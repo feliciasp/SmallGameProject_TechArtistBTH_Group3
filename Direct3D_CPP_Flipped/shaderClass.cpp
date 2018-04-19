@@ -21,7 +21,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -41,7 +41,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 
 	else if (type == 2)
 	{
-		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame);
+		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error setting player shader parameters",
@@ -510,7 +510,7 @@ bool shaderClass::setShaderParameters(ID3D11DeviceContext *devCon, XMMATRIX worl
 	return true;
 }
 
-bool shaderClass::setPlayerShaderParameters(ID3D11DeviceContext * devCon, bool flipped, int frameCount, int currentFrame)
+bool shaderClass::setPlayerShaderParameters(ID3D11DeviceContext * devCon, bool flipped, int frameCount, int currentFrame, int currentAnimation)
 {
 	HRESULT result;
 
@@ -527,8 +527,8 @@ bool shaderClass::setPlayerShaderParameters(ID3D11DeviceContext * devCon, bool f
 	}
 	dataPtr = (playerCBuffer*)mappedResources.pData;
 	dataPtr->flipped = flipped;
-	dataPtr->frameCount = frameCount;
 	dataPtr->currentFrame = currentFrame;
+	dataPtr->currentAnimation = currentAnimation;
 
 	devCon->Unmap(playerConstBuffer, 0);
 

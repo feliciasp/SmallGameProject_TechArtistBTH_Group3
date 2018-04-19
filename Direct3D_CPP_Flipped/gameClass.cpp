@@ -142,7 +142,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	player->getObj()->setMaterialName("SpriteSheetIdle.png");
+	player->getObj()->setMaterialName("playerSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
 
 	//enemy
@@ -557,7 +557,7 @@ bool gameClass::frameGame(float dt)
 	{
 		if (objHolder[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getFlipped());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -850,6 +850,8 @@ void gameClass::updatePlayer(float dt)
 	player->getMoveMat(playerMove);
 	player->getObj()->updatePosition(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
+	player->updateAnimation();
+	
 }
 
 void gameClass::updateCamera()

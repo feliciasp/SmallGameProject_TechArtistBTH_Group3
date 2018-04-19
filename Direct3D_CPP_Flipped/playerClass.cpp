@@ -23,7 +23,13 @@ playerClass::playerClass()
 
 	isPlayerHurt = false;
 	frameCount = 3;
-	currentFrame = 2;
+	currentFrame = 1;
+	currentAnimation = 1;
+	currentTime = 0;
+
+	idle = true;
+	running = false;
+	animationSpeed = 250;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -143,23 +149,40 @@ XMVECTOR playerClass::getTriggerCheck()
 void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisionCheckLeft, bool collisionCheckRight, bool collisionCheckBot)
 {
 
+	dt = 0.0015;
+	
 	justJumped = false;
 	moveValY += upSpeed * dt;
+	currentAnimation = 1;
+	frameCount = 3;
+	idle = true;
+	animationSpeed = 250;
 
 	input->readKeyboard(dt);
 	if (this->input->isAPressed() && !collisionCheckLeft)
 	{
 		moveValX += -10.0f * dt;
+		currentAnimation = 2;
+		frameCount = 8;
+		idle = false;
+		running = true;
+		animationSpeed = 100;
 		//OutputDebugString(L"func move left called");
 		if (this->flipped == false)
 		{
 			flipped = true;
+
 		}
 	}
 	
 	if (this->input->isDPressed() && !collisionCheckRight)
 	{
 		moveValX += 10.0f * dt;
+		currentAnimation = 2;
+		frameCount = 8;
+		idle = false;
+		running = true;
+		animationSpeed = 100;
 		//OutputDebugString(L"func move right called");
 		if (this->flipped == true)
 		{
@@ -206,6 +229,13 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 		//OutputDebugString(L"JUMP SET FALSE");
 	}
 
+	if (idle == true && running == true)
+	{
+		running = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
 
@@ -251,6 +281,18 @@ bool playerClass::getPlayerHurt()
 	return this->isPlayerHurt;
 }
 
+void playerClass::updateAnimation()
+{
+	currentTime++;
+	if (currentTime > animationSpeed)
+	{
+		currentFrame++;
+		if (currentFrame >= frameCount)
+			currentFrame = 1;
+		currentTime = 0;
+	}
+}
+
 bool playerClass::getFlipped()
 {
 	return this->flipped;
@@ -264,6 +306,11 @@ int playerClass::getFrameCount()
 int playerClass::getCurrentFrame()
 {
 	return this->currentFrame;
+}
+
+int playerClass::getCurrentAnimation()
+{
+	return this->currentAnimation;
 }
 
 float playerClass::getAnimationTime()

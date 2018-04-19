@@ -38,9 +38,12 @@ public:
 	void setPlayerHurt(bool x);
 	bool getPlayerHurt();
 
+	void updateAnimation();
+
 	bool getFlipped();
 	int getFrameCount();
 	int getCurrentFrame();
+	int getCurrentAnimation();
 	float getAnimationTime();
 	float getcurrentTime();
 
@@ -54,6 +57,9 @@ private:
 
 	XMVECTOR triggerCheck;
 
+	bool idle;
+	bool running;
+
 	bool isJumping;
 	bool justJumped;
 	float upSpeed;
@@ -65,8 +71,11 @@ private:
 	bool flipped;
 	int frameCount;
 	int currentFrame;
+	int currentAnimation;
 	float animationTime;
 	float currentTime;
+
+	int animationSpeed;
 
 	int HP;
 	bool isPlayerHurt;
