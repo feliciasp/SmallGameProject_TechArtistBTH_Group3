@@ -33,8 +33,16 @@ class enemyClass
 
 		void resetEnemy();
 
+		bool getCheckIfObjHolder();
+		void setCheckIfObjHolder(bool other);
+
+		void setIsActive(bool check);
+		bool getIsActive();
+
 	private:
 		objectClass* obj;
+		bool isActive;
+		bool checkIfObjHolder;
 
 		float temptest;
 		float moveVal;
