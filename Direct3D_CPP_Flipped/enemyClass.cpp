@@ -8,10 +8,13 @@ enemyClass::enemyClass()
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 5.5f, 0.0f, 0.0f};
+	isActive = true;
+	checkIfObjHolder = false;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
 {
+
 }
 
 enemyClass::~enemyClass()
@@ -68,6 +71,28 @@ void enemyClass::resetEnemy()
 	moveVal = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
+	isActive = true;
+	checkIfObjHolder = false;
+}
+
+bool enemyClass::getCheckIfObjHolder()
+{
+	return this->checkIfObjHolder;
+}
+
+void enemyClass::setCheckIfObjHolder(bool other)
+{
+	this->checkIfObjHolder = other;
+}
+
+void enemyClass::setIsActive(bool check)
+{
+	this->isActive = check;
+}
+
+bool enemyClass::getIsActive()
+{
+	return this->isActive;
 }
 
 
