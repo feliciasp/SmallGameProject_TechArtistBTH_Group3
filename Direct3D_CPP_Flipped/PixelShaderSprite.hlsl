@@ -1,9 +1,9 @@
 cbuffer playerConstBuffer : register(b0)
 {
-	int frameCount;
 	int currentFrame;
-	int test;
-	bool flipped;
+	int frameCount;
+	int flipped;
+	int currentAnimation;
 }
 
 Texture2D texture1	: register(t0);
@@ -26,11 +26,14 @@ float4 main(VS_OUT input) : SV_TARGET
 	lightDir = normalize(lightDir);
 	float diffConstant = dot(lightDir.xyz, input.Normal.xyz);
 	
-	float frameSkip = (1.0f / frameCount);
-	float initialUStep = input.TexCoord.x / frameCount;
-	input.TexCoord.x = input.TexCoord.x / frameCount + (frameSkip * (currentFrame - 1));
+	float frameSkipU = (1.0f / 8);
+	float frameSkipV = (1.0f / 2);
+	float initialUStep = input.TexCoord.x / 8;
+	float initialVStep = input.TexCoord.y / 2;
+	input.TexCoord.x = input.TexCoord.x / 8 + (frameSkipU * (currentFrame - 1));
+	input.TexCoord.y = input.TexCoord.y / 2 + (frameSkipV * (currentAnimation - 1));
 	if (flipped == true)
-		input.TexCoord.x = (frameSkip * currentFrame) - initialUStep;
+		input.TexCoord.x = (frameSkipU * currentFrame) - initialUStep;
 
 	float4 color = texture1.Sample(textureSample, input.TexCoord);
 
