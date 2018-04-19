@@ -66,6 +66,9 @@
     <ClCompile Include="GUItest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="weaponClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameClass.h">
@@ -120,6 +123,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GUItest.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="weaponClass.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

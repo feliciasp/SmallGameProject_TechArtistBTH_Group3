@@ -23,6 +23,11 @@ playerClass::playerClass()
 
 	isPlayerHurt = false;
 	frameCount = 3;
+
+	
+
+	isAttacking = false;
+
 	currentFrame = 1;
 	currentAnimation = 1;
 	currentTime = 0;
@@ -77,6 +82,14 @@ bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTA
 		return false;
 	}
 
+	weapon = new weaponClass;
+	if (!weapon)
+	{
+		MessageBox(NULL, L"Error create object weapon",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
 	setStartMat(0.0f);
 
 	return true;
@@ -96,13 +109,17 @@ void playerClass::shutdown()
 		delete input;
 		input = 0;
 	}
-	
+	if (weapon)
+	{
+		weapon->shutdown();
+		delete weapon;
+		weapon = 0;
+	}
 }
 
 void playerClass::setTranslation(float x)
 {
 	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
-	//moveVal = x;
 }
 
 objectClass* playerClass::getObj()
@@ -150,7 +167,7 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 {
 
 	dt = 0.0015;
-	
+
 	justJumped = false;
 	moveValY += upSpeed * dt;
 	currentAnimation = 1;
@@ -240,6 +257,32 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
 
 }
+
+void playerClass::checkIfAttacking()
+{
+	if (this->input->isOPressed())
+	{
+		this->isAttacking = true;
+	}
+	else
+	{
+		this->isAttacking = false;
+	}
+}
+
+bool playerClass::getIfAttack()
+{
+	checkIfAttacking();
+	if (this->isAttacking)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void playerClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMat;
@@ -259,6 +302,7 @@ void playerClass::resetPlayer()
 	upSpeed = 0.0f;
 	isJumping = false;
 	HP = 3;
+	isAttacking = false;
 }
 
 void playerClass::setPlayerHP(int x)
@@ -321,4 +365,9 @@ float playerClass::getAnimationTime()
 float playerClass::getcurrentTime()
 {
 	return this->currentTime;
+}
+
+weaponClass * playerClass::getWeapon()
+{
+	return this->weapon;
 }

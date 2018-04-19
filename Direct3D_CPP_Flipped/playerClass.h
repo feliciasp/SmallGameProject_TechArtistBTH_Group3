@@ -4,6 +4,7 @@
 
 #include "objectClass.h"
 #include "directInputClass.h"
+#include "weaponClass.h"
 
 class playerClass
 {
@@ -47,9 +48,13 @@ public:
 	float getAnimationTime();
 	float getcurrentTime();
 
+	weaponClass* getWeapon();
+	bool getIfAttack();
+
 private:
 	objectClass* obj;
 	directInput* input;
+	weaponClass* weapon;
 
 	float moveVal;
 	XMMATRIX translation;
@@ -79,6 +84,8 @@ private:
 
 	int HP;
 	bool isPlayerHurt;
+	bool isAttacking;
+	void checkIfAttacking();
 };
 
 
