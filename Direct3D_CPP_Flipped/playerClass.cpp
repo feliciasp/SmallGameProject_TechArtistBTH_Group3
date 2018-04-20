@@ -174,12 +174,13 @@ void playerClass::handleMovement(double dt)
 		dt = 0;
 
 
+
 	justJumped = false;
 	moveValY += upSpeed * dt;
 
+
 	currentAnimation = 1;
 	frameCount = 2;
-	idle = true;
 	animationSpeed = 250;
 
 	input->readKeyboard(dt);
@@ -188,8 +189,6 @@ void playerClass::handleMovement(double dt)
 		moveValX += -10.0f * dt;
 		currentAnimation = 2;
 		frameCount = 8;
-		idle = false;
-		running = true;
 		animationSpeed = 100;
 		//OutputDebugString(L"func move left called");
 		if (this->flipped == false)
@@ -204,8 +203,6 @@ void playerClass::handleMovement(double dt)
 		moveValX += 10.0f * dt;
 		currentAnimation = 2;
 		frameCount = 8;
-		idle = false;
-		running = true;
 		animationSpeed = 100;
 		//OutputDebugString(L"func move right called");
 		if (this->flipped == true)
@@ -224,6 +221,8 @@ void playerClass::handleMovement(double dt)
 			justJumped = true;
 		}
 		isJumping = true;
+		currentAnimation = 3;
+		frameCount = 2;
 	}
 
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
@@ -234,8 +233,6 @@ void playerClass::handleMovement(double dt)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
-		currentAnimation = 3;
-		frameCount = 2;
 	}
 	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
@@ -245,39 +242,7 @@ void playerClass::handleMovement(double dt)
 	}
 	
 
-	if (idle == true && running == true)
-	{
-		running = false;
-		currentTime = 0;
-		currentFrame = 1;
-		animationSpeed = 250;
-	}
-
-	if (running == true && isJumping == true)
-	{
-		running = false;
-		currentTime = 0;
-		currentFrame = 1;
-		animationSpeed = 250;
-	}
-
-	if (running == true && isJumping == true)
-	{
-		running = false;
-		currentTime = 0;
-		currentFrame = 1;
-		animationSpeed = 250;
-	}
-
-	if (idle == true && isJumping == true)
-	{
-		idle = false;
-		currentTime = 0;
-		currentFrame = 1;
-		animationSpeed = 250;
-	}
-
-	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
+	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }
 
@@ -295,6 +260,7 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		moveValY = oldMoveValY;
 		isJumping = false;
 		upSpeed = 0;
+		idle = true;
 	}
 
 	if (left)
@@ -306,7 +272,7 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		moveValX = oldMoveValX;
 	}
 
-	moveMat = XMMatrixTranslation(moveValX + 20, moveValY + 2, 0.0f);
+	moveMat = XMMatrixTranslation(moveValX, moveValY + 8, 0.0f);
 }
 
 void playerClass::checkIfAttacking()
