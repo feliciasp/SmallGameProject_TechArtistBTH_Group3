@@ -22,7 +22,7 @@ playerClass::playerClass()
 	flipped = false;
 
 	isPlayerHurt = false;
-	frameCount = 3;
+	frameCount = 2;
 
 	
 
@@ -35,6 +35,7 @@ playerClass::playerClass()
 	idle = true;
 	running = false;
 	animationSpeed = 250;
+	nrOfLoops = 0;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -171,7 +172,7 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	justJumped = false;
 	moveValY += upSpeed * dt;
 	currentAnimation = 1;
-	frameCount = 3;
+	frameCount = 2;
 	idle = true;
 	animationSpeed = 250;
 
@@ -234,10 +235,14 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
+		currentAnimation = 3;
+		frameCount = 2;
 	}
 	else if (!collisionCheckBot) //upSpeed less than -1.0f;
 	{
 		upSpeed += (-50 * dt) - -upSpeed * dt;
+		currentAnimation = 4;
+		frameCount = 2;
 	}
 	else if (isJumping && !justJumped)
 	{
@@ -249,6 +254,30 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	if (idle == true && running == true)
 	{
 		running = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
+
+	if (running == true && isJumping == true)
+	{
+		running = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
+
+	if (running == true && isJumping == true)
+	{
+		running = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
+
+	if (idle == true && isJumping == true)
+	{
+		idle = false;
 		currentTime = 0;
 		currentFrame = 1;
 		animationSpeed = 250;
@@ -331,8 +360,18 @@ void playerClass::updateAnimation()
 	if (currentTime > animationSpeed)
 	{
 		currentFrame++;
-		if (currentFrame >= frameCount)
+		if (currentFrame > frameCount)
+		{
 			currentFrame = 1;
+			if(idle == true || running == true)
+				nrOfLoops++;
+		}
+			
+		if (nrOfLoops == 3 && currentFrame == frameCount)
+		{
+			currentFrame++;
+			nrOfLoops = 0;
+		}
 		currentTime = 0;
 	}
 }

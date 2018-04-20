@@ -26,12 +26,12 @@ float4 main(VS_OUT input) : SV_TARGET
 	lightDir = normalize(lightDir);
 	float diffConstant = dot(lightDir.xyz, input.Normal.xyz);
 	
-	float frameSkipU = (1.0f / 8);
-	float frameSkipV = (1.0f / 2);
-	float initialUStep = input.TexCoord.x / 8;
-	float initialVStep = input.TexCoord.y / 2;
-	input.TexCoord.x = input.TexCoord.x / 8 + (frameSkipU * (currentFrame - 1));
-	input.TexCoord.y = input.TexCoord.y / 2 + (frameSkipV * (currentAnimation - 1));
+	float frameSkipU = (1.0f / 10);
+	float frameSkipV = (1.0f / 6);
+	float initialUStep = input.TexCoord.x / 10;
+	float initialVStep = input.TexCoord.y / 6;
+	input.TexCoord.x = input.TexCoord.x / 10 + (frameSkipU * (currentFrame - 1));
+	input.TexCoord.y = input.TexCoord.y / 6 + (frameSkipV * (currentAnimation - 1));
 	if (flipped == true)
 		input.TexCoord.x = (frameSkipU * currentFrame) - initialUStep;
 
