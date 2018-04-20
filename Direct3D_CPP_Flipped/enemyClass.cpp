@@ -192,7 +192,7 @@ XMVECTOR enemyClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void enemyClass::updateFalling(objectClass * platform, float dt, bool collisionCheck)
+void enemyClass::updateFalling(objectClass * platform, double dt, bool collisionCheck)
 {
 	if (!collisionCheck)
 	{

@@ -163,20 +163,26 @@ XMVECTOR playerClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisionCheckLeft, bool collisionCheckRight, bool collisionCheckBot)
+void playerClass::handleMovement(double dt)
 {
 
-	dt = 0.0015;
+	oldMoveValX = moveValX;
+	oldMoveValY = moveValY;
+
+	if (dt > 20)
+		dt = 0;
+
 
 	justJumped = false;
 	moveValY += upSpeed * dt;
+
 	currentAnimation = 1;
 	frameCount = 3;
 	idle = true;
 	animationSpeed = 250;
 
 	input->readKeyboard(dt);
-	if (this->input->isAPressed() && !collisionCheckLeft)
+	if (this->input->isAPressed())
 	{
 		moveValX += -10.0f * dt;
 		currentAnimation = 2;
@@ -192,7 +198,7 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 		}
 	}
 	
-	if (this->input->isDPressed() && !collisionCheckRight)
+	if (this->input->isDPressed())
 	{
 		moveValX += 10.0f * dt;
 		currentAnimation = 2;
@@ -208,43 +214,31 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	}
 	
 
-
-
-	if (this->input->isSpacePressed() && !collisionCheckTop)
+	if (this->input->isSpacePressed())
 	{
 		if (!isJumping)
 		{
-			upSpeed = 30.5f;
+			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
 		}
 		isJumping = true;
 	}
 
-
-
-	if (!this->input->isSpacePressed() && upSpeed > 15)
+	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
 		upSpeed -= upSpeed - (upSpeed * 0.99);
 
-	if (collisionCheckTop && upSpeed > 0)
-		upSpeed = 0;
 
-
-	if (!collisionCheckBot && upSpeed > -1.0f)
+	if (upSpeed > -1.0f)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
-	else if (!collisionCheckBot) //upSpeed less than -1.0f;
+	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
 		upSpeed += (-50 * dt) - -upSpeed * dt;
 	}
-	else if (isJumping && !justJumped)
-	{
-		upSpeed = 0.0f;
-		isJumping = false;
-		//OutputDebugString(L"JUMP SET FALSE");
-	}
+	
 
 	if (idle == true && running == true)
 	{
@@ -256,6 +250,34 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
 
+}
+
+void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
+{
+	if (top)
+	{
+		moveValY = oldMoveValY;
+		if (upSpeed > 0)
+			upSpeed = 0;
+	}
+
+	if (bot)
+	{
+		moveValY = oldMoveValY;
+		isJumping = false;
+		upSpeed = 0;
+	}
+
+	if (left)
+	{
+		moveValX = oldMoveValX;
+	}
+	if (right)
+	{
+		moveValX = oldMoveValX;
+	}
+
+	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
 }
 
 void playerClass::checkIfAttacking()

@@ -1,14 +1,21 @@
 #include "deltaTimeClass.h"
 
+
+
+
 deltatime::deltatime()
 {
-	/*deltaInMili = 0;*/
-	t = 0.0;
-	dt = 1 / 60.0;
-	deltaTime = 0;
-	currentTime = timeGetTime() / 1000.0;
 	newTime = 0;
 	frameTime = 0;
+
+	auto startTime = std::chrono::high_resolution_clock::now();
+	auto msTime = std::chrono::time_point_cast<std::chrono::milliseconds>(startTime);
+	auto epoch = msTime.time_since_epoch();
+	auto time = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
+
+	currentTime = time.count();
+
+	totalElapsedTime = 0;
 }
 
 deltatime::deltatime(deltatime & other)
@@ -19,33 +26,26 @@ deltatime::~deltatime()
 {
 }
 
-void deltatime::setDeltaTime()
-{
-	/*QueryPerformanceFrequency(&clockFreq);
-	QueryPerformanceCounter(&startTime);*/
-
-
-}
 
 void deltatime::updateDeltaTime()
 {
-	/*QueryPerformanceCounter(&endTime);
-	delta.QuadPart = endTime.QuadPart - startTime.QuadPart;
+	
 
-	deltaInMili = (float)delta.QuadPart / clockFreq.QuadPart;*/
-	newTime = timeGetTime() / 1000.0;
+	auto startTime = std::chrono::high_resolution_clock::now();
+	auto msTime = std::chrono::time_point_cast<std::chrono::milliseconds>(startTime);
+	auto epoch = msTime.time_since_epoch();
+	auto time = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
+
+	double newTime = time.count();
 	frameTime = newTime - currentTime;
 	currentTime = newTime;
 
-
+	totalElapsedTime += frameTime / 1000.0;
 }
 
 float deltatime::getDeltaTime()
 {
-	/*return this->deltaInMili;*/
 
-	t += frameTime;
-
-	return frameTime;
+	return frameTime / 1000.0;
 
 }

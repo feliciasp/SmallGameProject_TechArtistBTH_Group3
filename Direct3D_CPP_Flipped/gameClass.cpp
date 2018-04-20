@@ -442,7 +442,6 @@ void gameClass::run()
 			if (frameGameState)
 			{
 				//otherwise to the fram proc
-				dt->setDeltaTime();
 				result = frameGame(dt->getDeltaTime());
 				dt->updateDeltaTime();
 
@@ -456,7 +455,6 @@ void gameClass::run()
 			else
 			{
 				
-				dt->setDeltaTime();
 				result = frameMeny(dt->getDeltaTime());
 				dt->updateDeltaTime();
 
@@ -480,7 +478,7 @@ void gameClass::run()
 }
 
 //where all the processing for our app is done here. right now it checks if user has precces anything. if its escape then quit. if no then we call our graphics obj to do its frame processing and render the graphics for the frame
-bool gameClass::frameGame(float dt)
+bool gameClass::frameGame(double dt)
 {
 	//DO STUFFS
 	bool result;
@@ -607,7 +605,7 @@ bool gameClass::frameGame(float dt)
 	return true;
 }
 
-bool gameClass::frameMeny(float dt)
+bool gameClass::frameMeny(double dt)
 {
 	bool result;
 
@@ -849,10 +847,9 @@ void gameClass::updateConstantMatrices()
 	graphics->getD3D()->getWorldMatrix(world);
 }
 
-void gameClass::updateEnemy(float dt)
+void gameClass::updateEnemy(double dt)
 {
 	enemy->updateFalling(platform->getObj(), dt, enemyCheckCollisionPlatform());
-	//enemy->getObj()->updatePosition(enemyMatPos);
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
 	enemy->getFallingMat(enemyFallingMat);
@@ -860,11 +857,13 @@ void gameClass::updateEnemy(float dt)
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 }
 
-void gameClass::updatePlayer(float dt)
+void gameClass::updatePlayer(double dt)
 {
-	player->handleMovement(dt, checkCollisionPlatformTop(), checkCollisionPlatformLeft(), checkCollisionPlatformRight(), checkCollisionPlatformBot());
+	player->handleMovement(dt);
 	player->getMoveMat(playerMove);
-	/*player->getObj()->updatePosition(playerMove);*/
+	player->getObj()->setWorldMatrix(playerMove);
+	player->checkCollisions(checkCollisionPlatformTop(), checkCollisionPlatformLeft(), checkCollisionPlatformRight(), checkCollisionPlatformBot());
+	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	player->updateAnimation();
 	
@@ -882,7 +881,7 @@ void gameClass::staticBackground()
 	background->getObj()->setWorldMatrix(backgroundMat);
 }
 
-bool gameClass::updateGUI(float dt, GUItestClass* obj)
+bool gameClass::updateGUI(double dt, GUItestClass* obj)
 {
 	return obj->updateDestroyState(dt);
 }
@@ -900,7 +899,7 @@ void gameClass::updatePickup()
 	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
 }
 
-void gameClass::updateCollision(float dt)
+void gameClass::updateCollision(double dt)
 {
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat));

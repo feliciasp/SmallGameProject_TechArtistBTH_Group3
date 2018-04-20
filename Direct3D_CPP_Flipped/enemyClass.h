@@ -25,7 +25,7 @@ class enemyClass
 		void resetMove();
 
 		XMVECTOR getTriggerCheck();
-		void updateFalling(objectClass* platform, float dt, bool checkCollision);
+		void updateFalling(objectClass* platform, double dt, bool checkCollision);
 		void getFallingMat(XMMATRIX& other);
 
 		void setTriggerVector(XMVECTOR x);

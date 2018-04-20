@@ -28,7 +28,8 @@ public:
 
 	XMVECTOR getTriggerCheck();
 
-	void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisionCheckLeft, bool collisionCheckRight, bool collisionCheckBot);
+	void handleMovement(double dt);
+	void checkCollisions(bool top, bool left, bool right, bool bot);
 	void getMoveMat(XMMATRIX& mat);
 
 	void resetPlayer();
@@ -71,6 +72,10 @@ private:
 	float moveValX;
 	float moveValY;
 	float moveValZ;
+
+	float oldMoveValX;
+	float oldMoveValY;
+
 	XMMATRIX moveMat;
 
 	bool flipped;

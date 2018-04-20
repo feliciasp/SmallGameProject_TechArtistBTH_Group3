@@ -48,8 +48,8 @@ class gameClass
 		void removeObjFromObjHolderMeny(objectClass* obj);
 
 	private:
-		bool frameGame(float dt);
-		bool frameMeny(float dt);
+		bool frameGame(double dt);
+		bool frameMeny(double dt);
 		bool initializeWindow(int ShowWnd, int& width, int& height);
 		void shutdownWindow();
 		
@@ -81,9 +81,9 @@ class gameClass
 		void updateConstantMatrices();
 		XMMATRIX enemyMatPos, matMul, enemyFallingMat;
 		XMMATRIX masterMovementEnemyMat;
-		void updateEnemy(float dt);
+		void updateEnemy(double dt);
 		XMMATRIX playerMove;
-		void updatePlayer(float dt);
+		void updatePlayer(double dt);
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
@@ -91,7 +91,7 @@ class gameClass
 		void updatePickup();
 		float lengthBetween1;
 		float lengthBetween2;
-		void updateCollision(float dt);
+		void updateCollision(double dt);
 		XMMATRIX platformMat;
 
 		/*bool checkCollisionPlatform();*/
@@ -112,7 +112,7 @@ class gameClass
 		GUItestClass* GUIheart3;
 		void updatePlatform();
 		XMMATRIX guiMat;
-		bool updateGUI(float dt, GUItestClass* obj);
+		bool updateGUI(double dt, GUItestClass* obj);
 		XMMATRIX heart1;
 		XMMATRIX heart2;
 		XMMATRIX heart3;

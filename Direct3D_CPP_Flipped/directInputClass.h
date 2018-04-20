@@ -20,7 +20,7 @@ class directInput
 
 		bool initialize(HINSTANCE hInstance, HWND hwnd);
 		void shutdown();
-		bool frame(float dt);
+		bool frame(double dt);
 
 		bool isEscapePressed();
 		bool isSpacePressed();
@@ -30,7 +30,7 @@ class directInput
 		bool isEnterPressed();
 		bool isOPressed();
 
-		bool readKeyboard(float dt);
+		bool readKeyboard(double dt);
 
 	private:
 		IDirectInput8 * directInputOther;
