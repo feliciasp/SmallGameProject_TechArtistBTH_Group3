@@ -33,11 +33,8 @@ playerClass::playerClass()
 	currentTime = 0;
 
 	idle = true;
-	startedRunning = false;
 	running = false;
-	startedJumping = false;
 	jumping = false;
-	startedFalling = false;
 	falling = false;
 	animationSpeed = 250;
 	nrOfLoops = 0;
