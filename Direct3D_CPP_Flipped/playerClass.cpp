@@ -91,7 +91,7 @@ bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTA
 		return false;
 	}
 
-	setStartMat(0.0f);
+	setStartMat(0.0f, 5.0f);
 
 	return true;
 }
@@ -138,9 +138,9 @@ void playerClass::getTranslationMatStart(XMMATRIX & other)
 	other = this->transStart;
 }
 
-void playerClass::setStartMat(float x)
+void playerClass::setStartMat(float x, float y)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, y, 0.0f);
 }
 
 float playerClass::getMove()
@@ -306,7 +306,7 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		moveValX = oldMoveValX;
 	}
 
-	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
+	moveMat = XMMatrixTranslation(moveValX + 20, moveValY + 2, 0.0f);
 }
 
 void playerClass::checkIfAttacking()

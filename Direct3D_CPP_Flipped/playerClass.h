@@ -20,7 +20,7 @@ public:
 	objectClass* getObj();
 	void getTranslationMat(XMMATRIX& other);
 	void getTranslationMatStart(XMMATRIX& other);
-	void setStartMat(float x);
+	void setStartMat(float x, float y);
 
 	float getMove();
 	void setMove(float x);
