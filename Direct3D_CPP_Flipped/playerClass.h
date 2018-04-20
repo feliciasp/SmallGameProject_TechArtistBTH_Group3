@@ -65,6 +65,8 @@ private:
 
 	bool idle;
 	bool running;
+	bool jumping;
+	bool falling;
 
 	bool isJumping;
 	bool justJumped;

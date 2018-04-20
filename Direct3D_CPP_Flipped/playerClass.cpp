@@ -33,7 +33,12 @@ playerClass::playerClass()
 	currentTime = 0;
 
 	idle = true;
+	startedRunning = false;
 	running = false;
+	startedJumping = false;
+	jumping = false;
+	startedFalling = false;
+	falling = false;
 	animationSpeed = 250;
 	nrOfLoops = 0;
 }
@@ -173,6 +178,7 @@ void playerClass::handleMovement(double dt)
 	if (dt > 20)
 		dt = 0;
 
+	idle = true;
 
 
 	justJumped = false;
@@ -187,9 +193,16 @@ void playerClass::handleMovement(double dt)
 	if (this->input->isAPressed())
 	{
 		moveValX += -10.0f * dt;
+		if (running == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		currentAnimation = 2;
 		frameCount = 8;
 		animationSpeed = 100;
+		idle = false;
+		running = true;
 		//OutputDebugString(L"func move left called");
 		if (this->flipped == false)
 		{
@@ -201,9 +214,16 @@ void playerClass::handleMovement(double dt)
 	if (this->input->isDPressed())
 	{
 		moveValX += 10.0f * dt;
+		if (running == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		currentAnimation = 2;
 		frameCount = 8;
 		animationSpeed = 100;
+		idle = false;
+		running = true;
 		//OutputDebugString(L"func move right called");
 		if (this->flipped == true)
 		{
@@ -219,10 +239,16 @@ void playerClass::handleMovement(double dt)
 			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
+			currentFrame = 1;
+			currentTime = 0;
 		}
+		running = false;
 		isJumping = true;
+		idle = false;
+		jumping = true;
 		currentAnimation = 3;
 		frameCount = 2;
+		animationSpeed = 250;
 	}
 
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
@@ -236,11 +262,34 @@ void playerClass::handleMovement(double dt)
 	}
 	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
+		if (falling == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		upSpeed += (-50 * dt) - -upSpeed * dt;
 		currentAnimation = 4;
 		frameCount = 2;
+		idle = false;
+		running = false;
+		falling = true;
 	}
 	
+	if (running == true && idle == true)
+	{
+		running = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
+
+	if (falling == true && idle == true)
+	{
+		falling = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
@@ -344,7 +393,6 @@ bool playerClass::getPlayerHurt()
 
 void playerClass::updateAnimation()
 {
-	currentTime++;
 	if (currentTime > animationSpeed)
 	{
 		currentFrame++;
@@ -362,6 +410,8 @@ void playerClass::updateAnimation()
 		}
 		currentTime = 0;
 	}
+
+	currentTime++;
 }
 
 bool playerClass::getFlipped()
