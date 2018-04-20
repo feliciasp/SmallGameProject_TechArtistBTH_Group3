@@ -85,6 +85,8 @@ private:
 	float animationTime;
 	float currentTime;
 
+
+	int nrOfLoops;
 	int animationSpeed;
 
 	int HP;

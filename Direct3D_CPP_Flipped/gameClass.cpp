@@ -142,7 +142,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	player->getObj()->setMaterialName("playerSpriteSheet.png");
+	player->getObj()->setMaterialName("playerMovement.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
@@ -927,6 +927,7 @@ void gameClass::updateCollision(double dt)
 		enemy->resetMove();
 		enemy->getTranslationMatStart(masterMovementEnemyMat);
 		player->setPlayerHP(player->getPlayerHP() - 1);
+		player->setPlayerHurt(true);
 
 		if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 		{
