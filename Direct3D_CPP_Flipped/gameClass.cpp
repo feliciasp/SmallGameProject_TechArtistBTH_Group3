@@ -907,9 +907,22 @@ void gameClass::updateCollision(float dt)
 
 	if (player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeapon(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeapon(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
-		removeObjFromObjHolder(enemy->getObj());
-		enemy->setIsActive(false);
+		if (enemy->getEnemyHP() <= 0)
+		{
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
+		}
+		else if(enemy->hurtState())
+		{
+			enemy->resetMove();
+			enemy->getTranslationMatStart(masterMovementEnemyMat);
+			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			OutputDebugString(L"\nenemy lost hP!\n");
+		}
 	}
+	
+	enemy->timeCountdown();
+
 	if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
 		enemy->resetMove();

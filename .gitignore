@@ -2,3 +2,5 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+/Direct3D_CPP_Flipped/Debug
+/Direct3D_CPP_Flipped/.vs/D3DDemo/v15

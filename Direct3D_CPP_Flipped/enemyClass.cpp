@@ -10,6 +10,9 @@ enemyClass::enemyClass()
 	triggerCheck = { 5.5f, 0.0f, 0.0f};
 	isActive = true;
 	checkIfObjHolder = false;
+	HP = 3;
+	isHurt = false;
+	fakeTimer = 0;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -73,6 +76,9 @@ void enemyClass::resetEnemy()
 	transStart = XMMatrixIdentity();
 	isActive = true;
 	checkIfObjHolder = false;
+	HP = 3;
+	isHurt = false;
+	fakeTimer = 0;
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -93,6 +99,49 @@ void enemyClass::setIsActive(bool check)
 bool enemyClass::getIsActive()
 {
 	return this->isActive;
+}
+
+void enemyClass::setEnemyHP(int x)
+{
+	this->HP = x;
+}
+
+int enemyClass::getEnemyHP()
+{
+	return this->HP;
+}
+
+bool enemyClass::hurtState()
+{
+	if (this->isHurt == false && fakeTimer == 0)
+	{
+		this->isHurt = true;
+		fakeTimer = 150;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void enemyClass::timeCountdown()
+{
+	if (this->fakeTimer != 0)
+	{
+		this->fakeTimer -= 1;
+		this->isHurt = false;
+	}
+}
+
+void enemyClass::setEnemyHurt(bool check)
+{
+	this->isHurt = check;
+}
+
+bool enemyClass::getEnemyHurt()
+{
+	return this->isHurt;
 }
 
 

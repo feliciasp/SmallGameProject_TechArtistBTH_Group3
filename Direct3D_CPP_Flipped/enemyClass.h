@@ -39,6 +39,13 @@ class enemyClass
 		void setIsActive(bool check);
 		bool getIsActive();
 
+		void setEnemyHP(int x);
+		int getEnemyHP();
+
+		bool hurtState();
+		void timeCountdown();
+		
+
 	private:
 		objectClass* obj;
 		bool isActive;
@@ -53,6 +60,12 @@ class enemyClass
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
 
+		int HP;
+		bool isHurt;
+		int fakeTimer;
+
+		void setEnemyHurt(bool check);
+		bool getEnemyHurt();
 };
 
 
