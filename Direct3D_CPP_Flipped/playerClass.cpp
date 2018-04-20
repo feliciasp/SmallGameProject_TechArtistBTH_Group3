@@ -239,19 +239,23 @@ void playerClass::handleMovement(double dt)
 			currentFrame = 1;
 			currentTime = 0;
 		}
-		running = false;
 		isJumping = true;
-		idle = false;
-		jumping = true;
-		currentAnimation = 3;
-		frameCount = 2;
-		animationSpeed = 250;
 	}
 
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
 		upSpeed -= upSpeed - (upSpeed * 0.99);
 
 
+	if (upSpeed > 1)
+	{
+		running = false;
+		idle = false;
+		jumping = true;
+		currentAnimation = 3;
+		frameCount = 2;
+		animationSpeed = 250;
+	}
+	
 	if (upSpeed > -1.0f)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
@@ -288,6 +292,14 @@ void playerClass::handleMovement(double dt)
 		animationSpeed = 250;
 	}
 
+	if (jumping == true && idle == true)
+	{
+		jumping = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+
+	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }
