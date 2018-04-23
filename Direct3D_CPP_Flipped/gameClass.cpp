@@ -169,7 +169,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeleton3.bin");
+	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonBoi.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",
@@ -177,7 +177,7 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	enemy->getTranslationMatStart(enemyMatPos);
-	enemy->getObj()->setMaterialName("texture2.png");
+	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
 
 	//background test
