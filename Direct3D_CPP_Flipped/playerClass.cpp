@@ -51,9 +51,8 @@ playerClass::~playerClass()
 bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
 {
 	bool result;
+
 	obj = new objectClass;
-
-
 	if (!obj)
 	{
 		MessageBox(NULL, L"Error create object obj",
@@ -300,6 +299,8 @@ void playerClass::handleMovement(double dt)
 		animationSpeed = 250;
 
 	}
+
+
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }
@@ -411,7 +412,7 @@ void playerClass::updateAnimation()
 			if(idle == true || running == true)
 				nrOfLoops++;
 		}
-			
+		
 		if (nrOfLoops == 3 && currentFrame == frameCount)
 		{
 			currentFrame++;

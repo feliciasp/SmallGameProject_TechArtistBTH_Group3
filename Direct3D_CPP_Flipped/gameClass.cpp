@@ -20,8 +20,11 @@ gameClass::gameClass(HINSTANCE hInstance)
 	movementInput = 0;
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
+	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
-	frameGameState = false;
+	gameStateMeny = true;
+	gameStateLevel = false;
+	gameStateLimbo = false;
 	done = false;
 	
 	GUIheart1 = 0;
@@ -82,7 +85,6 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-
 	//init graphics obj
 	result = graphics->initialize(width, height, hwnd, hInstance);
 	if (!result)
@@ -127,6 +129,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	camera->setPosition(0.0f, 0.0f, -15.0f, 0.0f);
 
+
+	///OBJ
 	//player test
 	player = new playerClass;
 	if (!player)
@@ -142,12 +146,13 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+
 	player->getObj()->setMaterialName("playerMovement.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
+
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
 	player->getWeapon()->setBboxMaxWeapon(tempBboxMax);
-
 	player->getWeapon()->setBboxMinWeapon(player->getObj()->getBoundingBoxMax());
 
 	//enemy
@@ -285,7 +290,7 @@ bool gameClass::initialize(int ShowWnd)
 
 	//MENY
 	meny = new GUItestClass;
-	if (!pickup)
+	if (!meny)
 	{
 		MessageBox(NULL, L"Error create pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
@@ -302,6 +307,27 @@ bool gameClass::initialize(int ShowWnd)
 	meny->getObj()->setMaterialName("menyTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
 	addObjectToObjHolderMeny(meny->getObj());
+
+	//LIMBO
+	limbo = new GUItestClass;
+	if (!limbo)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limbo->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limbo->getObj()->setWorldMatrix(limboMat);
+	limbo->getObj()->setMaterialName("limboTexture.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limbo->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limbo->getObj());
 
 	return true;
 }
@@ -394,6 +420,12 @@ void gameClass::shutdown()
 		delete meny;
 		meny = 0;
 	}
+	if (limbo)
+	{
+		limbo->shutdown();
+		delete limbo;
+		limbo = 0;
+	}
 
 	shutdownWindow();
 
@@ -439,7 +471,7 @@ void gameClass::run()
 		else
 		{
 
-			if (frameGameState)
+			if (gameStateLevel)
 			{
 				//otherwise to the fram proc
 				result = frameGame(dt->getDeltaTime());
@@ -448,11 +480,10 @@ void gameClass::run()
 				if (!result)
 				{
 					fakeTimer = 500;
-					frameGameState = false;
 				}
 
 			}
-			else
+			else if(gameStateMeny)
 			{
 				
 				result = frameMeny(dt->getDeltaTime());
@@ -469,12 +500,64 @@ void gameClass::run()
 
 				if (inputDirectOther->isEnterPressed())
 				{
-					frameGameState = true;
+					gameStateLevel = true;
+				}
+			}
+			else if (gameStateLimbo)
+			{
+				result = frameLimbo(dt->getDeltaTime());
+				dt->updateDeltaTime();
+
+				if (fakeTimer <= 0)
+				{
+					fakeTimer -= 1;
 				}
 			}
 		}
 	}
 	return;
+}
+
+bool gameClass::frameLimbo(double dt)
+{
+	bool result;
+
+	result = inputDirectOther->frame(dt);
+	if (!result)
+	{
+		return false;
+	}
+
+	//constant MATRICES
+	updateConstantMatrices();
+
+	graphics->beginScene();
+	for (int i = 0; i < objHolderLimbo.size(); i++)
+	{
+		result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition());
+		if (!result)
+		{
+			return false;
+		}
+	}
+	graphics->endScene();
+
+	if (inputDirectOther->isEnterPressed() == true)
+	{
+		gameStateLevel = true;
+		gameStateLimbo = false;
+		gameStateMeny = false;
+		return false;
+	}
+	if (inputDirectOther->isEscapePressed() == true)
+	{
+		gameStateLevel = false;
+		gameStateLimbo = false;
+		gameStateMeny = true;
+		return false;
+	}
+
+	return true;
 }
 
 //where all the processing for our app is done here. right now it checks if user has precces anything. if its escape then quit. if no then we call our graphics obj to do its frame processing and render the graphics for the frame
@@ -488,6 +571,7 @@ bool gameClass::frameGame(double dt)
 	{
 		return false;
 	}
+
 
 	//constant MATRICES
 	updateConstantMatrices();
@@ -591,7 +675,7 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEscapePressed() == true || player->getPlayerHP() == 0)
+	if (player->getPlayerHP() == 0)
 	{
 		player->resetPlayer();
 		pickup->resetPickup();
@@ -599,6 +683,25 @@ bool gameClass::frameGame(double dt)
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
+
+		gameStateLevel = false;
+		gameStateMeny = false;
+		gameStateLimbo = true;
+		return false;
+	}
+
+	if (inputDirectOther->isEscapePressed() == true)
+	{
+		player->resetPlayer();
+		pickup->resetPickup();
+		enemy->resetEnemy();
+		GUIheart1->resetGUI();
+		GUIheart2->resetGUI();
+		GUIheart3->resetGUI();
+
+		gameStateLevel = false;
+		gameStateMeny = true;
+		gameStateLimbo = false;
 		return false;
 	}
 
@@ -608,8 +711,6 @@ bool gameClass::frameGame(double dt)
 bool gameClass::frameMeny(double dt)
 {
 	bool result;
-
-	
 
 	result = inputDirectOther->frame(dt);
 	if (!result)
@@ -634,7 +735,6 @@ bool gameClass::frameMeny(double dt)
 
 	if (inputDirectOther->isEscapePressed() == true)
 	{
-		//frameGameState = true;
 		return false;
 	}
 
@@ -821,6 +921,23 @@ void gameClass::removeObjFromObjHolder(objectClass * obj)
 
 }
 
+void gameClass::addObjectToObjHolderLimbo(objectClass * obj)
+{
+	objHolderLimbo.push_back(obj);
+}
+
+void gameClass::removeObjFromObjHolderLimbo(objectClass * obj)
+{
+	//vec.erase(vec.begin() + i);
+	for (int i = 0; i < objHolderLimbo.size(); i++)
+	{
+		if (objHolderLimbo[i] == obj)
+		{
+			objHolderLimbo.erase(objHolderLimbo.begin() + i);
+		}
+	}
+}
+
 void gameClass::addObjectToObjHolderMeny(objectClass* obj)
 {
 	objHolderMeny.push_back(obj);
@@ -904,19 +1021,32 @@ void gameClass::updateCollision(double dt)
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat));
 
+	if (player->getFlipped())
+	{
+		//true = vänster
+		/*void setBboxMaxWeapon(XMVECTOR vector);
+		void setBboxMinWeapon(XMVECTOR vector);
+
+		XMVECTOR getBboxMaxWeapon();
+		XMVECTOR getBboxMinWeapon();*/
+		player->getWeapon()->setBboxMaxWeapon(player->getWeapon()->getBboxMaxWeapon() * -1);
+		player->getWeapon()->setBboxMinWeapon(player->getWeapon()->getBboxMinWeapon() * -1);
+	}
+
 	if (player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeapon(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeapon(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
-		if (enemy->getEnemyHP() <= 0)
-		{
-			removeObjFromObjHolder(enemy->getObj());
-			enemy->setIsActive(false);
-		}
-		else if(enemy->hurtState())
+		
+		if(enemy->hurtState())
 		{
 			enemy->resetMove();
 			enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
+		}
+		if (enemy->getEnemyHP() <= 0)
+		{
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
 		}
 	}
 	
@@ -928,6 +1058,7 @@ void gameClass::updateCollision(double dt)
 		enemy->getTranslationMatStart(masterMovementEnemyMat);
 		player->setPlayerHP(player->getPlayerHP() - 1);
 		player->setPlayerHurt(true);
+		OutputDebugString(L"\nplayer lost hP!\n");
 
 		if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 		{
@@ -1042,7 +1173,17 @@ bool gameClass::enemyCheckCollisionPlatform()
 	return false;
 }
 
-void gameClass::setFrameGetState(bool other)
+void gameClass::setGameStateLevel(bool other)
 {
-	this->frameGameState = other;
+	this->gameStateLevel = other;
+}
+
+void gameClass::setGameStateMeny(bool other)
+{
+	this->gameStateMeny = other;
+}
+
+void gameClass::setGameStateLimbo(bool other)
+{
+	this->gameStateLimbo = other;
 }

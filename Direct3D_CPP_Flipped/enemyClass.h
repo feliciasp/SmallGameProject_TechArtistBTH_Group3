@@ -4,7 +4,7 @@
 
 #include "objectClass.h"
 
-class enemyClass
+class enemyClass 
 {
 	public:
 		enemyClass();
