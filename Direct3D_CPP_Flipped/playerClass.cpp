@@ -36,6 +36,8 @@ playerClass::playerClass()
 	running = false;
 	jumping = false;
 	falling = false;
+	attacking = false;
+	isHit = false;
 	animationSpeed = 250;
 	nrOfLoops = 0;
 }
@@ -210,14 +212,14 @@ void playerClass::handleMovement(double dt)
 	if (this->input->isDPressed())
 	{
 		moveValX += 10.0f * dt;
-		if (running == false)
+		if (running == false && attacking == false)
 		{
 			currentTime = 0;
 			currentFrame = 1;
 		}
 		currentAnimation = 2;
 		frameCount = 8;
-		animationSpeed = 100;
+		animationSpeed = 60;
 		idle = false;
 		running = true;
 		//OutputDebugString(L"func move right called");
@@ -235,8 +237,12 @@ void playerClass::handleMovement(double dt)
 			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
-			currentFrame = 1;
-			currentTime = 0;
+			if (attacking == false)
+			{
+				currentFrame = 1;
+				currentTime = 0;
+			}
+			
 		}
 		isJumping = true;
 	}
@@ -262,7 +268,7 @@ void playerClass::handleMovement(double dt)
 	}
 	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
-		if (falling == false)
+		if (falling == false && attacking == false)
 		{
 			currentTime = 0;
 			currentFrame = 1;
@@ -274,8 +280,26 @@ void playerClass::handleMovement(double dt)
 		running = false;
 		falling = true;
 	}
+
+	if (this->input->isOPressed())
+	{
+		if (attacking == false)
+		{
+			attacking = true;
+			currentTime = 0;
+			currentFrame = 1;
+		}
+	}
+
+	if (attacking == true)
+	{
+		currentAnimation = 6;
+		frameCount = 4;
+		animationSpeed = 60;
+		idle = false;
+	}
 	
-	if (running == true && idle == true)
+	if (running == true && idle == true && attacking == false)
 	{
 		running = false;
 		currentTime = 0;
@@ -283,7 +307,7 @@ void playerClass::handleMovement(double dt)
 		animationSpeed = 250;
 	}
 
-	if (falling == true && idle == true)
+	if (falling == true && idle == true && attacking == false)
 	{
 		falling = false;
 		currentTime = 0;
@@ -291,7 +315,7 @@ void playerClass::handleMovement(double dt)
 		animationSpeed = 250;
 	}
 
-	if (jumping == true && idle == true)
+	if (jumping == true && idle == true && attacking == false)
 	{
 		jumping = false;
 		currentTime = 0;
@@ -300,7 +324,13 @@ void playerClass::handleMovement(double dt)
 
 	}
 
-
+	if (isHit == true && idle == true)
+	{
+		isHit = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 250;
+	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }
@@ -336,7 +366,7 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 
 void playerClass::checkIfAttacking()
 {
-	if (this->input->isOPressed())
+	if (isHit == true)
 	{
 		this->isAttacking = true;
 	}
@@ -409,8 +439,19 @@ void playerClass::updateAnimation()
 		if (currentFrame > frameCount)
 		{
 			currentFrame = 1;
-			if(idle == true || running == true)
-				nrOfLoops++;
+			if (attacking == false)
+			{
+				if (idle == true || running == true)
+					nrOfLoops++;
+			}
+			
+			if (attacking == true)
+			{
+				attacking = false;
+				isHit = true;
+			}
+			
+			
 		}
 		
 		if (nrOfLoops == 3 && currentFrame == frameCount)
