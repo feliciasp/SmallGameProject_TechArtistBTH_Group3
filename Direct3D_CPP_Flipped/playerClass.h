@@ -52,6 +52,8 @@ public:
 	weaponClass* getWeapon();
 	bool getIfAttack();
 
+	bool  getIfInObjHolder();
+	void setIfInObjHolder(bool other);
 private:
 	objectClass* obj;
 	directInput* input;
@@ -97,6 +99,8 @@ private:
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
+
+	bool isInObjHolder;
 };
 
 

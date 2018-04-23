@@ -16,20 +16,28 @@ public:
 	
 	void shutdown();
 
-	void setBboxMaxWeapon(XMVECTOR vector);
-	void setBboxMinWeapon(XMVECTOR vector);
+	void setBboxMaxWeaponRight(XMVECTOR vector);
+	void setBboxMinWeaponRight(XMVECTOR vector);
 
-	XMVECTOR getBboxMaxWeapon();
-	XMVECTOR getBboxMinWeapon();
+	XMVECTOR getBboxMaxWeaponRight();
+	XMVECTOR getBboxMinWeaponRight();
+
+	void setBboxMaxWeaponLeft(XMVECTOR vector);
+	void setBboxMinWeaponLeft(XMVECTOR vector);
+
+	XMVECTOR getBboxMaxWeaponLeft();
+	XMVECTOR getBboxMinWeaponLeft();
 
 	collisionClass* getCollisionClass();
 
 public:
-
 	collisionClass* collision;
 
-	XMVECTOR bboxMax;
-	XMVECTOR bboxMin;
+	XMVECTOR bboxMaxLeft;
+	XMVECTOR bboxMinLeft;
+
+	XMVECTOR bboxMaxRight;
+	XMVECTOR bboxMinRight;
 	int tonsOfDmg;
 };
 
