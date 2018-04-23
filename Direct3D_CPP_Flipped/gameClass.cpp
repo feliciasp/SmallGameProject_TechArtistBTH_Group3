@@ -149,6 +149,7 @@ bool gameClass::initialize(int ShowWnd)
 
 	player->getObj()->setMaterialName("playerMovement.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
 
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
@@ -1020,18 +1021,6 @@ void gameClass::updateCollision(double dt)
 {
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat));
-
-	if (player->getFlipped())
-	{
-		//true = vänster
-		/*void setBboxMaxWeapon(XMVECTOR vector);
-		void setBboxMinWeapon(XMVECTOR vector);
-
-		XMVECTOR getBboxMaxWeapon();
-		XMVECTOR getBboxMinWeapon();*/
-		player->getWeapon()->setBboxMaxWeapon(player->getWeapon()->getBboxMaxWeapon() * -1);
-		player->getWeapon()->setBboxMinWeapon(player->getWeapon()->getBboxMinWeapon() * -1);
-	}
 
 	if (player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeapon(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeapon(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{

@@ -7,6 +7,7 @@ cbuffer playerConstBuffer : register(b0)
 }
 
 Texture2D texture1	: register(t0);
+Texture2D texture2 : register(t1);
 SamplerState textureSample;
 struct VS_OUT
 {
@@ -36,6 +37,11 @@ float4 main(VS_OUT input) : SV_TARGET
 		input.TexCoord.x = (frameSkipU * currentFrame) - initialUStep;
 
 	float4 color = texture1.Sample(textureSample, input.TexCoord);
+	float4 weapon = texture2.Sample(textureSample, input.TexCoord);
+	if (weapon.a == 1)
+	{
+		color = weapon;
+	}
 
 	return float4(color);
 }
