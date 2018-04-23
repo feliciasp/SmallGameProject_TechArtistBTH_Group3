@@ -7,7 +7,7 @@ enemyClass::enemyClass()
 	moveVal = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
-	triggerCheck = { 5.5f, 0.0f, 0.0f};
+	triggerCheck = { 10.5f, 0.0f, 0.0f};
 	isActive = true;
 	checkIfObjHolder = false;
 	HP = 3;

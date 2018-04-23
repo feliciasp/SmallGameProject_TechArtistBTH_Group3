@@ -41,13 +41,14 @@ class gameClass
 		void addObjectToObjHolder(objectClass* obj);
 		void removeObjFromObjHolder(objectClass* obj);
 
-		void addObjectToObjHolderGUI(objectClass* obj);
-		void removeObjFromObjHolderGUI(objectClass* obj);
+		void addObjectToObjHolderLimbo(objectClass* obj);
+		void removeObjFromObjHolderLimbo(objectClass* obj);
 
 		void addObjectToObjHolderMeny(objectClass* obj);
 		void removeObjFromObjHolderMeny(objectClass* obj);
 
 	private:
+		bool frameLimbo(double dt);
 		bool frameGame(double dt);
 		bool frameMeny(double dt);
 		bool initializeWindow(int ShowWnd, int& width, int& height);
@@ -73,6 +74,7 @@ class gameClass
 
 		std::vector<objectClass*> objHolder;
 		std::vector<objectClass*> objHolderMeny;
+		std::vector<objectClass*> objHolderLimbo;
 
 		XMMATRIX moveMatTest;
 		float moveTest;
@@ -103,8 +105,13 @@ class gameClass
 
 		bool enemyCheckCollisionPlatform();
 
-		bool frameGameState;
-		void setFrameGetState(bool other);
+	
+		bool gameStateLevel;
+		bool gameStateMeny;
+		bool gameStateLimbo;
+		void setGameStateLevel(bool other);
+		void setGameStateMeny(bool other);
+		void setGameStateLimbo(bool other);
 
 		//GUI
 		GUItestClass* GUIheart1;
@@ -121,6 +128,10 @@ class gameClass
 		GUItestClass* meny;
 		XMMATRIX menyMat;
 		bool done;
+
+		/////////LIMBO STUFF
+		GUItestClass* limbo;
+		XMMATRIX limboMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

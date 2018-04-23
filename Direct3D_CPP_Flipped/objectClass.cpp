@@ -22,7 +22,6 @@ bool objectClass::initlialize(ID3D11Device * device, const char* filename)
 	{
 		vertexBuffer = new ID3D11Buffer*[this->mesh.getMeshCount()];
 	}
-	
 	bool result;
 
 	for (int i = 0; i < this->mesh.getMeshCount(); i++)
