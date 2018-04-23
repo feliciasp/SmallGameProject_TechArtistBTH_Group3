@@ -297,7 +297,7 @@ void playerClass::handleMovement(double dt)
 	{
 		currentAnimation = 6;
 		frameCount = 4;
-		animationSpeed = 60;
+		animationSpeed = 30;
 		idle = false;
 	}
 	
@@ -413,6 +413,7 @@ void playerClass::resetPlayer()
 	isJumping = false;
 	HP = 3;
 	isAttacking = false;
+
 	isInObjHolder = false;
 }
 
