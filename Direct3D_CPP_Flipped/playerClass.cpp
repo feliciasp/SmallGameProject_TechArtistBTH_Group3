@@ -380,15 +380,7 @@ void playerClass::checkIfAttacking()
 
 bool playerClass::getIfAttack()
 {
-	checkIfAttacking();
-	if (this->isAttacking)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return isHit;
 }
 
 bool playerClass::getIfInObjHolder()
