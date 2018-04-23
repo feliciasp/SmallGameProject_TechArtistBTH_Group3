@@ -2,8 +2,10 @@
 
 weaponClass::weaponClass()
 {
-	bboxMin = { 0.0f, 0.0f };
-	bboxMax = { 0.0f,0.0f };
+	bboxMinRight = { 0.0f, 0.0f };
+	bboxMaxRight = { 0.0f,0.0f };
+	bboxMinLeft = { 0.0f, 0.0f };
+	bboxMaxLeft = { 0.0f,0.0f };
 	tonsOfDmg = 0;
 }
 
@@ -22,27 +24,47 @@ void weaponClass::shutdown()
 	collision = 0;
 }
 
-void weaponClass::setBboxMaxWeapon(XMVECTOR vector)
+void weaponClass::setBboxMaxWeaponRight(XMVECTOR vector)
 {
-	this->bboxMax = vector;
+	this->bboxMaxRight = vector;
 }
 
-void weaponClass::setBboxMinWeapon(XMVECTOR vector)
+void weaponClass::setBboxMinWeaponRight(XMVECTOR vector)
 {
-	this->bboxMin = vector;
+	this->bboxMinRight = vector;
 }
 
-XMVECTOR weaponClass::getBboxMaxWeapon()
+XMVECTOR weaponClass::getBboxMaxWeaponRight()
 {
-	return this->bboxMax;
+	return this->bboxMaxRight;
 }
 
-XMVECTOR weaponClass::getBboxMinWeapon()
+XMVECTOR weaponClass::getBboxMinWeaponRight()
 {
-	return this->bboxMin;
+	return this->bboxMinRight;
 }
 
 collisionClass * weaponClass::getCollisionClass()
 {
 	return this->collision;
+}
+
+void weaponClass::setBboxMaxWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMaxLeft = vector;
+}
+
+void weaponClass::setBboxMinWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMinLeft = vector;
+}
+
+XMVECTOR weaponClass::getBboxMaxWeaponLeft()
+{
+	return this->bboxMaxLeft;
+}
+
+XMVECTOR weaponClass::getBboxMinWeaponLeft()
+{
+	return this->bboxMinLeft;
 }

@@ -10,6 +10,8 @@ playerClass::playerClass()
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
+	isInObjHolder = false;
+
 	HP = 3;
 	//movement
 	moveValX = 0.0f;
@@ -359,6 +361,16 @@ bool playerClass::getIfAttack()
 	}
 }
 
+bool playerClass::getIfInObjHolder()
+{
+	return this->isInObjHolder;
+}
+
+void playerClass::setIfInObjHolder(bool other)
+{
+	this->isInObjHolder = other;
+}
+
 void playerClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMat;
@@ -379,6 +391,7 @@ void playerClass::resetPlayer()
 	isJumping = false;
 	HP = 3;
 	isAttacking = false;
+	isInObjHolder = false;
 }
 
 void playerClass::setPlayerHP(int x)

@@ -152,8 +152,13 @@ bool gameClass::initialize(int ShowWnd)
 
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
-	player->getWeapon()->setBboxMaxWeapon(tempBboxMax);
-	player->getWeapon()->setBboxMinWeapon(player->getObj()->getBoundingBoxMax());
+	player->getWeapon()->setBboxMaxWeaponRight(tempBboxMax);
+	player->getWeapon()->setBboxMinWeaponRight(player->getObj()->getBoundingBoxMax());
+	
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) - 3 };
+	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
+	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
+
 
 	//enemy
 	enemy = new enemyClass;
@@ -285,7 +290,6 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
-	addObjectToObjHolder(player->getObj());
 
 
 	//MENY
@@ -606,6 +610,12 @@ bool gameClass::frameGame(double dt)
 	//om enemy hör på sig
 	updateCollision(dt);
 	
+	if (!player->getIfInObjHolder())
+	{
+		addObjectToObjHolder(player->getObj());
+		player->setIfInObjHolder(true);
+	}
+
 	//GUI
 	if (updateGUI(dt, GUIheart1))
 	{
@@ -1021,22 +1031,25 @@ void gameClass::updateCollision(double dt)
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), masterMovementEnemyMat));
 
-	if (player->getFlipped())
-	{
-		//true = vänster
-		/*void setBboxMaxWeapon(XMVECTOR vector);
-		void setBboxMinWeapon(XMVECTOR vector);
-
-		XMVECTOR getBboxMaxWeapon();
-		XMVECTOR getBboxMinWeapon();*/
-		player->getWeapon()->setBboxMaxWeapon(player->getWeapon()->getBboxMaxWeapon() * -1);
-		player->getWeapon()->setBboxMinWeapon(player->getWeapon()->getBboxMinWeapon() * -1);
-	}
-
-	if (player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeapon(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeapon(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
+	if (player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
 		
 		if(enemy->hurtState())
+		{
+			enemy->resetMove();
+			enemy->getTranslationMatStart(masterMovementEnemyMat);
+			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			OutputDebugString(L"\nenemy lost hP!\n");
+		}
+		if (enemy->getEnemyHP() <= 0)
+		{
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
+		}
+	}
+	else if (!player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
+	{
+		if (enemy->hurtState())
 		{
 			enemy->resetMove();
 			enemy->getTranslationMatStart(masterMovementEnemyMat);
