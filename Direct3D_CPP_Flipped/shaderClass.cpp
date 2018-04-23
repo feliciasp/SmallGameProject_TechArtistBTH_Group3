@@ -595,8 +595,12 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
-	}
 
+		if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png")
+		{
+			devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+		}
+	}
 	//devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
