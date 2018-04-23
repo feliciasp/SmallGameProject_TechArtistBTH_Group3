@@ -153,7 +153,6 @@ bool gameClass::initialize(int ShowWnd)
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
 	player->getWeapon()->setBboxMaxWeapon(tempBboxMax);
-
 	player->getWeapon()->setBboxMinWeapon(player->getObj()->getBoundingBoxMax());
 
 	//enemy
@@ -684,11 +683,13 @@ bool gameClass::frameGame(double dt)
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
+
 		gameStateLevel = false;
 		gameStateMeny = false;
 		gameStateLimbo = true;
 		return false;
 	}
+
 	if (inputDirectOther->isEscapePressed() == true)
 	{
 		player->resetPlayer();
@@ -697,6 +698,7 @@ bool gameClass::frameGame(double dt)
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
+
 		gameStateLevel = false;
 		gameStateMeny = true;
 		gameStateLimbo = false;
@@ -1021,17 +1023,18 @@ void gameClass::updateCollision(double dt)
 
 	if (player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeapon(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeapon(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
-		if (enemy->getEnemyHP() <= 0)
-		{
-			removeObjFromObjHolder(enemy->getObj());
-			enemy->setIsActive(false);
-		}
-		else if(enemy->hurtState())
+		
+		if(enemy->hurtState())
 		{
 			enemy->resetMove();
 			enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
+		}
+		if (enemy->getEnemyHP() <= 0)
+		{
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
 		}
 	}
 	
@@ -1043,6 +1046,7 @@ void gameClass::updateCollision(double dt)
 		enemy->getTranslationMatStart(masterMovementEnemyMat);
 		player->setPlayerHP(player->getPlayerHP() - 1);
 		player->setPlayerHurt(true);
+		OutputDebugString(L"\nplayer lost hP!\n");
 
 		if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 		{

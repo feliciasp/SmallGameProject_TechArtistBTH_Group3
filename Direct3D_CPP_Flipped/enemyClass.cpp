@@ -70,10 +70,8 @@ XMVECTOR enemyClass::getTriggerVector()
 
 void enemyClass::resetEnemy()
 {
-	temptest = 3;
 	moveVal = 0;
 	translation = XMMatrixIdentity();
-	transStart = XMMatrixIdentity();
 	isActive = true;
 	checkIfObjHolder = false;
 	HP = 3;
