@@ -442,7 +442,7 @@ bool playerClass::getPlayerHurt()
 
 void playerClass::updateAnimation(double dt)
 {
-	if (currentTime * dt > (animationSpeed * dt))
+	if (currentTime > (animationSpeed * dt))
 	{
 		currentFrame++;
 		if (currentFrame > frameCount)
@@ -471,7 +471,7 @@ void playerClass::updateAnimation(double dt)
 		currentTime = 0;
 	}
 
-	currentTime++;
+	currentTime+= 1 * dt;
 }
 
 bool playerClass::getFlipped()
