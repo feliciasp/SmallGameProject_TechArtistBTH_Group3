@@ -83,6 +83,7 @@ class gameClass
 		void updateConstantMatrices();
 		XMMATRIX enemyMatPos, matMul, enemyFallingMat;
 		XMMATRIX masterMovementEnemyMat;
+		XMMATRIX enemyTranslationMatrix;
 		void updateEnemy(double dt);
 		XMMATRIX playerMove;
 		void updatePlayer(double dt);
