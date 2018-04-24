@@ -405,7 +405,7 @@ bool shaderClass::createShaders(ID3D11Device* device)
 	//pixelShader enemy
 	ID3DBlob* pPSEnemy = nullptr;
 	D3DCompileFromFile(
-		L"PixelShaderSprite.hlsl",
+		L"PixelShaderEnemy.hlsl",
 		nullptr,
 		nullptr,
 		"main",
