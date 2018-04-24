@@ -586,7 +586,7 @@ bool gameClass::frameGame(double dt)
 	{	
 		addObjectToObjHolder(enemy->getObj());
 		enemy->setCheckIfObjHolder(true);
-	
+		player->setIfInObjHolder(false);
 	}
 	if (enemy->getIsActive())
 	{
@@ -1048,6 +1048,7 @@ void gameClass::updateCollision(double dt)
 		{
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
+			player->setIfInObjHolder(false);
 		}
 	}
 	else if (!player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
