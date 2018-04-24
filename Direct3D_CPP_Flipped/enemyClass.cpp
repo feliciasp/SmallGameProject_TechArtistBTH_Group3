@@ -13,6 +13,10 @@ enemyClass::enemyClass()
 	HP = 3;
 	isHurt = false;
 	fakeTimer = 0;
+
+
+	isFacingRight = true;
+	useRotation = false;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -77,6 +81,8 @@ void enemyClass::resetEnemy()
 	HP = 3;
 	isHurt = false;
 	fakeTimer = 0;
+	isFacingRight = true;
+	useRotation = false;
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -130,6 +136,26 @@ void enemyClass::timeCountdown()
 		this->fakeTimer -= 1;
 		this->isHurt = false;
 	}
+}
+
+void enemyClass::setFacing(bool other)
+{
+	this->isFacingRight = other;
+}
+
+bool enemyClass::getFacing()
+{
+	return this->isFacingRight;
+}
+
+void enemyClass::setRoationCheck(bool other)
+{
+	this->useRotation = other;
+}
+
+bool enemyClass::getRoationCheck()
+{
+	return this->useRotation;
 }
 
 void enemyClass::setEnemyHurt(bool check)

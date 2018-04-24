@@ -96,6 +96,8 @@ class gameClass
 		void updateCollision(double dt);
 		XMMATRIX platformMat;
 
+
+		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
 		bool checkCollisionPlatformTop();
