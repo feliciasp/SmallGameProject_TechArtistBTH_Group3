@@ -4,7 +4,7 @@
 
 #include "objectClass.h"
 
-class enemyClass
+class enemyClass 
 {
 	public:
 		enemyClass();
@@ -25,7 +25,7 @@ class enemyClass
 		void resetMove();
 
 		XMVECTOR getTriggerCheck();
-		void updateFalling(objectClass* platform, float dt, bool checkCollision);
+		void updateFalling(objectClass* platform, double dt, bool checkCollision);
 		void getFallingMat(XMMATRIX& other);
 
 		void setTriggerVector(XMVECTOR x);
@@ -38,6 +38,20 @@ class enemyClass
 
 		void setIsActive(bool check);
 		bool getIsActive();
+
+		void setEnemyHP(int x);
+		int getEnemyHP();
+
+		bool hurtState();
+		void timeCountdown();
+		
+		void setFacing(bool other);
+		bool getFacing();
+
+		void setRoationCheck(bool other);
+		bool getRoationCheck();
+
+
 
 	private:
 		objectClass* obj;
@@ -53,6 +67,15 @@ class enemyClass
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
 
+		int HP;
+		bool isHurt;
+		int fakeTimer;
+
+		void setEnemyHurt(bool check);
+		bool getEnemyHurt();
+
+		bool isFacingRight;
+		bool useRotation;
 };
 
 

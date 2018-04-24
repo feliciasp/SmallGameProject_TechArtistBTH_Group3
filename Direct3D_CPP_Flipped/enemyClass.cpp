@@ -7,9 +7,16 @@ enemyClass::enemyClass()
 	moveVal = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
-	triggerCheck = { 5.5f, 0.0f, 0.0f};
+	triggerCheck = { 10.5f, 0.0f, 0.0f};
 	isActive = true;
 	checkIfObjHolder = false;
+	HP = 3;
+	isHurt = false;
+	fakeTimer = 0;
+
+
+	isFacingRight = true;
+	useRotation = false;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -67,12 +74,16 @@ XMVECTOR enemyClass::getTriggerVector()
 
 void enemyClass::resetEnemy()
 {
-	temptest = 3;
 	moveVal = 0;
 	translation = XMMatrixIdentity();
-	transStart = XMMatrixIdentity();
 	isActive = true;
 	checkIfObjHolder = false;
+	HP = 3;
+	isHurt = false;
+	fakeTimer = 0;
+
+	isFacingRight = true;
+	useRotation = false;
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -93,6 +104,69 @@ void enemyClass::setIsActive(bool check)
 bool enemyClass::getIsActive()
 {
 	return this->isActive;
+}
+
+void enemyClass::setEnemyHP(int x)
+{
+	this->HP = x;
+}
+
+int enemyClass::getEnemyHP()
+{
+	return this->HP;
+}
+
+bool enemyClass::hurtState()
+{
+	if (this->isHurt == false && fakeTimer == 0)
+	{
+		this->isHurt = true;
+		fakeTimer = 150;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void enemyClass::timeCountdown()
+{
+	if (this->fakeTimer != 0)
+	{
+		this->fakeTimer -= 1;
+		this->isHurt = false;
+	}
+}
+
+void enemyClass::setFacing(bool other)
+{
+	this->isFacingRight = other;
+}
+
+bool enemyClass::getFacing()
+{
+	return this->isFacingRight;
+}
+
+void enemyClass::setRoationCheck(bool other)
+{
+	this->useRotation = other;
+}
+
+bool enemyClass::getRoationCheck()
+{
+	return this->useRotation;
+}
+
+void enemyClass::setEnemyHurt(bool check)
+{
+	this->isHurt = check;
+}
+
+bool enemyClass::getEnemyHurt()
+{
+	return this->isHurt;
 }
 
 
@@ -143,7 +217,7 @@ XMVECTOR enemyClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void enemyClass::updateFalling(objectClass * platform, float dt, bool collisionCheck)
+void enemyClass::updateFalling(objectClass * platform, double dt, bool collisionCheck)
 {
 	if (!collisionCheck)
 	{

@@ -89,7 +89,7 @@ void GUItestClass::setIsDestroy(bool check)
 	this->isDestroy = check;
 }
 
-bool GUItestClass::updateDestroyState(float dt)
+bool GUItestClass::updateDestroyState(double dt)
 {
 	bool check = false;
 	input->readKeyboard(dt);

@@ -17,7 +17,7 @@ public:
 	bool getIsDestry();
 	void setIsDestroy(bool check);
 
-	bool updateDestroyState(float dt);
+	bool updateDestroyState(double dt);
 
 	bool getCheckIfObjHolder();
 	void setCheckIfObjHolder(bool check);

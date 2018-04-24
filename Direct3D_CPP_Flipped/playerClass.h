@@ -20,7 +20,7 @@ public:
 	objectClass* getObj();
 	void getTranslationMat(XMMATRIX& other);
 	void getTranslationMatStart(XMMATRIX& other);
-	void setStartMat(float x);
+	void setStartMat(float x, float y);
 
 	float getMove();
 	void setMove(float x);
@@ -28,7 +28,8 @@ public:
 
 	XMVECTOR getTriggerCheck();
 
-	void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisionCheckLeft, bool collisionCheckRight, bool collisionCheckBot);
+	void handleMovement(double dt);
+	void checkCollisions(bool top, bool left, bool right, bool bot);
 	void getMoveMat(XMMATRIX& mat);
 
 	void resetPlayer();
@@ -39,7 +40,7 @@ public:
 	void setPlayerHurt(bool x);
 	bool getPlayerHurt();
 
-	void updateAnimation();
+	void updateAnimation(double dt);
 
 	bool getFlipped();
 	int getFrameCount();
@@ -51,6 +52,8 @@ public:
 	weaponClass* getWeapon();
 	bool getIfAttack();
 
+	bool  getIfInObjHolder();
+	void setIfInObjHolder(bool other);
 private:
 	objectClass* obj;
 	directInput* input;
@@ -64,6 +67,10 @@ private:
 
 	bool idle;
 	bool running;
+	bool jumping;
+	bool falling;
+	bool attacking;
+	bool isHit;
 
 	bool isJumping;
 	bool justJumped;
@@ -71,6 +78,10 @@ private:
 	float moveValX;
 	float moveValY;
 	float moveValZ;
+
+	float oldMoveValX;
+	float oldMoveValY;
+
 	XMMATRIX moveMat;
 
 	bool flipped;
@@ -80,12 +91,16 @@ private:
 	float animationTime;
 	float currentTime;
 
+
+	int nrOfLoops;
 	int animationSpeed;
 
 	int HP;
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
+
+	bool isInObjHolder;
 };
 
 

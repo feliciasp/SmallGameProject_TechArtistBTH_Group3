@@ -66,7 +66,7 @@ void pickupClass::setIsDestroy(bool check)
 
 void pickupClass::setStartMat(float x)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x - 10, 1.5f, 0.0f);
 }
 
 void pickupClass::getTranslationMatStart(XMMATRIX & other)

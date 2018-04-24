@@ -41,15 +41,20 @@ class gameClass
 		void addObjectToObjHolder(objectClass* obj);
 		void removeObjFromObjHolder(objectClass* obj);
 
-		void addObjectToObjHolderGUI(objectClass* obj);
-		void removeObjFromObjHolderGUI(objectClass* obj);
+		void addObjectToObjHolderLimbo(objectClass* obj);
+		void removeObjFromObjHolderLimbo(objectClass* obj);
 
 		void addObjectToObjHolderMeny(objectClass* obj);
 		void removeObjFromObjHolderMeny(objectClass* obj);
 
+		void addObjectToObjHolderWin(objectClass* obj);
+		void removeObjFromObjHolderWin(objectClass* obj);
+
 	private:
-		bool frameGame(float dt);
-		bool frameMeny(float dt);
+		bool frameLimbo(double dt);
+		bool frameGame(double dt);
+		bool frameMeny(double dt);
+		bool frameWin(double dt);
 		bool initializeWindow(int ShowWnd, int& width, int& height);
 		void shutdownWindow();
 		
@@ -73,6 +78,8 @@ class gameClass
 
 		std::vector<objectClass*> objHolder;
 		std::vector<objectClass*> objHolderMeny;
+		std::vector<objectClass*> objHolderLimbo;
+		std::vector<objectClass*> objHolderWin;
 
 		XMMATRIX moveMatTest;
 		float moveTest;
@@ -81,9 +88,10 @@ class gameClass
 		void updateConstantMatrices();
 		XMMATRIX enemyMatPos, matMul, enemyFallingMat;
 		XMMATRIX masterMovementEnemyMat;
-		void updateEnemy(float dt);
+		XMMATRIX enemyTranslationMatrix;
+		void updateEnemy(double dt);
 		XMMATRIX playerMove;
-		void updatePlayer(float dt);
+		void updatePlayer(double dt);
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
@@ -91,9 +99,11 @@ class gameClass
 		void updatePickup();
 		float lengthBetween1;
 		float lengthBetween2;
-		void updateCollision(float dt);
+		void updateCollision(double dt);
 		XMMATRIX platformMat;
 
+
+		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
 		bool checkCollisionPlatformTop();
@@ -103,8 +113,14 @@ class gameClass
 
 		bool enemyCheckCollisionPlatform();
 
-		bool frameGameState;
-		void setFrameGetState(bool other);
+	
+		bool gameStateLevel;
+		bool gameStateMeny;
+		bool gameStateLimbo;
+		bool gameStateWin;
+		void setGameStateLevel(bool other);
+		void setGameStateMeny(bool other);
+		void setGameStateLimbo(bool other);
 
 		//GUI
 		GUItestClass* GUIheart1;
@@ -112,7 +128,7 @@ class gameClass
 		GUItestClass* GUIheart3;
 		void updatePlatform();
 		XMMATRIX guiMat;
-		bool updateGUI(float dt, GUItestClass* obj);
+		bool updateGUI(double dt, GUItestClass* obj);
 		XMMATRIX heart1;
 		XMMATRIX heart2;
 		XMMATRIX heart3;
@@ -121,6 +137,14 @@ class gameClass
 		GUItestClass* meny;
 		XMMATRIX menyMat;
 		bool done;
+
+		/////////LIMBO STUFF
+		GUItestClass* limbo;
+		XMMATRIX limboMat;
+
+		//////////////////////WIN STATE
+		GUItestClass* win;
+		XMMATRIX winMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

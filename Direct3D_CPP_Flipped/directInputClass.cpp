@@ -79,7 +79,7 @@ void directInput::shutdown()
 	}
 }
 
-bool directInput::frame(float dt)
+bool directInput::frame(double dt)
 {
 	bool result;
 	//read current state of keyboard
@@ -173,7 +173,7 @@ bool directInput::isOPressed()
 //	if(moveObj->checkD())
 //}
 
-//void directInput::isMovementPressed(float dt, bool collisionCheck)
+//void directInput::isMovementPressed(double dt, bool collisionCheck)
 //{
 //	keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 //
@@ -249,7 +249,7 @@ bool directInput::isOPressed()
 //}
 
 
-bool directInput::readKeyboard(float dt)
+bool directInput::readKeyboard(double dt)
 {
 	HRESULT result;
 	//read keyboard device

@@ -10,6 +10,8 @@ playerClass::playerClass()
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
+	isInObjHolder = false;
+
 	HP = 3;
 	//movement
 	moveValX = 0.0f;
@@ -22,7 +24,7 @@ playerClass::playerClass()
 	flipped = false;
 
 	isPlayerHurt = false;
-	frameCount = 3;
+	frameCount = 2;
 
 	
 
@@ -34,7 +36,12 @@ playerClass::playerClass()
 
 	idle = true;
 	running = false;
-	animationSpeed = 250;
+	jumping = false;
+	falling = false;
+	attacking = false;
+	isHit = false;
+	animationSpeed = 100;
+	nrOfLoops = 0;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -48,9 +55,8 @@ playerClass::~playerClass()
 bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
 {
 	bool result;
+
 	obj = new objectClass;
-
-
 	if (!obj)
 	{
 		MessageBox(NULL, L"Error create object obj",
@@ -90,7 +96,7 @@ bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTA
 		return false;
 	}
 
-	setStartMat(0.0f);
+	setStartMat(0.0f, 5.0f);
 
 	return true;
 }
@@ -137,9 +143,9 @@ void playerClass::getTranslationMatStart(XMMATRIX & other)
 	other = this->transStart;
 }
 
-void playerClass::setStartMat(float x)
+void playerClass::setStartMat(float x, float y)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, y, 0.0f);
 }
 
 float playerClass::getMove()
@@ -163,27 +169,40 @@ XMVECTOR playerClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisionCheckLeft, bool collisionCheckRight, bool collisionCheckBot)
+void playerClass::handleMovement(double dt)
 {
 
-	dt = 0.0015;
+	oldMoveValX = moveValX;
+	oldMoveValY = moveValY;
+
+	if (dt > 20)
+		dt = 0;
+
+	idle = true;
+
 
 	justJumped = false;
 	moveValY += upSpeed * dt;
+
+
 	currentAnimation = 1;
-	frameCount = 3;
-	idle = true;
+	frameCount = 2;
 	animationSpeed = 250;
 
 	input->readKeyboard(dt);
-	if (this->input->isAPressed() && !collisionCheckLeft)
+	if (this->input->isAPressed())
 	{
 		moveValX += -10.0f * dt;
+		if (running == false && attacking == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		currentAnimation = 2;
 		frameCount = 8;
+		animationSpeed = 60;
 		idle = false;
 		running = true;
-		animationSpeed = 100;
 		//OutputDebugString(L"func move left called");
 		if (this->flipped == false)
 		{
@@ -192,14 +211,19 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 		}
 	}
 	
-	if (this->input->isDPressed() && !collisionCheckRight)
+	if (this->input->isDPressed())
 	{
 		moveValX += 10.0f * dt;
+		if (running == false && attacking == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		currentAnimation = 2;
 		frameCount = 8;
+		animationSpeed = 60;
 		idle = false;
 		running = true;
-		animationSpeed = 100;
 		//OutputDebugString(L"func move right called");
 		if (this->flipped == true)
 		{
@@ -208,59 +232,146 @@ void playerClass::handleMovement(float dt, bool collisionCheckTop, bool collisio
 	}
 	
 
-
-
-	if (this->input->isSpacePressed() && !collisionCheckTop)
+	if (this->input->isSpacePressed())
 	{
 		if (!isJumping)
 		{
-			upSpeed = 30.5f;
+			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
+			if (attacking == false)
+			{
+				currentFrame = 1;
+				currentTime = 0;
+			}
+			
 		}
 		isJumping = true;
 	}
 
-
-
-	if (!this->input->isSpacePressed() && upSpeed > 15)
+	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
 		upSpeed -= upSpeed - (upSpeed * 0.99);
 
-	if (collisionCheckTop && upSpeed > 0)
-		upSpeed = 0;
 
-
-	if (!collisionCheckBot && upSpeed > -1.0f)
+	if (upSpeed > 1)
+	{
+		running = false;
+		idle = false;
+		jumping = true;
+		currentAnimation = 3;
+		frameCount = 2;
+		animationSpeed = 100;
+	}
+	
+	if (upSpeed > -1.0f)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
-	else if (!collisionCheckBot) //upSpeed less than -1.0f;
+	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
+		if (falling == false && attacking == false)
+		{
+			currentTime = 0;
+			currentFrame = 1;
+		}
 		upSpeed += (-50 * dt) - -upSpeed * dt;
-	}
-	else if (isJumping && !justJumped)
-	{
-		upSpeed = 0.0f;
-		isJumping = false;
-		//OutputDebugString(L"JUMP SET FALSE");
+		currentAnimation = 4;
+		animationSpeed = 100;
+		frameCount = 2;
+		idle = false;
+		running = false;
+		falling = true;
 	}
 
-	if (idle == true && running == true)
+	if (this->input->isOPressed())
+	{
+		if (attacking == false)
+		{
+			attacking = true;
+			currentTime = 0;
+			currentFrame = 1;
+		}
+	}
+
+	if (attacking == true)
+	{
+		currentAnimation = 6;
+		frameCount = 4;
+
+		animationSpeed = 48;
+
+		idle = false;
+	}
+	
+	if (running == true && idle == true && attacking == false)
 	{
 		running = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 250;
+		animationSpeed = 100;
 	}
 
-	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
+	if (falling == true && idle == true && attacking == false)
+	{
+		falling = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 100;
+	}
 
+	if (jumping == true && idle == true && attacking == false)
+	{
+		jumping = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 100;
+
+	}
+
+	if (isHit == true && idle == true)
+	{
+		isHit = false;
+		currentTime = 0;
+		currentFrame = 1;
+		animationSpeed = 100;
+	}
+	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
+
+}
+
+void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
+{
+	if (top)
+	{
+		moveValY = oldMoveValY;
+		if (upSpeed > 0)
+			upSpeed = 0;
+	}
+
+	if (bot)
+	{
+		moveValY = oldMoveValY;
+		isJumping = false;
+		upSpeed = 0;
+		idle = true;
+	}
+
+	if (left)
+	{
+		moveValX = oldMoveValX;
+	}
+	if (right)
+	{
+		moveValX = oldMoveValX;
+	}
+
+	moveMat = XMMatrixTranslation(moveValX, moveValY + 8, 0.0f);
 }
 
 void playerClass::checkIfAttacking()
 {
-	if (this->input->isOPressed())
+	if (isHit == true)
 	{
 		this->isAttacking = true;
 	}
@@ -272,15 +383,17 @@ void playerClass::checkIfAttacking()
 
 bool playerClass::getIfAttack()
 {
-	checkIfAttacking();
-	if (this->isAttacking)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return isHit;
+}
+
+bool playerClass::getIfInObjHolder()
+{
+	return this->isInObjHolder;
+}
+
+void playerClass::setIfInObjHolder(bool other)
+{
+	this->isInObjHolder = other;
 }
 
 void playerClass::getMoveMat(XMMATRIX& mat)
@@ -303,6 +416,8 @@ void playerClass::resetPlayer()
 	isJumping = false;
 	HP = 3;
 	isAttacking = false;
+
+	isInObjHolder = false;
 }
 
 void playerClass::setPlayerHP(int x)
@@ -325,16 +440,38 @@ bool playerClass::getPlayerHurt()
 	return this->isPlayerHurt;
 }
 
-void playerClass::updateAnimation()
+void playerClass::updateAnimation(double dt)
 {
-	currentTime++;
-	if (currentTime > animationSpeed)
+	if (currentTime > (animationSpeed * dt))
 	{
 		currentFrame++;
-		if (currentFrame >= frameCount)
+		if (currentFrame > frameCount)
+		{
 			currentFrame = 1;
+			if (attacking == false)
+			{
+				if (idle == true || running == true)
+					nrOfLoops++;
+			}
+			
+			if (attacking == true)
+			{
+				attacking = false;
+				isHit = true;
+			}
+			
+			
+		}
+		
+		if (nrOfLoops == 3 && currentFrame == frameCount)
+		{
+			currentFrame++;
+			nrOfLoops = 0;
+		}
 		currentTime = 0;
 	}
+
+	currentTime+= 1 * dt;
 }
 
 bool playerClass::getFlipped()
