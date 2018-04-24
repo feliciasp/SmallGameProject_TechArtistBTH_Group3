@@ -988,7 +988,7 @@ void gameClass::updateEnemy(double dt)
 void gameClass::updatePlayer(double dt)
 {
 	player->handleMovement(dt);
-	player->updateAnimation();
+	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	player->checkCollisions(checkCollisionPlatformTop(), checkCollisionPlatformLeft(), checkCollisionPlatformRight(), checkCollisionPlatformBot());

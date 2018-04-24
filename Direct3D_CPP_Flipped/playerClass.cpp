@@ -40,7 +40,7 @@ playerClass::playerClass()
 	falling = false;
 	attacking = false;
 	isHit = false;
-	animationSpeed = 250;
+	animationSpeed = 100;
 	nrOfLoops = 0;
 }
 
@@ -193,14 +193,14 @@ void playerClass::handleMovement(double dt)
 	if (this->input->isAPressed())
 	{
 		moveValX += -10.0f * dt;
-		if (running == false)
+		if (running == false && attacking == false)
 		{
 			currentTime = 0;
 			currentFrame = 1;
 		}
 		currentAnimation = 2;
 		frameCount = 8;
-		animationSpeed = 100;
+		animationSpeed = 60;
 		idle = false;
 		running = true;
 		//OutputDebugString(L"func move left called");
@@ -260,7 +260,7 @@ void playerClass::handleMovement(double dt)
 		jumping = true;
 		currentAnimation = 3;
 		frameCount = 2;
-		animationSpeed = 250;
+		animationSpeed = 100;
 	}
 	
 	if (upSpeed > -1.0f)
@@ -277,6 +277,7 @@ void playerClass::handleMovement(double dt)
 		}
 		upSpeed += (-50 * dt) - -upSpeed * dt;
 		currentAnimation = 4;
+		animationSpeed = 100;
 		frameCount = 2;
 		idle = false;
 		running = false;
@@ -297,7 +298,9 @@ void playerClass::handleMovement(double dt)
 	{
 		currentAnimation = 6;
 		frameCount = 4;
-		animationSpeed = 30;
+
+		animationSpeed = 48;
+
 		idle = false;
 	}
 	
@@ -306,7 +309,7 @@ void playerClass::handleMovement(double dt)
 		running = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 250;
+		animationSpeed = 100;
 	}
 
 	if (falling == true && idle == true && attacking == false)
@@ -314,7 +317,7 @@ void playerClass::handleMovement(double dt)
 		falling = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 250;
+		animationSpeed = 100;
 	}
 
 	if (jumping == true && idle == true && attacking == false)
@@ -322,7 +325,7 @@ void playerClass::handleMovement(double dt)
 		jumping = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 250;
+		animationSpeed = 100;
 
 	}
 
@@ -331,7 +334,7 @@ void playerClass::handleMovement(double dt)
 		isHit = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 250;
+		animationSpeed = 100;
 	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
@@ -437,9 +440,9 @@ bool playerClass::getPlayerHurt()
 	return this->isPlayerHurt;
 }
 
-void playerClass::updateAnimation()
+void playerClass::updateAnimation(double dt)
 {
-	if (currentTime > animationSpeed)
+	if (currentTime * dt > (animationSpeed * dt))
 	{
 		currentFrame++;
 		if (currentFrame > frameCount)
