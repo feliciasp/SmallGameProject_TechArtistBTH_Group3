@@ -81,6 +81,7 @@ void enemyClass::resetEnemy()
 	HP = 3;
 	isHurt = false;
 	fakeTimer = 0;
+
 	isFacingRight = true;
 	useRotation = false;
 }
