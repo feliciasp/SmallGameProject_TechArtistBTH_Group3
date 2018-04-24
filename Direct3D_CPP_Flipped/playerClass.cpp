@@ -277,6 +277,7 @@ void playerClass::handleMovement(double dt)
 		}
 		upSpeed += (-50 * dt) - -upSpeed * dt;
 		currentAnimation = 4;
+		animationSpeed = 100;
 		frameCount = 2;
 		idle = false;
 		running = false;
