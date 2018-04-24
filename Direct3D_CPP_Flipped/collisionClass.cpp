@@ -22,7 +22,7 @@ bool collisionClass::checkCollision(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECT
 	}
 	if (XMVectorGetY(bbox1Max) >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) <= XMVectorGetY(bbox2Max))
 	{
-		check2 =  true;
+		check2 = true;
 	}
 	if (check1 == true && check2 == true)
 	{

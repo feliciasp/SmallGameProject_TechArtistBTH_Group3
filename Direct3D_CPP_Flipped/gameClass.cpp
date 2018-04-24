@@ -12,6 +12,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
+	countEnemy = 0;
+
 	player = 0;
 	camera = 0;
 	platform = 0;
@@ -981,7 +983,14 @@ void gameClass::updateEnemy(double dt)
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
 	enemy->getFallingMat(enemyFallingMat);
-	masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
+	if (!enemy->getRoationCheck())
+	{
+		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
+	}
+	else
+	{
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
+	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 }
 
@@ -1034,9 +1043,7 @@ void gameClass::updateCollision(double dt)
 
 
 	if (player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
-
 	{
-		
 		if(enemy->hurtState())
 		{
 			enemy->resetMove();
@@ -1069,6 +1076,7 @@ void gameClass::updateCollision(double dt)
 	
 	enemy->timeCountdown();
 
+	
 	if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), masterMovementEnemyMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), masterMovementEnemyMat)))
 	{
 		enemy->resetMove();
@@ -1076,7 +1084,6 @@ void gameClass::updateCollision(double dt)
 		player->setPlayerHP(player->getPlayerHP() - 1);
 		player->setPlayerHurt(true);
 		OutputDebugString(L"\nplayer lost hP!\n");
-
 		if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 		{
 			GUIheart1->setIsDestroy(true);
@@ -1096,14 +1103,50 @@ void gameClass::updateCollision(double dt)
 			GUIheart3->setCheckIfObjHolder(false);
 		}
 	}
+	
 
-	if (lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 0.0f)
+	if (lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
 	{
+		//går åt vänster
+		if (enemy->getFacing() && countEnemy <= 0)
+		{
+			enemy->setRoationCheck(true);
+			countEnemy = 100;
+
+		}
+		else if(enemy->getFacing() && countEnemy >= 0)
+		{
+			countEnemy -= 1;
+		}
+		else
+		{
+			enemy->setRoationCheck(false);
+			enemy->setFacing(false);
+		}
+
+		OutputDebugString(L"\nwalking\n");
 		enemy->setMove(2.5f * dt);
 		enemy->setTranslation(enemy->getMove());
 	}
-	if (lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 0.0f)
+	if (lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
 	{
+		//år höger
+		if (!enemy->getFacing() && countEnemy <= 0)
+		{
+			enemy->setRoationCheck(true);
+			countEnemy = 100;
+		}
+		else if (!enemy->getFacing() && countEnemy >= 0)
+		{
+			countEnemy -= 1;
+		}
+		else
+		{
+			enemy->setRoationCheck(false);
+			enemy->setFacing(true);
+		}
+
+		
 		enemy->setMove(-2.5f * dt);
 		enemy->setTranslation(enemy->getMove());
 	}

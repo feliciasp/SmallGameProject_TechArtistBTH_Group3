@@ -31,7 +31,7 @@ VS_OUT VS_main(VS_IN input)
 
 	output.Pos = float4(input.Pos, 1);
 	output.Pos = mul(output.Pos, transform);
-	output.Normal = input.Normal;
+	output.Normal = mul(input.Normal, world);
 	output.TexCoord = input.TexCoord;
 	output.Color = input.Color;
 	output.pointOnSurface = mul(input.Pos, world);

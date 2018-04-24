@@ -45,6 +45,13 @@ class enemyClass
 		bool hurtState();
 		void timeCountdown();
 		
+		void setFacing(bool other);
+		bool getFacing();
+
+		void setRoationCheck(bool other);
+		bool getRoationCheck();
+
+
 
 	private:
 		objectClass* obj;
@@ -66,6 +73,9 @@ class enemyClass
 
 		void setEnemyHurt(bool check);
 		bool getEnemyHurt();
+
+		bool isFacingRight;
+		bool useRotation;
 };
 
 
