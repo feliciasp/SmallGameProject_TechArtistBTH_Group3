@@ -39,6 +39,11 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		renderShaderScreenSpace(devCon, indexCount, name);
 	}
 
+	if (type == 3)
+	{
+		renderEnemy(devCon, indexCount, name);
+	}
+
 	else if (type == 2)
 	{
 		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
@@ -397,6 +402,30 @@ bool shaderClass::createShaders(ID3D11Device* device)
 	pPSSprite->Release();
 	pPSSprite = 0;
 
+	//pixelShader enemy
+	ID3DBlob* pPSEnemy = nullptr;
+	D3DCompileFromFile(
+		L"PixelShaderEnemy.hlsl",
+		nullptr,
+		nullptr,
+		"main",
+		"ps_5_0",
+		0,
+		0,
+		&pPSEnemy,
+		nullptr
+	);
+	result = device->CreatePixelShader(pPSEnemy->GetBufferPointer(), pPSEnemy->GetBufferSize(), nullptr, &this->pixelShaderEnemy);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creating sprite pixelShader",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	pPSEnemy->Release();
+	pPSEnemy = 0;
+
 
 	//geometryShader
 	ID3DBlob * pGS = nullptr;
@@ -599,6 +628,27 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 		if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png")
 		{
 			devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+		}
+	}
+	//devCon->PSSetSamplers(0, 1, &textureSample);
+
+	//render triangle
+	devCon->Draw(indexCount, 0);
+}
+
+void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+{
+	//Set vertex Layout
+	devCon->IASetInputLayout(vertexLayout);
+	//set vertex and pixel shaders the wil be used to render triangle
+	devCon->VSSetShader(vertexShader, nullptr, 0);
+	devCon->PSSetShader(pixelShaderEnemy, nullptr, 0);
+
+	for (int i = 0; i < matNameHolder.size(); i++)
+	{
+		if (matNameHolder[i].nameMat == name)
+		{
+			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
 	//devCon->PSSetSamplers(0, 1, &textureSample);

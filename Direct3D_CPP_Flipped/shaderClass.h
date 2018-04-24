@@ -64,6 +64,8 @@ class shaderClass
 		//Sprite shaders
 		ID3D11PixelShader* pixelShaderSprite;
 
+		ID3D11PixelShader* pixelShaderEnemy;
+
 		ID3D11BlendState* transparency;
 
 		struct cBuffer
@@ -95,6 +97,7 @@ class shaderClass
 		void renderShader(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderShaderScreenSpace(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderShaderSprite(ID3D11DeviceContext* devCon, int indexCount, std::string name);
+		void renderEnemy(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 
 		std::vector<texImage> matNameHolder;
 

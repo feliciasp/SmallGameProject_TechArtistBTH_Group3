@@ -182,6 +182,7 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->getTranslationMatStart(enemyMatPos);
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
+	enemy->getObj()->setType(3);
 
 	//background test
 	background = new backgroundClass;
@@ -218,6 +219,7 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	pickup->getObj()->setMaterialName("texture2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickup->getObj()->getMaterialName());
+	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -1034,7 +1036,6 @@ void gameClass::updatePlatform()
 
 void gameClass::updatePickup()
 {
-	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 	/*pickup->getObj()->updatePosition(pickupStartPosMoveMat);*/
 	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
 }
