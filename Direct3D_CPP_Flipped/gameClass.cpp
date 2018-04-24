@@ -11,6 +11,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart2 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.65f, 0.82f, 0.0f);
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
 	countEnemy = 0;
 
@@ -28,6 +29,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	gameStateMeny = true;
 	gameStateLevel = false;
 	gameStateLimbo = false;
+	gameStateWin = false;
 	done = false;
 	
 	GUIheart1 = 0;
@@ -339,6 +341,27 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolderLimbo(limbo->getObj());
 
+	//LIMBO
+	win = new GUItestClass;
+	if (!win)
+	{
+		MessageBox(NULL, L"Error create win obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = win->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init win obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	win->getObj()->setWorldMatrix(winMat);
+	win->getObj()->setMaterialName("winTexture.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), win->getObj()->getMaterialName());
+
+	addObjectToObjHolderWin(win->getObj());
+
 	return true;
 }
 
@@ -436,6 +459,12 @@ void gameClass::shutdown()
 		delete limbo;
 		limbo = 0;
 	}
+	if (win)
+	{
+		win->shutdown();
+		delete win;
+		win = 0;
+	}
 
 	shutdownWindow();
 
@@ -523,9 +552,56 @@ void gameClass::run()
 					fakeTimer -= 1;
 				}
 			}
+			else if (gameStateWin)
+			{
+				result = frameWin(dt->getDeltaTime());
+				dt->updateDeltaTime();
+
+				if (fakeTimer <= 0)
+				{
+					fakeTimer -= 1;
+				}
+			}
 		}
 	}
 	return;
+}
+
+bool gameClass::frameWin(double dt)
+{
+	bool result;
+
+	result = inputDirectOther->frame(dt);
+	if (!result)
+	{
+		return false;
+	}
+
+	//constant MATRICES
+	updateConstantMatrices();
+
+	graphics->beginScene();
+	for (int i = 0; i < objHolderWin.size(); i++)
+	{
+		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition());
+		if (!result)
+		{
+			return false;
+		}
+	}
+	graphics->endScene();
+
+	
+	if (inputDirectOther->isEscapePressed() == true)
+	{
+		gameStateLevel = false;
+		gameStateLimbo = false;
+		gameStateWin = false;
+		gameStateMeny = true;
+		return false;
+	}
+
+	return true;
 }
 
 bool gameClass::frameLimbo(double dt)
@@ -691,6 +767,22 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
+	if (enemy->getEnemyHP() == 0)
+	{
+		player->resetPlayer();
+		pickup->resetPickup();
+		enemy->resetEnemy();
+		GUIheart1->resetGUI();
+		GUIheart2->resetGUI();
+		GUIheart3->resetGUI();
+
+		gameStateLevel = false;
+		gameStateMeny = false;
+		gameStateLimbo = false;
+		gameStateWin = true;
+		return false;
+	}
+
 	if (player->getPlayerHP() == 0)
 	{
 		player->resetPlayer();
@@ -702,6 +794,7 @@ bool gameClass::frameGame(double dt)
 
 		gameStateLevel = false;
 		gameStateMeny = false;
+		gameStateWin = false;
 		gameStateLimbo = true;
 		return false;
 	}
@@ -717,6 +810,7 @@ bool gameClass::frameGame(double dt)
 
 		gameStateLevel = false;
 		gameStateMeny = true;
+		gameStateWin = false;
 		gameStateLimbo = false;
 		return false;
 	}
@@ -970,6 +1064,23 @@ void gameClass::removeObjFromObjHolderMeny(objectClass * obj)
 		}
 	}
 
+}
+
+void gameClass::addObjectToObjHolderWin(objectClass * obj)
+{
+	objHolderWin.push_back(obj);
+}
+
+void gameClass::removeObjFromObjHolderWin(objectClass * obj)
+{
+	//vec.erase(vec.begin() + i);
+	for (int i = 0; i < objHolderWin.size(); i++)
+	{
+		if (objHolderWin[i] == obj)
+		{
+			objHolderWin.erase(objHolderWin.begin() + i);
+		}
+	}
 }
 
 void gameClass::updateConstantMatrices()
