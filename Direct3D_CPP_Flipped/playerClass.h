@@ -40,7 +40,7 @@ public:
 	void setPlayerHurt(bool x);
 	bool getPlayerHurt();
 
-	void updateAnimation();
+	void updateAnimation(double dt);
 
 	bool getFlipped();
 	int getFrameCount();
