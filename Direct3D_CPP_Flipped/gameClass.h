@@ -102,7 +102,9 @@ class gameClass
 		void updateCollision(double dt);
 		XMMATRIX platformMat;
 
+		XMMATRIX enemyTrans;
 
+		XMVECTOR tempBboxMin;
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
@@ -120,6 +122,7 @@ class gameClass
 		void setGameStateLevel(bool other);
 		void setGameStateMeny(bool other);
 		void setGameStateLimbo(bool other);
+
 
 		//GUI
 		GUItestClass* GUIheart1;

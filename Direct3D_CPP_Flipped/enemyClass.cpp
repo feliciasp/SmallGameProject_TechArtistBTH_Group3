@@ -8,15 +8,25 @@ enemyClass::enemyClass()
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
+	rangeCheck = { 4.0f, 0.0f, 0.0f };
 	isActive = true;
 	checkIfObjHolder = false;
 	HP = 3;
+	isAttack = false;
 	isHurt = false;
-	fakeTimer = 0;
-
+	fakeTimer = 1000;
 
 	isFacingRight = true;
 	useRotation = false;
+
+	isHit = false;
+
+	//VAPEN
+	bboxMinRight = { 0.0f, 0.0f };
+	bboxMaxRight = { 0.0f,0.0f };
+	bboxMinLeft = { 0.0f, 0.0f };
+	bboxMaxLeft = { 0.0f,0.0f };
+	tonsOfDmg = 0;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -67,6 +77,11 @@ void enemyClass::setTriggerVector(XMVECTOR x)
 	this->triggerVector = x;
 }
 
+void enemyClass::setRangeVector(XMVECTOR x)
+{
+	this->rangeVector = x;
+}
+
 XMVECTOR enemyClass::getTriggerVector()
 {
 	return this->triggerVector;
@@ -80,10 +95,12 @@ void enemyClass::resetEnemy()
 	checkIfObjHolder = false;
 	HP = 3;
 	isHurt = false;
-	fakeTimer = 0;
+	isAttack = false;
+	fakeTimer = 300;
 
 	isFacingRight = true;
 	useRotation = false;
+
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -121,7 +138,7 @@ bool enemyClass::hurtState()
 	if (this->isHurt == false && fakeTimer == 0)
 	{
 		this->isHurt = true;
-		fakeTimer = 150;
+		fakeTimer = 300;
 		return true;
 	}
 	else
@@ -136,6 +153,29 @@ void enemyClass::timeCountdown()
 	{
 		this->fakeTimer -= 1;
 		this->isHurt = false;
+	}
+}
+
+bool enemyClass::attackCooldown()
+{
+	if (this->isAttack == false && fakeTimer <= 0)
+	{
+		this->isAttack = true;
+		fakeTimer = 300;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void enemyClass::updateAttackCooldownTimer()
+{
+	this->fakeTimer -= 1;
+	if (this->fakeTimer <= 0)
+	{
+		this->isAttack = false;
 	}
 }
 
@@ -157,6 +197,28 @@ void enemyClass::setRoationCheck(bool other)
 bool enemyClass::getRoationCheck()
 {
 	return this->useRotation;
+}
+
+void enemyClass::checkIfAttacking()
+{
+	if (isHit == true)
+	{
+		this->isAttacking = true;
+	}
+	else
+	{
+		this->isAttacking = false;
+	}
+}
+
+bool enemyClass::getIfAttack()
+{
+	return isHit;
+}
+
+int enemyClass::getAttackCooldown()
+{
+	return this->fakeTimer;
 }
 
 void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
@@ -182,6 +244,8 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 
 	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
 }
+
+
 
 void enemyClass::setEnemyHurt(bool check)
 {
@@ -241,6 +305,11 @@ XMVECTOR enemyClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
+XMVECTOR enemyClass::getRangeVector()
+{
+	return this->rangeCheck;
+}
+
 void enemyClass::updateFalling(double dt)
 {
 	oldMoveValY = temptest;
@@ -255,3 +324,44 @@ void enemyClass::getFallingMat(XMMATRIX & other)
 }
 
 
+//VAPEN
+
+void enemyClass::setBboxMaxWeaponRight(XMVECTOR vector)
+{
+	this->bboxMaxRight = vector;
+}
+
+void enemyClass::setBboxMinWeaponRight(XMVECTOR vector)
+{
+	this->bboxMinRight = vector;
+}
+
+XMVECTOR enemyClass::getBboxMaxWeaponRight()
+{
+	return this->bboxMaxRight;
+}
+
+XMVECTOR enemyClass::getBboxMinWeaponRight()
+{
+	return this->bboxMinRight;
+}
+
+void enemyClass::setBboxMaxWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMaxLeft = vector;
+}
+
+void enemyClass::setBboxMinWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMinLeft = vector;
+}
+
+XMVECTOR enemyClass::getBboxMaxWeaponLeft()
+{
+	return this->bboxMaxLeft;
+}
+
+XMVECTOR enemyClass::getBboxMinWeaponLeft()
+{
+	return this->bboxMinLeft;
+}

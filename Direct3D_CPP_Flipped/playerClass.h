@@ -49,12 +49,19 @@ public:
 	float getAnimationTime();
 	float getcurrentTime();
 
+	bool hurtState();
+
+	void updateTimer();
+
 	weaponClass* getWeapon();
 	bool getIfAttack();
 
 	bool  getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 private:
+	bool isHurt;
+	int fakeTimer;
+
 	objectClass* obj;
 	directInput* input;
 	weaponClass* weapon;
