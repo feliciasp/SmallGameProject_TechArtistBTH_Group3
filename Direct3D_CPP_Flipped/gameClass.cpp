@@ -807,7 +807,7 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
-	/*if (enemy->getEnemyHP() == 0)
+	if (enemy->getEnemyHP() == 0)
 	{
 		player->resetPlayer();
 		pickup->resetPickup();
@@ -821,7 +821,7 @@ bool gameClass::frameGame(double dt)
 		gameStateLimbo = false;
 		gameStateWin = true;
 		return false;
-	}*/
+	}
 
 	if (player->getPlayerHP() == 0)
 	{

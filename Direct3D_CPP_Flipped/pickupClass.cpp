@@ -87,7 +87,7 @@ void pickupClass::getTranslationMatStart(XMMATRIX & other)
 
 void pickupClass::resetPickup()
 {
-	isDestroy = false;
+	isDestroy = true;
 }
 
 
