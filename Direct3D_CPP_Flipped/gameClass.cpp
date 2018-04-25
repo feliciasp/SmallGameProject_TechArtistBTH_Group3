@@ -679,8 +679,18 @@ bool gameClass::frameGame(double dt)
 	//platform
 	updatePlatform();
 
-	//pickup stuff
-	updatePickup(dt);
+	if (!pickup->getIsDestry() && !pickup->getCheckIfObjHolder())
+	{
+		addObjectToObjHolder(pickup->getObj());
+		pickup->setCheckIfObjHolder(true);
+		player->setIfInObjHolder(false);
+	}
+
+	if (!pickup->getIsDestry())
+	{
+		//pickup stuff
+		updatePickup(dt);
+	}
 
 	//player stuff
 	updatePlayer(dt);
@@ -726,12 +736,6 @@ bool gameClass::frameGame(double dt)
 		addObjectToObjHolder(GUIheart3->getObj());
 		GUIheart3->setCheckIfObjHolder(true);
 	}
-
-	if (!pickup->getIsDestry() && !pickup->getCheckIfObjHolder())
-	{
-		addObjectToObjHolder(pickup->getObj());
-		pickup->setCheckIfObjHolder(true);
-	}
 	if (pickup->getIsDestry() && pickup->getCheckIfObjHolder())
 	{
 		removeObjFromObjHolder(pickup->getObj());
@@ -775,7 +779,7 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
-	if (enemy->getEnemyHP() == 0)
+	/*if (enemy->getEnemyHP() == 0)
 	{
 		player->resetPlayer();
 		pickup->resetPickup();
@@ -789,7 +793,7 @@ bool gameClass::frameGame(double dt)
 		gameStateLimbo = false;
 		gameStateWin = true;
 		return false;
-	}
+	}*/
 
 	if (player->getPlayerHP() == 0)
 	{
@@ -1173,14 +1177,15 @@ void gameClass::updatePlatform()
 void gameClass::updatePickup(double dt)
 {
 	/*pickup->getObj()->updatePosition(pickupStartPosMoveMat);*/
-	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
+	XMMATRIX yOffset = enemyTranslationMatrix * XMMatrixTranslation(0.0f, 1.4f, 0.0f);
+	pickup->setTranslationMatStart(yOffset);
+	pickup->getObj()->setWorldMatrix(yOffset);
 	pickup->updateAnimation(dt);
 }
 
 void gameClass::updateCollision(double dt)
 {
-	XMMATRIX enemyTrans;
-	enemy->getTranslationMat(enemyTrans);
+	float enemyMove = enemy->getMove();
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
 
@@ -1198,6 +1203,7 @@ void gameClass::updateCollision(double dt)
 		{
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
+			pickup->setIsDestroy(false);
 			player->setIfInObjHolder(false);
 		}
 	}
@@ -1214,6 +1220,8 @@ void gameClass::updateCollision(double dt)
 		{
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
+			pickup->setIsDestroy(false);
+			player->setIfInObjHolder(false);
 		}
 	}
 	
@@ -1294,7 +1302,9 @@ void gameClass::updateCollision(double dt)
 		enemy->setTranslation(enemy->getMove());
 	}
 
-	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), pickupStartPosMoveMat), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), pickupStartPosMoveMat)))
+	XMMATRIX yOffset;
+	pickup->getTranslationMatStart(yOffset);
+	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), yOffset)))
 	{
 		pickup->setIsDestroy(true);
 	}

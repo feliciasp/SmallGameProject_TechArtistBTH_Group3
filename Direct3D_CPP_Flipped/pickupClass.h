@@ -20,6 +20,7 @@ public:
 	void setIsDestroy(bool check);
 
 	void setStartMat(float x);
+	void setTranslationMatStart(XMMATRIX& other);
 	void getTranslationMatStart(XMMATRIX& other);
 	void resetPickup();
 

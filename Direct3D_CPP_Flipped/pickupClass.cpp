@@ -4,7 +4,7 @@ pickupClass::pickupClass()
 {
 	obj = 0;
 	transStart = XMMatrixIdentity();
-	isDestroy = false;
+	isDestroy = true;
 	checkIfSetToObjHolder = false;
 
 	frameCount = 8;
@@ -39,9 +39,9 @@ bool pickupClass::initlialize(ID3D11Device * device, const char* filename)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	obj->setType(4);
 
 	setStartMat(-3.0f);
+	obj->setType(4);
 	return true;
 }
 
@@ -73,6 +73,11 @@ void pickupClass::setIsDestroy(bool check)
 void pickupClass::setStartMat(float x)
 {
 	this->transStart = XMMatrixTranslation(x - 10, 1.5f, 0.0f);
+}
+
+void pickupClass::setTranslationMatStart(XMMATRIX & other)
+{
+	this->transStart = other;
 }
 
 void pickupClass::getTranslationMatStart(XMMATRIX & other)
