@@ -12,6 +12,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
 	countEnemy = 0;
 
@@ -24,7 +25,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
-	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -319,28 +320,49 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
 	addObjectToObjHolderMeny(meny->getObj());
 
-	//LIMBO
-	limbo = new GUItestClass;
-	if (!limbo)
+	//LIMBO BACK PLANE
+	limboBackPlane = new GUItestClass;
+	if (!limboBackPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limbo->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboBackPlane.bin", hInstance, hwnd);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limbo->getObj()->setWorldMatrix(limboMat);
-	limbo->getObj()->setMaterialName("limboTexture.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limbo->getObj()->getMaterialName());
+	limboBackPlane->getObj()->setWorldMatrix(limboMat);
+	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limbo->getObj());
+	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
-	//LIMBO
+	//LIMBO FRONT PLANE
+	limboFrontPlane = new GUItestClass;
+	if (!limboFrontPlane)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
+	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+
+	//WIN
 	win = new GUItestClass;
 	if (!win)
 	{
@@ -452,11 +474,17 @@ void gameClass::shutdown()
 		delete meny;
 		meny = 0;
 	}
-	if (limbo)
+	if (limboFrontPlane)
 	{
-		limbo->shutdown();
-		delete limbo;
-		limbo = 0;
+		limboFrontPlane->shutdown();
+		delete limboFrontPlane;
+		limboFrontPlane = 0;
+	}
+	if (limboBackPlane)
+	{
+		limboBackPlane->shutdown();
+		delete limboBackPlane;
+		limboBackPlane = 0;
 	}
 	if (win)
 	{
