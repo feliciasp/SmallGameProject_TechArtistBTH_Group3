@@ -157,11 +157,11 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
 
 	XMVECTOR tempBboxMax;
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax())};
 	player->getWeapon()->setBboxMaxWeaponRight(tempBboxMax);
 	player->getWeapon()->setBboxMinWeaponRight(player->getObj()->getBoundingBoxMax());
 	
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) - 3 };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin())};
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -184,7 +184,6 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->getTranslationMatStart(enemyMatPos);
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
-	enemy->getObj()->setType(3);
 
 	//background test
 	background = new backgroundClass;
@@ -212,14 +211,14 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = pickup->initlialize(graphics->getD3D()->GetDevice(), "vaseUV.bin");
+	result = pickup->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	pickup->getObj()->setMaterialName("texture2.png");
+	pickup->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickup->getObj()->getMaterialName());
 	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
@@ -681,7 +680,7 @@ bool gameClass::frameGame(double dt)
 	updatePlatform();
 
 	//pickup stuff
-	updatePickup();
+	updatePickup(dt);
 
 	//player stuff
 	updatePlayer(dt);
@@ -750,6 +749,15 @@ bool gameClass::frameGame(double dt)
 			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
+			{
+				return false;
+			}
+		}
+
+		else if (objHolder[i]->getType() == 4)
+		{
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), pickup->getFrameCount(), pickup->getCurrentFrame());
+			if (!result)
 			{
 				return false;
 			}
@@ -1162,10 +1170,11 @@ void gameClass::updatePlatform()
 	platform->getObj()->setWorldMatrix(platformMat);
 }
 
-void gameClass::updatePickup()
+void gameClass::updatePickup(double dt)
 {
 	/*pickup->getObj()->updatePosition(pickupStartPosMoveMat);*/
 	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
+	pickup->updateAnimation(dt);
 }
 
 void gameClass::updateCollision(double dt)

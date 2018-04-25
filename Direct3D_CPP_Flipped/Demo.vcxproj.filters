@@ -151,5 +151,8 @@
     <FxCompile Include="PixelShaderEnemy.hlsl">
       <Filter>Source Files</Filter>
     </FxCompile>
+    <FxCompile Include="PickUpPixelShader.hlsl">
+      <Filter>Source Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

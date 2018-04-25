@@ -6,6 +6,11 @@ pickupClass::pickupClass()
 	transStart = XMMatrixIdentity();
 	isDestroy = false;
 	checkIfSetToObjHolder = false;
+
+	frameCount = 8;
+	currentFrame = 2;
+	currentTime = 0;
+	animationSpeed = 50;
 }
 
 pickupClass::pickupClass(const pickupClass & other)
@@ -34,6 +39,7 @@ bool pickupClass::initlialize(ID3D11Device * device, const char* filename)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	obj->setType(4);
 
 	setStartMat(-3.0f);
 	return true;
@@ -88,4 +94,29 @@ bool pickupClass::getCheckIfObjHolder()
 void pickupClass::setCheckIfObjHolder(bool check)
 {
 	this->checkIfSetToObjHolder = check;
+}
+
+void pickupClass::updateAnimation(double dt)
+{
+	if (currentTime > animationSpeed * dt)
+	{
+		currentTime = 0;
+		currentFrame++;
+		if (currentFrame > frameCount)
+		{
+			currentFrame = 1;
+		}
+	}
+
+	currentTime += 1 * dt;
+}
+
+int pickupClass::getFrameCount()
+{
+	return this->frameCount;
+}
+
+int pickupClass::getCurrentFrame()
+{
+	return this->currentFrame;
 }

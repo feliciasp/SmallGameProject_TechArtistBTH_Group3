@@ -26,11 +26,20 @@ public:
 	bool getCheckIfObjHolder();
 	void setCheckIfObjHolder(bool check);
 
+	void updateAnimation(double dt);
+	int getFrameCount();
+	int getCurrentFrame();
+
 private:
 	objectClass * obj;
 	bool isDestroy;
 	XMMATRIX transStart;
 	bool checkIfSetToObjHolder;
+
+	int frameCount;
+	int currentFrame;
+	float currentTime;
+	float animationSpeed;
 };
 
 

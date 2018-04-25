@@ -96,7 +96,7 @@ class gameClass
 		XMMATRIX backgroundMat;
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
-		void updatePickup();
+		void updatePickup(double dt);
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);
