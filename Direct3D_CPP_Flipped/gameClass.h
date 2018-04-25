@@ -47,10 +47,14 @@ class gameClass
 		void addObjectToObjHolderMeny(objectClass* obj);
 		void removeObjFromObjHolderMeny(objectClass* obj);
 
+		void addObjectToObjHolderWin(objectClass* obj);
+		void removeObjFromObjHolderWin(objectClass* obj);
+
 	private:
 		bool frameLimbo(double dt);
 		bool frameGame(double dt);
 		bool frameMeny(double dt);
+		bool frameWin(double dt);
 		bool initializeWindow(int ShowWnd, int& width, int& height);
 		void shutdownWindow();
 		
@@ -75,6 +79,7 @@ class gameClass
 		std::vector<objectClass*> objHolder;
 		std::vector<objectClass*> objHolderMeny;
 		std::vector<objectClass*> objHolderLimbo;
+		std::vector<objectClass*> objHolderWin;
 
 		XMMATRIX moveMatTest;
 		float moveTest;
@@ -91,7 +96,7 @@ class gameClass
 		XMMATRIX backgroundMat;
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
-		void updatePickup();
+		void updatePickup(double dt);
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);
@@ -101,17 +106,17 @@ class gameClass
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
-		bool checkCollisionPlatformTop();
-		bool checkCollisionPlatformLeft();
-		bool checkCollisionPlatformRight();
-		bool checkCollisionPlatformBot();
+		bool checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld);
 
-		bool enemyCheckCollisionPlatform();
 
 	
 		bool gameStateLevel;
 		bool gameStateMeny;
 		bool gameStateLimbo;
+		bool gameStateWin;
 		void setGameStateLevel(bool other);
 		void setGameStateMeny(bool other);
 		void setGameStateLimbo(bool other);
@@ -133,8 +138,13 @@ class gameClass
 		bool done;
 
 		/////////LIMBO STUFF
-		GUItestClass* limbo;
+		GUItestClass* limboFrontPlane;
+		GUItestClass* limboBackPlane;
 		XMMATRIX limboMat;
+
+		//////////////////////WIN STATE
+		GUItestClass* win;
+		XMMATRIX winMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

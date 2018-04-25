@@ -50,6 +50,17 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		}
 		renderShaderSprite(devCon, indexCount, name);
 	}
+
+	else if (type == 3)
+	{
+		renderEnemy(devCon, indexCount, name);
+	}
+
+	else if (type == 4)
+	{
+		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
+		renderPickup(devCon, indexCount, name);
+	}
 	else
 	{
 		renderShader(devCon, indexCount, name);
@@ -397,6 +408,46 @@ bool shaderClass::createShaders(ID3D11Device* device)
 	pPSSprite->Release();
 	pPSSprite = 0;
 
+	//pixelShader enemy
+	ID3DBlob* pPSEnemy = nullptr;
+	D3DCompileFromFile(
+		L"PixelShaderEnemy.hlsl",
+		nullptr,
+		nullptr,
+		"main",
+		"ps_5_0",
+		0,
+		0,
+		&pPSEnemy,
+		nullptr
+	);
+	result = device->CreatePixelShader(pPSEnemy->GetBufferPointer(), pPSEnemy->GetBufferSize(), nullptr, &this->pixelShaderEnemy);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creating sprite pixelShader",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	pPSEnemy->Release();
+	pPSEnemy = 0;
+
+	ID3DBlob* pPSPickup = nullptr;
+	D3DCompileFromFile(
+		L"PickUpPixelShader.hlsl",
+		nullptr,
+		nullptr,
+		"main",
+		"ps_5_0",
+		0,
+		0,
+		&pPSPickup,
+		nullptr
+	);
+	result = device->CreatePixelShader(pPSPickup->GetBufferPointer(), pPSPickup->GetBufferSize(), nullptr, &this->pixelShaderPickup);
+
+	pPSPickup->Release();
+	pPSPickup = 0;
 
 	//geometryShader
 	ID3DBlob * pGS = nullptr;
@@ -604,6 +655,44 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 	//devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
+	devCon->Draw(indexCount, 0);
+}
+
+void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+{
+	//Set vertex Layout
+	devCon->IASetInputLayout(vertexLayout);
+	//set vertex and pixel shaders the wil be used to render triangle
+	devCon->VSSetShader(vertexShader, nullptr, 0);
+	devCon->PSSetShader(pixelShaderEnemy, nullptr, 0);
+
+	for (int i = 0; i < matNameHolder.size(); i++)
+	{
+		if (matNameHolder[i].nameMat == name)
+		{
+			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
+		}
+	}
+	//devCon->PSSetSamplers(0, 1, &textureSample);
+
+	//render triangle
+	devCon->Draw(indexCount, 0);
+}
+
+void shaderClass::renderPickup(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+{
+	devCon->IASetInputLayout(vertexLayout);
+	devCon->VSSetShader(vertexShader, nullptr, 0);
+	devCon->PSSetShader(pixelShaderPickup, nullptr, 0);
+
+	for (int i = 0; i < matNameHolder.size(); i++)
+	{
+		if (matNameHolder[i].nameMat == name)
+		{
+			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
+		}
+	}
+
 	devCon->Draw(indexCount, 0);
 }
 

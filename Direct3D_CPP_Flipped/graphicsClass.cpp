@@ -2,6 +2,8 @@
 
 #include "graphicsClass.h"
 
+//ANNIES COOL TEST COMMENT = RAD
+
 graphicsClass::graphicsClass()
 {
 	direct3D = 0;					//always init pointers to null for safety
@@ -143,5 +145,5 @@ void graphicsClass::endScene()
 void graphicsClass::beginScene()
 {
 	//clear buffer to begin the scene
-	direct3D->beginScene(0.6f, 0.6f, 0.6f, 1.0f);
+	direct3D->beginScene(1.0f, 1.0f, 1.0f, 1.0f);
 }

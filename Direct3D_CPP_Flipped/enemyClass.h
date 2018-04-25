@@ -25,7 +25,7 @@ class enemyClass
 		void resetMove();
 
 		XMVECTOR getTriggerCheck();
-		void updateFalling(objectClass* platform, double dt, bool checkCollision);
+		void updateFalling(double dt);
 		void getFallingMat(XMMATRIX& other);
 
 		void setTriggerVector(XMVECTOR x);
@@ -51,6 +51,7 @@ class enemyClass
 		void setRoationCheck(bool other);
 		bool getRoationCheck();
 
+		void checkCollisions(bool top, bool left, bool right, bool bot);
 
 
 	private:
@@ -76,6 +77,8 @@ class enemyClass
 
 		bool isFacingRight;
 		bool useRotation;
+
+		float oldMoveValY;
 };
 
 
