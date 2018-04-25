@@ -982,7 +982,24 @@ void gameClass::updateConstantMatrices()
 
 void gameClass::updateEnemy(double dt)
 {
-	enemy->updateFalling(platform->getObj(), dt, enemyCheckCollisionPlatform());
+	enemy->updateFalling(dt);
+	enemy->getObj()->setWorldMatrix(enemyMatPos);
+	enemy->getTranslationMat(matMul);
+	enemy->getFallingMat(enemyFallingMat);
+	if (!enemy->getRoationCheck())
+	{
+		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
+		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+	}
+	else
+	{
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
+		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+	}
+	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
+	///////////////
+	enemy->checkCollisions(checkCollisionPlatformTop(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(enemy->getObj(), enemyTranslationMatrix));
+	///////////////
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
 	enemy->getFallingMat(enemyFallingMat);
@@ -1005,7 +1022,7 @@ void gameClass::updatePlayer(double dt)
 	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
-	player->checkCollisions(checkCollisionPlatformTop(), checkCollisionPlatformLeft(), checkCollisionPlatformRight(), checkCollisionPlatformBot());
+	player->checkCollisions(checkCollisionPlatformTop(player->getObj(), playerMove), checkCollisionPlatformLeft(player->getObj(), playerMove), checkCollisionPlatformRight(player->getObj(), playerMove), checkCollisionPlatformBot(player->getObj(), playerMove));
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	
@@ -1163,12 +1180,12 @@ void gameClass::updateCollision(double dt)
 	}
 }
 
-bool gameClass::checkCollisionPlatformTop()
+bool gameClass::checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
 	{
-		if (player->getObj()->getCollisionClass()->checkCollisionTop(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
+		if (obj->getCollisionClass()->checkCollisionTop(XMVector3Transform(obj->getBoundingBoxMin(), objWorld), XMVector3Transform(obj->getBoundingBoxMax(), objWorld), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
 		{
 			//OutputDebugString(L"\nCOLLISION PLATFORM TOP TRUE\n");
 			check = true;
@@ -1179,12 +1196,12 @@ bool gameClass::checkCollisionPlatformTop()
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformLeft()
+bool gameClass::checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
 	{
-		if (player->getObj()->getCollisionClass()->checkCollisionLeft(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
+		if (obj->getCollisionClass()->checkCollisionLeft(XMVector3Transform(obj->getBoundingBoxMin(), objWorld), XMVector3Transform(obj->getBoundingBoxMax(), objWorld), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
 		{
 			//OutputDebugString(L"\nCOLLISION PLATFORM LEFT TRUE\n");
 			check = true;
@@ -1195,12 +1212,12 @@ bool gameClass::checkCollisionPlatformLeft()
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformRight()
+bool gameClass::checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
 	{
-		if (player->getObj()->getCollisionClass()->checkCollisionRight(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
+		if (obj->getCollisionClass()->checkCollisionRight(XMVector3Transform(obj->getBoundingBoxMin(), objWorld), XMVector3Transform(obj->getBoundingBoxMax(), objWorld), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
 		{
 			//OutputDebugString(L"\nCOLLISION PLATFORM RIGHT TRUE\n");
 			check = true;
@@ -1211,12 +1228,12 @@ bool gameClass::checkCollisionPlatformRight()
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformBot()
+bool gameClass::checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
 	{
-		if (player->getObj()->getCollisionClass()->checkCollisionBot(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
+		if (obj->getCollisionClass()->checkCollisionBot(XMVector3Transform(obj->getBoundingBoxMin(), objWorld), XMVector3Transform(obj->getBoundingBoxMax(), objWorld), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
 		{
 			//OutputDebugString(L"\nCOLLISION PLATFORM BOT TRUE\n");
 			check = true;
@@ -1226,17 +1243,6 @@ bool gameClass::checkCollisionPlatformBot()
 		return false;
 	else
 		return true;
-}
-
-bool gameClass::enemyCheckCollisionPlatform()
-{
-	XMMATRIX temp;
-	enemy->getObj()->getWorldMatrix(temp);
-	if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), temp), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), temp), XMVector3Transform(platform->getObj()->getBoundingBoxMin(), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(), world)))
-	{
-		return true;
-	}
-	return false;
 }
 
 void gameClass::setGameStateLevel(bool other)

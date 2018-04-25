@@ -159,6 +159,30 @@ bool enemyClass::getRoationCheck()
 	return this->useRotation;
 }
 
+void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
+{
+	if (top)
+	{
+		temptest = oldMoveValY;
+	}
+
+	if (bot)
+	{
+		temptest = oldMoveValY;
+	}
+
+	/*if (left)
+	{
+		moveValX = oldMoveValX;
+	}
+	if (right)
+	{
+		moveValX = oldMoveValX;
+	}*/
+
+	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
+}
+
 void enemyClass::setEnemyHurt(bool check)
 {
 	this->isHurt = check;
@@ -217,18 +241,11 @@ XMVECTOR enemyClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void enemyClass::updateFalling(objectClass * platform, double dt, bool collisionCheck)
+void enemyClass::updateFalling(double dt)
 {
-	if (!collisionCheck)
-	{
-		//moveValY += 1.0f * dt;
-		temptest += -10.5 * dt;
-		//OutputDebugString(L"\nCOLLISION PLATFORM ENEMY FALSE\n");
-	}
-	else
-	{
-	//	OutputDebugString(L"\nCOLLISION PLATFORM ENEMY TRUE\n");
-	}
+	oldMoveValY = temptest;
+	temptest += -10.5 * dt;
+	
 	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
 }
 

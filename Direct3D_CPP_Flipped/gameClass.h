@@ -101,12 +101,11 @@ class gameClass
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
-		bool checkCollisionPlatformTop();
-		bool checkCollisionPlatformLeft();
-		bool checkCollisionPlatformRight();
-		bool checkCollisionPlatformBot();
+		bool checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld);
 
-		bool enemyCheckCollisionPlatform();
 
 	
 		bool gameStateLevel;

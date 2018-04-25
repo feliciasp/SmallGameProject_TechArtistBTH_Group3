@@ -460,7 +460,6 @@ void playerClass::updateAnimation(double dt)
 				isHit = true;
 			}
 			
-			
 		}
 		
 		if (nrOfLoops == 3 && currentFrame == frameCount)
