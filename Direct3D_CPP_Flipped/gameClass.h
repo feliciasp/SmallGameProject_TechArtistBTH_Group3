@@ -96,7 +96,7 @@ class gameClass
 		XMMATRIX backgroundMat;
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
-		void updatePickup();
+		void updatePickup(double dt);
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);
@@ -138,7 +138,8 @@ class gameClass
 		bool done;
 
 		/////////LIMBO STUFF
-		GUItestClass* limbo;
+		GUItestClass* limboFrontPlane;
+		GUItestClass* limboBackPlane;
 		XMMATRIX limboMat;
 
 		//////////////////////WIN STATE

@@ -12,6 +12,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
 	countEnemy = 0;
 
@@ -24,7 +25,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
-	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -157,11 +158,11 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
 
 	XMVECTOR tempBboxMax;
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) + 3 };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax())};
 	player->getWeapon()->setBboxMaxWeaponRight(tempBboxMax);
 	player->getWeapon()->setBboxMinWeaponRight(player->getObj()->getBoundingBoxMax());
 	
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) - 3 };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin())};
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -184,7 +185,6 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->getTranslationMatStart(enemyMatPos);
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
-	enemy->getObj()->setType(3);
 
 	//background test
 	background = new backgroundClass;
@@ -212,14 +212,14 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = pickup->initlialize(graphics->getD3D()->GetDevice(), "vaseUV.bin");
+	result = pickup->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	pickup->getObj()->setMaterialName("texture2.png");
+	pickup->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickup->getObj()->getMaterialName());
 	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
@@ -320,28 +320,49 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
 	addObjectToObjHolderMeny(meny->getObj());
 
-	//LIMBO
-	limbo = new GUItestClass;
-	if (!limbo)
+	//LIMBO BACK PLANE
+	limboBackPlane = new GUItestClass;
+	if (!limboBackPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limbo->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboBackPlane.bin", hInstance, hwnd);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limbo->getObj()->setWorldMatrix(limboMat);
-	limbo->getObj()->setMaterialName("limboTexture.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limbo->getObj()->getMaterialName());
+	limboBackPlane->getObj()->setWorldMatrix(limboMat);
+	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limbo->getObj());
+	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
-	//LIMBO
+	//LIMBO FRONT PLANE
+	limboFrontPlane = new GUItestClass;
+	if (!limboFrontPlane)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
+	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+
+	//WIN
 	win = new GUItestClass;
 	if (!win)
 	{
@@ -453,11 +474,17 @@ void gameClass::shutdown()
 		delete meny;
 		meny = 0;
 	}
-	if (limbo)
+	if (limboFrontPlane)
 	{
-		limbo->shutdown();
-		delete limbo;
-		limbo = 0;
+		limboFrontPlane->shutdown();
+		delete limboFrontPlane;
+		limboFrontPlane = 0;
+	}
+	if (limboBackPlane)
+	{
+		limboBackPlane->shutdown();
+		delete limboBackPlane;
+		limboBackPlane = 0;
 	}
 	if (win)
 	{
@@ -680,8 +707,18 @@ bool gameClass::frameGame(double dt)
 	//platform
 	updatePlatform();
 
-	//pickup stuff
-	updatePickup();
+	if (!pickup->getIsDestry() && !pickup->getCheckIfObjHolder())
+	{
+		addObjectToObjHolder(pickup->getObj());
+		pickup->setCheckIfObjHolder(true);
+		player->setIfInObjHolder(false);
+	}
+
+	if (!pickup->getIsDestry())
+	{
+		//pickup stuff
+		updatePickup(dt);
+	}
 
 	//player stuff
 	updatePlayer(dt);
@@ -727,12 +764,6 @@ bool gameClass::frameGame(double dt)
 		addObjectToObjHolder(GUIheart3->getObj());
 		GUIheart3->setCheckIfObjHolder(true);
 	}
-
-	if (!pickup->getIsDestry() && !pickup->getCheckIfObjHolder())
-	{
-		addObjectToObjHolder(pickup->getObj());
-		pickup->setCheckIfObjHolder(true);
-	}
 	if (pickup->getIsDestry() && pickup->getCheckIfObjHolder())
 	{
 		removeObjFromObjHolder(pickup->getObj());
@@ -750,6 +781,15 @@ bool gameClass::frameGame(double dt)
 			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
+			{
+				return false;
+			}
+		}
+
+		else if (objHolder[i]->getType() == 4)
+		{
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), pickup->getFrameCount(), pickup->getCurrentFrame());
+			if (!result)
 			{
 				return false;
 			}
@@ -1162,16 +1202,18 @@ void gameClass::updatePlatform()
 	platform->getObj()->setWorldMatrix(platformMat);
 }
 
-void gameClass::updatePickup()
+void gameClass::updatePickup(double dt)
 {
 	/*pickup->getObj()->updatePosition(pickupStartPosMoveMat);*/
-	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
+	XMMATRIX yOffset = enemyTranslationMatrix * XMMatrixTranslation(0.0f, 1.4f, 0.0f);
+	pickup->setTranslationMatStart(yOffset);
+	pickup->getObj()->setWorldMatrix(yOffset);
+	pickup->updateAnimation(dt);
 }
 
 void gameClass::updateCollision(double dt)
 {
-	XMMATRIX enemyTrans;
-	enemy->getTranslationMat(enemyTrans);
+	float enemyMove = enemy->getMove();
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
 
@@ -1189,6 +1231,7 @@ void gameClass::updateCollision(double dt)
 		{
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
+			pickup->setIsDestroy(false);
 			player->setIfInObjHolder(false);
 		}
 	}
@@ -1205,6 +1248,8 @@ void gameClass::updateCollision(double dt)
 		{
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
+			pickup->setIsDestroy(false);
+			player->setIfInObjHolder(false);
 		}
 	}
 	
@@ -1285,7 +1330,9 @@ void gameClass::updateCollision(double dt)
 		enemy->setTranslation(enemy->getMove());
 	}
 
-	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), pickupStartPosMoveMat), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), pickupStartPosMoveMat)))
+	XMMATRIX yOffset;
+	pickup->getTranslationMatStart(yOffset);
+	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), yOffset)))
 	{
 		pickup->setIsDestroy(true);
 	}

@@ -39,11 +39,6 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		renderShaderScreenSpace(devCon, indexCount, name);
 	}
 
-	if (type == 3)
-	{
-		renderEnemy(devCon, indexCount, name);
-	}
-
 	else if (type == 2)
 	{
 		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
@@ -54,6 +49,17 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 			return false;
 		}
 		renderShaderSprite(devCon, indexCount, name);
+	}
+
+	else if (type == 3)
+	{
+		renderEnemy(devCon, indexCount, name);
+	}
+
+	else if (type == 4)
+	{
+		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
+		renderPickup(devCon, indexCount, name);
 	}
 	else
 	{
@@ -426,6 +432,22 @@ bool shaderClass::createShaders(ID3D11Device* device)
 	pPSEnemy->Release();
 	pPSEnemy = 0;
 
+	ID3DBlob* pPSPickup = nullptr;
+	D3DCompileFromFile(
+		L"PickUpPixelShader.hlsl",
+		nullptr,
+		nullptr,
+		"main",
+		"ps_5_0",
+		0,
+		0,
+		&pPSPickup,
+		nullptr
+	);
+	result = device->CreatePixelShader(pPSPickup->GetBufferPointer(), pPSPickup->GetBufferSize(), nullptr, &this->pixelShaderPickup);
+
+	pPSPickup->Release();
+	pPSPickup = 0;
 
 	//geometryShader
 	ID3DBlob * pGS = nullptr;
@@ -654,6 +676,23 @@ void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std:
 	//devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
+	devCon->Draw(indexCount, 0);
+}
+
+void shaderClass::renderPickup(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+{
+	devCon->IASetInputLayout(vertexLayout);
+	devCon->VSSetShader(vertexShader, nullptr, 0);
+	devCon->PSSetShader(pixelShaderPickup, nullptr, 0);
+
+	for (int i = 0; i < matNameHolder.size(); i++)
+	{
+		if (matNameHolder[i].nameMat == name)
+		{
+			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
+		}
+	}
+
 	devCon->Draw(indexCount, 0);
 }
 
