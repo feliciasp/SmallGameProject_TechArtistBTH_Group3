@@ -187,7 +187,7 @@ void playerClass::handleMovement(double dt)
 
 	currentAnimation = 1;
 	frameCount = 2;
-	animationSpeed = 250;
+	animationSpeed = 100;
 
 	input->readKeyboard(dt);
 	if (this->input->isAPressed())
@@ -334,7 +334,7 @@ void playerClass::handleMovement(double dt)
 		isHit = false;
 		currentTime = 0;
 		currentFrame = 1;
-		animationSpeed = 100;
+		animationSpeed = 60;
 	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
@@ -442,7 +442,7 @@ bool playerClass::getPlayerHurt()
 
 void playerClass::updateAnimation(double dt)
 {
-	if (currentTime > (animationSpeed * dt))
+	if (currentTime > ((animationSpeed / 2) * dt))
 	{
 		currentFrame++;
 		if (currentFrame > frameCount)

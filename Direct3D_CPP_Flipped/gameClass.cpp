@@ -194,7 +194,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = background->initlialize(graphics->getD3D()->GetDevice(), "backGround1.bin");
+	result = background->initlialize(graphics->getD3D()->GetDevice(), "propsLargeScene.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init background obj",
@@ -286,7 +286,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = platform->initlialize(graphics->getD3D()->GetDevice(), "platformsCol1.bin");
+	result = platform->initlialize(graphics->getD3D()->GetDevice(), "platformsLargeScene.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
