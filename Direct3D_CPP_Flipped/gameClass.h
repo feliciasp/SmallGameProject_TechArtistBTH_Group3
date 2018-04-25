@@ -138,7 +138,8 @@ class gameClass
 		bool done;
 
 		/////////LIMBO STUFF
-		GUItestClass* limbo;
+		GUItestClass* limboFrontPlane;
+		GUItestClass* limboBackPlane;
 		XMMATRIX limboMat;
 
 		//////////////////////WIN STATE
