@@ -2,6 +2,8 @@
 
 #include "graphicsClass.h"
 
+//ANNIES COOL TEST COMMENT = RAD
+
 graphicsClass::graphicsClass()
 {
 	direct3D = 0;					//always init pointers to null for safety
