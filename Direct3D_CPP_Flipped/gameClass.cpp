@@ -235,6 +235,10 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickup->getObj()->getMaterialName());
 	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
+	pickup->setPickupType(3);
+	pickup->setRingType(0);
+	
+
 	//GUI
 	GUIheart1 = new GUItestClass;
 	if (!GUIheart1)
@@ -1483,9 +1487,7 @@ void gameClass::updateCollision(double dt)
 				{
 					enemy->updateAttackCooldownTimer();
 				}
-
 			}
-
 		}
 		else
 		{
@@ -1505,7 +1507,6 @@ void gameClass::updateCollision(double dt)
 				enemy->setFacing(true);
 				enemy->updateAttackCooldownTimer();
 			}
-
 			enemy->setTranslation(enemy->getMove());
 			enemy->setMove(-2.5f * dt);
 		}
@@ -1520,8 +1521,12 @@ void gameClass::updateCollision(double dt)
 	XMMATRIX yOffset;
 	pickup->getTranslationMatStart(yOffset);
 	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), yOffset)))
-
 	{
+		if (pickup->getPickupType() == 3) //type 3 means it's a RING
+		{
+			this->player->setHasRing(true);
+			this->player->setRingType(pickup->getRingType());
+		}
 		pickup->setIsDestroy(true);
 	}
 }

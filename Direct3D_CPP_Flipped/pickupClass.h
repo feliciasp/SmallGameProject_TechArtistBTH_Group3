@@ -31,6 +31,13 @@ public:
 	int getFrameCount();
 	int getCurrentFrame();
 
+	void setPickupType(int other);
+	int getPickupType();
+
+	void setRingType(int other);
+	int getRingType();
+
+
 private:
 	objectClass * obj;
 	bool isDestroy;
@@ -41,6 +48,12 @@ private:
 	int currentFrame;
 	float currentTime;
 	float animationSpeed;
+	bool isAnimated;
+
+	int pickupType; // 0 = 3D PIXEL(health), 1 = PIXEL ESSENCE(exp), 2 = POLYGON(currency), 3 = RING.
+
+	bool isRing;
+	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.                                            profit.
 };
 
 
