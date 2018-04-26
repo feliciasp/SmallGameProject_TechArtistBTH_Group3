@@ -186,6 +186,17 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
 
+	tempBboxMax = { XMVectorGetX(enemy->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(enemy->getObj()->getBoundingBoxMax()) };
+	tempBboxMin = { XMVectorGetX(enemy->getObj()->getBoundingBoxMax()), XMVectorGetY(enemy->getObj()->getBoundingBoxMin()) };
+	enemy->setBboxMaxWeaponRight(tempBboxMax);
+	enemy->setBboxMinWeaponRight(tempBboxMin);
+
+	tempBboxMax = { XMVectorGetX(enemy->getObj()->getBoundingBoxMin()), XMVectorGetY(enemy->getObj()->getBoundingBoxMax()) };
+	tempBboxMin = { XMVectorGetX(enemy->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(enemy->getObj()->getBoundingBoxMin()) };
+	enemy->setBboxMaxWeaponLeft(tempBboxMax);
+	enemy->setBboxMinWeaponLeft(tempBboxMin);
+
+
 	//background test
 	background = new backgroundClass;
 	if (!background)
@@ -194,7 +205,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = background->initlialize(graphics->getD3D()->GetDevice(), "propsLargeScene.bin");
+	result = background->initlialize(graphics->getD3D()->GetDevice(), "backgroudnDummy.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init background obj",
@@ -286,7 +297,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = platform->initlialize(graphics->getD3D()->GetDevice(), "platformsLargeScene.bin");
+	result = platform->initlialize(graphics->getD3D()->GetDevice(), "platformsDummy.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -1213,10 +1224,14 @@ void gameClass::updatePickup(double dt)
 
 void gameClass::updateCollision(double dt)
 {
+
+	
 	float enemyMove = enemy->getMove();
+
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
-
+	lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix));
+	lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
@@ -1254,9 +1269,8 @@ void gameClass::updateCollision(double dt)
 	}
 	
 	enemy->timeCountdown();
-
 	
-	if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
+	/*if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		enemy->resetMove();
 		enemy->getTranslationMatStart(masterMovementEnemyMat);
@@ -1281,58 +1295,148 @@ void gameClass::updateCollision(double dt)
 			removeObjFromObjHolder(GUIheart3->getObj());
 			GUIheart3->setCheckIfObjHolder(false);
 		}
-	}
-	
+	}*/
 
-	if (lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
+	if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
 	{
-		//går åt vänster
-		if (enemy->getFacing() && countEnemy <= 0)
+		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
 		{
-			enemy->setRoationCheck(true);
-			countEnemy = 100;
+			enemy->setMove(0.0f);
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			{
+				if (enemy->attackCooldown())
+				{
+					player->setPlayerHP(player->getPlayerHP() - 1);
+					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					{
+						GUIheart1->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart1->getObj());
+						GUIheart1->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
+					{
+						GUIheart2->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart2->getObj());
+						GUIheart2->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
+					{
+						GUIheart3->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart3->getObj());
+						GUIheart3->setCheckIfObjHolder(false);
+					}
+				}
+				if (enemy->getAttackCooldown() >= 0)
+				{
+					enemy->updateAttackCooldownTimer();
+				}
 
-		}
-		else if(enemy->getFacing() && countEnemy >= 0)
-		{
-			countEnemy -= 1;
+			}
 		}
 		else
 		{
-			enemy->setRoationCheck(false);
-			enemy->setFacing(false);
-		}
+			//går åt vänster
+			if (enemy->getFacing() && countEnemy <= 0)
+			{
+				enemy->setRoationCheck(true);
+				countEnemy = 100;
+				enemy->setMove(0.0f);
+			}
+			else if (enemy->getFacing() && countEnemy >= 0)
+			{
+				countEnemy -= 1;
+			}
+			else
+			{
+				enemy->setRoationCheck(false);
+				enemy->setFacing(false);
+				enemy->updateAttackCooldownTimer();
+			}
 
-		OutputDebugString(L"\nwalking\n");
-		enemy->setMove(2.5f * dt);
-		enemy->setTranslation(enemy->getMove());
+			enemy->setMove(2.5f * dt);
+			enemy->setTranslation(enemy->getMove());
+		}
 	}
-	if (lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) < XMVectorGetX(enemy->getStartPos()))
+	{
+		enemy->setMove(-1.5f * dt);
+		enemy->setTranslation(enemy->getMove());
+		//OutputDebugString(L"MOVING TO SPAWN");
+	}
+
+
+	if (enemy->getIsActive() && lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
 	{
 		//år höger
-		if (!enemy->getFacing() && countEnemy <= 0)
+		if (lengthBetween2 <= XMVectorGetX(enemy->getRangeVector()) - 3)
 		{
-			enemy->setRoationCheck(true);
-			countEnemy = 100;
-		}
-		else if (!enemy->getFacing() && countEnemy >= 0)
-		{
-			countEnemy -= 1;
+			enemy->setMove(0.0f);
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			{
+				if (enemy->attackCooldown())
+				{
+					player->setPlayerHP(player->getPlayerHP() - 1);
+					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					{
+						GUIheart1->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart1->getObj());
+						GUIheart1->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
+					{
+						GUIheart2->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart2->getObj());
+						GUIheart2->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
+					{
+						GUIheart3->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart3->getObj());
+						GUIheart3->setCheckIfObjHolder(false);
+					}
+				}
+				if (enemy->getAttackCooldown() >= 0)
+				{
+					enemy->updateAttackCooldownTimer();
+				}
+
+			}
+
 		}
 		else
 		{
-			enemy->setRoationCheck(false);
-			enemy->setFacing(true);
-		}
+			if (!enemy->getFacing() && countEnemy <= 0)
+			{
+				enemy->setRoationCheck(true);
+				countEnemy = 100;
+				enemy->setMove(0.0f);
+			}
+			else if (!enemy->getFacing() && countEnemy >= 0)
+			{
+				countEnemy -= 1;
+			}
+			else
+			{
+				enemy->setRoationCheck(false);
+				enemy->setFacing(true);
+				enemy->updateAttackCooldownTimer();
+			}
 
-		
-		enemy->setMove(-2.5f * dt);
+			enemy->setTranslation(enemy->getMove());
+			enemy->setMove(-2.5f * dt);
+		}
+	}
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) > XMVectorGetX(enemy->getStartPos()))
+	{
+		enemy->setMove(1.5f * dt);
 		enemy->setTranslation(enemy->getMove());
 	}
+
 
 	XMMATRIX yOffset;
 	pickup->getTranslationMatStart(yOffset);
 	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), yOffset)))
+
 	{
 		pickup->setIsDestroy(true);
 	}

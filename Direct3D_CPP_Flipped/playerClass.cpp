@@ -26,7 +26,8 @@ playerClass::playerClass()
 	isPlayerHurt = false;
 	frameCount = 2;
 
-	
+	isHurt = false;
+	fakeTimer = 0;
 
 	isAttacking = false;
 
@@ -162,6 +163,28 @@ void playerClass::resetMove()
 {
 
 	moveVal = 0;
+}
+bool playerClass::hurtState()
+{
+	if (this->isHurt == false && fakeTimer == 0)
+	{
+		this->isHurt = true;
+		fakeTimer = 300;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void playerClass::updateTimer()
+{
+	this->fakeTimer -= 1;
+	if (this->fakeTimer == 0)
+	{
+		this->isHurt = false;
+	}
 }
 
 XMVECTOR playerClass::getTriggerCheck()

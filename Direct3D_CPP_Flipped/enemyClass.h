@@ -44,6 +44,9 @@ class enemyClass
 
 		bool hurtState();
 		void timeCountdown();
+
+		bool attackCooldown();
+		void updateAttackCooldownTimer();
 		
 		void setFacing(bool other);
 		bool getFacing();
@@ -53,6 +56,27 @@ class enemyClass
 
 		void checkCollisions(bool top, bool left, bool right, bool bot);
 
+		void setRangeVector(XMVECTOR x);
+		XMVECTOR getRangeVector();
+
+		bool getIfAttack();
+		
+		int getAttackCooldown();
+
+		//VAPEN
+		void setBboxMaxWeaponRight(XMVECTOR vector);
+		void setBboxMinWeaponRight(XMVECTOR vector);
+
+		XMVECTOR getBboxMaxWeaponRight();
+		XMVECTOR getBboxMinWeaponRight();
+
+		void setBboxMaxWeaponLeft(XMVECTOR vector);
+		void setBboxMinWeaponLeft(XMVECTOR vector);
+
+		XMVECTOR getBboxMaxWeaponLeft();
+		XMVECTOR getBboxMinWeaponLeft();
+
+		XMVECTOR getStartPos();
 
 	private:
 		objectClass* obj;
@@ -68,8 +92,14 @@ class enemyClass
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
 
+		XMVECTOR rangeVector;
+		XMVECTOR rangeCheck;
+
+		XMVECTOR startPos;
+
 		int HP;
 		bool isHurt;
+		bool isAttack;
 		int fakeTimer;
 
 		void setEnemyHurt(bool check);
@@ -79,6 +109,19 @@ class enemyClass
 		bool useRotation;
 
 		float oldMoveValY;
+
+		bool isHit;
+		bool isAttacking;
+		void checkIfAttacking();
+
+		//VAPEN
+
+		XMVECTOR bboxMaxLeft;
+		XMVECTOR bboxMinLeft;
+
+		XMVECTOR bboxMaxRight;
+		XMVECTOR bboxMinRight;
+		int tonsOfDmg;
 };
 
 
