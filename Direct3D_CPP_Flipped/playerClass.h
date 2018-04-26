@@ -59,9 +59,17 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
-	bool allowDoubleJump;
-	bool hasDoubleJumped;
-	bool spaceReleased;
+	
+
+	void setHasRing(bool check);
+	bool getHasRing();
+
+	void setRingType(int other);
+	int getRingType();
+
+	
+
+	float getMoveValY();
 
 private:
 	bool isHurt;
@@ -91,6 +99,9 @@ private:
 	float moveValY;
 	float moveValZ;
 
+	bool hasDoubleJumped;
+	bool spaceReleased;
+
 	float oldMoveValX;
 	float oldMoveValY;
 
@@ -112,7 +123,12 @@ private:
 	bool isAttacking;
 	void checkIfAttacking();
 
+	bool hasRing;
+	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
+
 	bool isInObjHolder;
+
+
 };
 
 
