@@ -36,10 +36,12 @@ class d3dClass
 		//void getOrtoMatrix(XMMATRIX& matrix);		///?????????????????????
 
 		//void getVideoCardInfo(char* desc, int& mem);
+		void getOrtoProjMat(XMMATRIX& matrix);
 
 	private:
 		bool vsync_enabled;
 
+		XMMATRIX projMatrixOrto;
 		XMMATRIX projMatrix;
 		XMMATRIX worldMatrix;
 		XMMATRIX viewMatrix;

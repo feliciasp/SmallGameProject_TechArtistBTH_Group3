@@ -277,6 +277,7 @@ void playerClass::handleMovement(double dt)
 			
 		}
 
+
 		if (hasRing == true && ringType == 0)
 		{
 			if (isJumping == true && !hasDoubleJumped && spaceReleased)
@@ -294,7 +295,6 @@ void playerClass::handleMovement(double dt)
 	}
 
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
-	{
 		upSpeed -= upSpeed - (upSpeed * 0.99);
 	}
 	if (!this->input->isSpacePressed())
@@ -445,6 +445,11 @@ void playerClass::setIfInObjHolder(bool other)
 {
 	this->isInObjHolder = other;
 }
+
+
+float playerClass::getMoveValY()
+{
+	return this->moveValY;
 
 void playerClass::setHasRing(bool check)
 {

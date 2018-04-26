@@ -69,6 +69,8 @@ public:
 
 	
 
+	float getMoveValY();
+
 private:
 	bool isHurt;
 	int fakeTimer;
