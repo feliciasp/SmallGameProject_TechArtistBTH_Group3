@@ -276,7 +276,7 @@ void playerClass::handleMovement(double dt)
 			}
 			
 		}
-		if (isJumping = true && allowDoubleJump && !hasDoubleJumped && spaceReleased)
+		if (isJumping == true && allowDoubleJump && !hasDoubleJumped && spaceReleased)
 		{
 			upSpeed = 23.5f;
 			if (attacking == false)
@@ -292,9 +292,12 @@ void playerClass::handleMovement(double dt)
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
 	{
 		upSpeed -= upSpeed - (upSpeed * 0.99);
+	}
+	if (!this->input->isSpacePressed())
+	{
 		spaceReleased = true;
 	}
-		
+
 
 
 	if (upSpeed > 1)
