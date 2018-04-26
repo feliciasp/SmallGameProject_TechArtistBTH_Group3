@@ -63,6 +63,8 @@ public:
 	bool hasDoubleJumped;
 	bool spaceReleased;
 
+	float getMoveValY();
+
 private:
 	bool isHurt;
 	int fakeTimer;

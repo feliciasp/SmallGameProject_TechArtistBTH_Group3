@@ -4,7 +4,7 @@ pickupClass::pickupClass()
 {
 	obj = 0;
 	transStart = XMMatrixIdentity();
-	isDestroy = true;
+	isDestroy = false;
 	checkIfSetToObjHolder = false;
 
 	frameCount = 8;
