@@ -1184,6 +1184,8 @@ void gameClass::updateCollision(double dt)
 	enemy->getTranslationMat(enemyTrans);
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
+	lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix));
+	lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
@@ -1275,7 +1277,7 @@ void gameClass::updateCollision(double dt)
 						GUIheart3->setCheckIfObjHolder(false);
 					}
 				}
-				if(enemy->getAttackCooldown() >= 0)
+				if (enemy->getAttackCooldown() >= 0)
 				{
 					enemy->updateAttackCooldownTimer();
 				}
@@ -1306,6 +1308,13 @@ void gameClass::updateCollision(double dt)
 			enemy->setTranslation(enemy->getMove());
 		}
 	}
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) < XMVectorGetX(enemy->getStartPos()))
+	{
+		enemy->setMove(-1.5f * dt);
+		enemy->setTranslation(enemy->getMove());
+		//OutputDebugString(L"MOVING TO SPAWN");
+	}
+
 
 	if (enemy->getIsActive() && lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
 	{
@@ -1367,6 +1376,11 @@ void gameClass::updateCollision(double dt)
 			enemy->setTranslation(enemy->getMove());
 			enemy->setMove(-2.5f * dt);
 		}
+	}
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) > XMVectorGetX(enemy->getStartPos()))
+	{
+		enemy->setMove(1.5f * dt);
+		enemy->setTranslation(enemy->getMove());
 	}
 
 	if (!pickup->getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), pickupStartPosMoveMat), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), pickupStartPosMoveMat)))

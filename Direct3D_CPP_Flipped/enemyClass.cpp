@@ -57,7 +57,8 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 		return false;
 	}
 
-	setStartMat(8.0f);
+	startPos = {5.0f, 0.0f, 0.0f};
+	setStartMat(5.0f);
 
 	return true;
 }
@@ -364,4 +365,9 @@ XMVECTOR enemyClass::getBboxMaxWeaponLeft()
 XMVECTOR enemyClass::getBboxMinWeaponLeft()
 {
 	return this->bboxMinLeft;
+}
+
+XMVECTOR enemyClass::getStartPos()
+{
+	return this->startPos;
 }

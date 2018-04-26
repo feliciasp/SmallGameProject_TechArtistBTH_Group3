@@ -104,6 +104,9 @@ class gameClass
 
 		XMMATRIX enemyTrans;
 
+		float lengthBetweenEnemyStartAndEnemyCurrentPos1;
+		float lengthBetweenEnemyStartAndEnemyCurrentPos2;
+
 		XMVECTOR tempBboxMin;
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/

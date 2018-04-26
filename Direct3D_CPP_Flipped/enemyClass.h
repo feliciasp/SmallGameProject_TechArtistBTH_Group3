@@ -76,6 +76,7 @@ class enemyClass
 		XMVECTOR getBboxMaxWeaponLeft();
 		XMVECTOR getBboxMinWeaponLeft();
 
+		XMVECTOR getStartPos();
 
 	private:
 		objectClass* obj;
@@ -93,6 +94,8 @@ class enemyClass
 
 		XMVECTOR rangeVector;
 		XMVECTOR rangeCheck;
+
+		XMVECTOR startPos;
 
 		int HP;
 		bool isHurt;
