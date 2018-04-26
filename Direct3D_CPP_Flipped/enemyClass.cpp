@@ -56,6 +56,7 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	obj->setType(3);
 
 	startPos = {5.0f, 0.0f, 0.0f};
 	setStartMat(5.0f);
