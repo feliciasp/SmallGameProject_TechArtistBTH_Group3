@@ -56,8 +56,13 @@ public:
 	weaponClass* getWeapon();
 	bool getIfAttack();
 
-	bool  getIfInObjHolder();
+	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
+
+	bool allowDoubleJump;
+	bool hasDoubleJumped;
+	bool spaceReleased;
+
 private:
 	bool isHurt;
 	int fakeTimer;

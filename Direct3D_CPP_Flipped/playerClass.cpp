@@ -43,6 +43,12 @@ playerClass::playerClass()
 	isHit = false;
 	animationSpeed = 100;
 	nrOfLoops = 0;
+
+	allowDoubleJump = true;
+
+	hasDoubleJumped = false;
+
+	spaceReleased = true;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -262,6 +268,7 @@ void playerClass::handleMovement(double dt)
 			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
+			spaceReleased = false;
 			if (attacking == false)
 			{
 				currentFrame = 1;
@@ -269,11 +276,25 @@ void playerClass::handleMovement(double dt)
 			}
 			
 		}
+		if (isJumping = true && allowDoubleJump && !hasDoubleJumped && spaceReleased)
+		{
+			upSpeed = 23.5f;
+			if (attacking == false)
+			{
+				currentFrame = 1;
+				currentTime = 0;
+			}
+			hasDoubleJumped = true;
+		}
 		isJumping = true;
 	}
 
 	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
+	{
 		upSpeed -= upSpeed - (upSpeed * 0.99);
+		spaceReleased = true;
+	}
+		
 
 
 	if (upSpeed > 1)
@@ -378,6 +399,7 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		isJumping = false;
 		upSpeed = 0;
 		idle = true;
+		hasDoubleJumped = false;
 	}
 
 	if (left)
