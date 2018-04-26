@@ -5,6 +5,9 @@ playerClass::playerClass()
 	obj = 0;
 	moveVal = 0;
 	input = 0;
+	
+	hasRing = false;
+	ringType = 0;
 
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
@@ -43,8 +46,6 @@ playerClass::playerClass()
 	isHit = false;
 	animationSpeed = 100;
 	nrOfLoops = 0;
-
-	allowDoubleJump = true;
 
 	hasDoubleJumped = false;
 
@@ -260,7 +261,6 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 	
-
 	if (this->input->isSpacePressed())
 	{
 		if (!isJumping)
@@ -276,15 +276,19 @@ void playerClass::handleMovement(double dt)
 			}
 			
 		}
-		if (isJumping == true && allowDoubleJump && !hasDoubleJumped && spaceReleased)
+
+		if (hasRing == true && ringType == 0)
 		{
-			upSpeed = 23.5f;
-			if (attacking == false)
+			if (isJumping == true && !hasDoubleJumped && spaceReleased)
 			{
-				currentFrame = 1;
-				currentTime = 0;
+				upSpeed = 23.5f;
+				if (attacking == false)
+				{
+					currentFrame = 1;
+					currentTime = 0;
+				}
+				hasDoubleJumped = true;
 			}
-			hasDoubleJumped = true;
 		}
 		isJumping = true;
 	}
@@ -297,8 +301,6 @@ void playerClass::handleMovement(double dt)
 	{
 		spaceReleased = true;
 	}
-
-
 
 	if (upSpeed > 1)
 	{
@@ -444,6 +446,26 @@ void playerClass::setIfInObjHolder(bool other)
 	this->isInObjHolder = other;
 }
 
+void playerClass::setHasRing(bool check)
+{
+	this->hasRing = check;
+}
+
+bool playerClass::getHasRing()
+{
+	return this->hasRing;
+}
+
+void playerClass::setRingType(int other)
+{
+	this->ringType = other;
+}
+
+int playerClass::getRingType()
+{
+	return this->ringType;
+}
+
 void playerClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMat;
@@ -466,6 +488,9 @@ void playerClass::resetPlayer()
 	isAttacking = false;
 
 	isInObjHolder = false;
+
+	hasRing = false;
+
 }
 
 void playerClass::setPlayerHP(int x)

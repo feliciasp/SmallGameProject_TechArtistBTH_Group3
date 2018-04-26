@@ -4,13 +4,17 @@ pickupClass::pickupClass()
 {
 	obj = 0;
 	transStart = XMMatrixIdentity();
-	isDestroy = true;
+	isDestroy = false;
 	checkIfSetToObjHolder = false;
 
 	frameCount = 8;
 	currentFrame = 2;
 	currentTime = 0;
 	animationSpeed = 50;
+
+	isAnimated = true;
+	isRing = false;
+
 }
 
 pickupClass::pickupClass(const pickupClass & other)
@@ -103,17 +107,19 @@ void pickupClass::setCheckIfObjHolder(bool check)
 
 void pickupClass::updateAnimation(double dt)
 {
-	if (currentTime > animationSpeed * dt)
+	if (isAnimated)
 	{
-		currentTime = 0;
-		currentFrame++;
-		if (currentFrame > frameCount)
+		if (currentTime > animationSpeed * dt)
 		{
-			currentFrame = 1;
+			currentTime = 0;
+			currentFrame++;
+			if (currentFrame > frameCount)
+			{
+				currentFrame = 1;
+			}
 		}
+		currentTime += 1 * dt;
 	}
-
-	currentTime += 1 * dt;
 }
 
 int pickupClass::getFrameCount()
@@ -124,4 +130,36 @@ int pickupClass::getFrameCount()
 int pickupClass::getCurrentFrame()
 {
 	return this->currentFrame;
+}
+
+void pickupClass::setPickupType(int other)
+{
+	this->pickupType = other;
+	if (other = 3)
+	{
+		this->isRing = true;
+		this->isAnimated = false;
+	}
+	else
+	{
+		this->isRing = false;
+		this->isAnimated = true;
+	}
+		
+}
+
+int pickupClass::getPickupType()
+{
+	return this->pickupType;
+}
+
+
+void pickupClass::setRingType(int other)
+{
+	this->ringType = other;
+}
+
+int pickupClass::getRingType()
+{
+	return this->ringType;
 }
