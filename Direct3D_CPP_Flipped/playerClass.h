@@ -16,9 +16,8 @@ public:
 	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
 	void setTranslation(float x);
-
+	
 	objectClass* getObj();
-	void getTranslationMat(XMMATRIX& other);
 	void getTranslationMatStart(XMMATRIX& other);
 	void setStartMat(float x, float y);
 
@@ -54,13 +53,13 @@ public:
 
 	bool  getIfInObjHolder();
 	void setIfInObjHolder(bool other);
+
 private:
 	objectClass* obj;
 	directInput* input;
 	weaponClass* weapon;
 
 	float moveVal;
-	XMMATRIX translation;
 	XMMATRIX transStart;
 
 	XMVECTOR triggerCheck;

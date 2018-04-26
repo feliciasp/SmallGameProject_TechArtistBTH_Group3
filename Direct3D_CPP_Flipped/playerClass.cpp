@@ -6,7 +6,6 @@ playerClass::playerClass()
 	moveVal = 0;
 	input = 0;
 
-	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
@@ -123,19 +122,9 @@ void playerClass::shutdown()
 	}
 }
 
-void playerClass::setTranslation(float x)
-{
-	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
-}
-
 objectClass* playerClass::getObj()
 {
 	return this->obj;
-}
-
-void playerClass::getTranslationMat(XMMATRIX & other)
-{
-	other = this->translation;
 }
 
 void playerClass::getTranslationMatStart(XMMATRIX & other)
@@ -404,7 +393,6 @@ void playerClass::getMoveMat(XMMATRIX& mat)
 void playerClass::resetPlayer()
 {
 	moveVal = 0;
-	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 
 	//movement

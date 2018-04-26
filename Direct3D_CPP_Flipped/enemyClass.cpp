@@ -5,6 +5,9 @@ enemyClass::enemyClass()
 	temptest = 3;
 	obj = 0;
 	moveVal = 0;
+	moveValX = 0;
+	moveValY = 0;
+	moveValZ = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
@@ -14,6 +17,7 @@ enemyClass::enemyClass()
 	isHurt = false;
 	fakeTimer = 0;
 
+	upSpeed = 0;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -163,24 +167,22 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 {
 	if (top)
 	{
-		temptest = oldMoveValY;
+		moveValY = oldMoveValY;
 	}
 
 	if (bot)
 	{
-		temptest = oldMoveValY;
+		moveValY = oldMoveValY;
 	}
-
-	/*if (left)
+	if (left)
 	{
 		moveValX = oldMoveValX;
 	}
 	if (right)
 	{
 		moveValX = oldMoveValX;
-	}*/
-
-	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
+	}
+	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
 }
 
 void enemyClass::setEnemyHurt(bool check)
@@ -193,11 +195,98 @@ bool enemyClass::getEnemyHurt()
 	return this->isHurt;
 }
 
+void enemyClass::handleMovement(double dt)
+{
+	oldMoveValX = moveValX;
+	oldMoveValY = moveValY;
 
+	if (dt > 20)
+		dt = 0;
+
+	//idle = true;
+
+	//justJumped = false;
+	moveValY += upSpeed * dt;
+
+	//input->readKeyboard(dt);
+	if ()
+	{
+		moveValX += -10.0f * dt;
+		/*idle = false;
+		running = true;*/
+
+		if (this->isFacingRight == true)
+			isFacingRight = false;
+	}
+	if ()
+	{
+		moveValX += 10.0f * dt;
+
+		/*idle = false;
+		running = true;*/
+		
+		if (this->isFacingRight == false)
+			isFacingRight = true;
+	}
+
+	/*if ()
+	{
+		if (!isJumping)
+		{
+			upSpeed = 23.5f;
+			justJumped = true;
+		}
+		isJumping = true;
+	}*/
+
+	//if (upSpeed > 1)
+	//{
+	//	/*running = false;
+	//	idle = false;
+	//	jumping = true;*/
+	//}
+
+	if (upSpeed > -1.0f)
+	{
+		upSpeed += (-50 * dt) - moveValY * dt;
+		/*isJumping = true;*/
+	}
+	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
+	{
+		upSpeed += (-50 * dt) - -upSpeed * dt;
+		/*idle = false;
+		running = false;
+		falling = true;*/
+	}
+
+	/*if (this->input->isOPressed())
+		if (attacking == false)
+			attacking = true;*/
+
+	/*if (attacking == true)
+		idle = false;
+
+
+	if (running == true && idle == true && attacking == false)
+		running = false;
+
+	if (falling == true && idle == true && attacking == false)
+		falling = false;
+
+	if (jumping == true && idle == true && attacking == false)
+		jumping = false;
+
+	if (isHit == true && idle == true)
+		isHit = false;*/
+
+	moveMat = XMMatrixTranslation(moveValX, moveValY + 8, 0.0f);
+}
 
 void enemyClass::setTranslation(float x)
 {
+	oldMoveValX = moveValX;
 	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
+	moveValX = x;
 }
 
 objectClass* enemyClass::getObj()

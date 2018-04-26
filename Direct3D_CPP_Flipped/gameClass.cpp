@@ -22,7 +22,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	background = 0;
 	movementInput = 0;
 	moveTest = 2.0f;
-	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
 	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 
@@ -689,7 +688,7 @@ bool gameClass::frameGame(double dt)
 	//set camera to follow player
 	updateCamera();
 
-	//om enemy hör på sig
+	//om enemy rör på sig
 	updateCollision(dt);
 	
 	if (!player->getIfInObjHolder())
@@ -1093,19 +1092,18 @@ void gameClass::updateConstantMatrices()
 
 void gameClass::updateEnemy(double dt)
 {
-	enemy->updateFalling(dt);
-	enemy->getObj()->setWorldMatrix(enemyMatPos);
+	enemy->handleMovement(dt);
 	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
+	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	if (!enemy->getRoationCheck())
 	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		masterMovementEnemyMat = matMul * enemyMatPos;
+		enemyTranslationMatrix = matMul * enemyMatPos;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * matMul * enemyMatPos;
+		enemyTranslationMatrix = matMul * enemyMatPos;
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 	///////////////
@@ -1113,16 +1111,15 @@ void gameClass::updateEnemy(double dt)
 	///////////////
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
 	if (!enemy->getRoationCheck())
 	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		masterMovementEnemyMat = matMul * enemyMatPos;
+		enemyTranslationMatrix = matMul * enemyMatPos;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * matMul * enemyMatPos;
+		enemyTranslationMatrix = matMul * enemyMatPos;
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 }
@@ -1168,13 +1165,10 @@ void gameClass::updatePickup()
 	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
 }
 
-void gameClass::updateCollision(double dt)
+void gameClass::updateCollision(double dt, enemyClass enemy)
 {
-	XMMATRIX enemyTrans;
-	enemy->getTranslationMat(enemyTrans);
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
-
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
@@ -1260,7 +1254,6 @@ void gameClass::updateCollision(double dt)
 
 		OutputDebugString(L"\nwalking\n");
 		enemy->setMove(2.5f * dt);
-		enemy->setTranslation(enemy->getMove());
 	}
 	if (lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
 	{
@@ -1280,9 +1273,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setFacing(true);
 		}
 
-		
 		enemy->setMove(-2.5f * dt);
-		enemy->setTranslation(enemy->getMove());
 	}
 
 	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickup->getObj()->getBoundingBoxMin(), pickupStartPosMoveMat), XMVector3Transform(pickup->getObj()->getBoundingBoxMax(), pickupStartPosMoveMat)))

@@ -16,22 +16,21 @@ class enemyClass
 		void setTranslation(float x);
 
 		objectClass* getObj();
-		void getTranslationMat(XMMATRIX& other);
+
 		void getTranslationMatStart(XMMATRIX& other);
 		void setStartMat(float x);
 
 		float getMove();
-		void setMove(float x);
 		void resetMove();
 
 		XMVECTOR getTriggerCheck();
-		void updateFalling(double dt);
-		void getFallingMat(XMMATRIX& other);
 
 		void setTriggerVector(XMVECTOR x);
 		XMVECTOR getTriggerVector();
 
 		void resetEnemy();
+
+		void handleMovement(double dt);
 
 		bool getCheckIfObjHolder();
 		void setCheckIfObjHolder(bool other);
@@ -55,15 +54,22 @@ class enemyClass
 
 
 	private:
+
 		objectClass* obj;
 		bool isActive;
 		bool checkIfObjHolder;
 
 		float temptest;
 		float moveVal;
-		XMMATRIX translation;
+
+		float moveValX;
+		float moveValY;
+		float moveValZ;
+
 		XMMATRIX transStart;
 		XMMATRIX translationInY;
+
+		XMMATRIX moveMat;
 
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
@@ -79,6 +85,10 @@ class enemyClass
 		bool useRotation;
 
 		float oldMoveValY;
+		float oldMoveValX;
+
+		float upSpeed;
+		
 };
 
 
