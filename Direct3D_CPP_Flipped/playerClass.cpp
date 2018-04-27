@@ -15,7 +15,7 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
-	HP = 3;
+	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -50,6 +50,10 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+
+	polygoner = 0;
+	fargments = 0;
+	maxHP = HP;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -453,6 +457,16 @@ float playerClass::getMoveValY()
 	return this->moveValY;
 }
 
+void playerClass::setMaxHP(int other)
+{
+	this->maxHP = other;
+}
+
+int playerClass::getMaxHP()
+{
+	return this->maxHP;
+}
+
 void playerClass::setHasRing(bool check)
 {
 	this->hasRing = check;
@@ -473,6 +487,16 @@ int playerClass::getRingType()
 	return this->ringType;
 }
 
+int playerClass::getNrPixelFramgent()
+{
+	return this->fargments;
+}
+
+void playerClass::setNrPixelFragments(int other)
+{
+	this->fargments = other;
+}
+
 void playerClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMat;
@@ -491,7 +515,7 @@ void playerClass::resetPlayer()
 	moveMat = XMMatrixIdentity();
 	upSpeed = 0.0f;
 	isJumping = false;
-	HP = 3;
+	HP = maxHP;
 	isAttacking = false;
 
 	isInObjHolder = false;

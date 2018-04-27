@@ -67,9 +67,13 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
-	
+	int getNrPixelFramgent();
+	void setNrPixelFragments(int other);
 
 	float getMoveValY();
+
+	void setMaxHP(int other);
+	int getMaxHP();
 
 private:
 	bool isHurt;
@@ -119,6 +123,7 @@ private:
 	float timeBetweenFrames;
 
 	int HP;
+	int maxHP;
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
@@ -128,6 +133,9 @@ private:
 
 	bool isInObjHolder;
 
+	////PICKUP STATS!!!!!
+	int polygoner;
+	int fargments;
 
 };
 
