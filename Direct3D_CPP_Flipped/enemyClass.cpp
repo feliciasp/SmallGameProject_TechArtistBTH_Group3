@@ -4,11 +4,9 @@ enemyClass::enemyClass()
 {
 	temptest = 3;
 	obj = 0;
-	moveVal = 0;
 	moveValX = 0;
 	moveValY = 0;
 	moveValZ = 0;
-	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
 	isActive = true;
@@ -78,8 +76,6 @@ XMVECTOR enemyClass::getTriggerVector()
 
 void enemyClass::resetEnemy()
 {
-	moveVal = 0;
-	translation = XMMatrixIdentity();
 	isActive = true;
 	checkIfObjHolder = false;
 	HP = 3;
@@ -153,12 +149,12 @@ bool enemyClass::getFacing()
 	return this->isFacingRight;
 }
 
-void enemyClass::setRoationCheck(bool other)
+void enemyClass::setRotationCheck(bool other)
 {
 	this->useRotation = other;
 }
 
-bool enemyClass::getRoationCheck()
+bool enemyClass::getRotationCheck()
 {
 	return this->useRotation;
 }
@@ -204,30 +200,60 @@ void enemyClass::handleMovement(double dt)
 		dt = 0;
 
 	//idle = true;
-
 	//justJumped = false;
 	moveValY += upSpeed * dt;
 
 	//input->readKeyboard(dt);
-	if ()
+	if (lengthBetween1 <= XMVectorGetX(triggerCheck) && lengthBetween1 >= 1.5f)
 	{
-		moveValX += -10.0f * dt;
+		//går vänster
+
+		moveValX += -2.5f * dt;
 		/*idle = false;
 		running = true;*/
 
 		if (this->isFacingRight == true)
 			isFacingRight = false;
-	}
-	if ()
-	{
-		moveValX += 10.0f * dt;
 
+		if (isFacingRight && /*countEnemy*/ <= 0)
+		{
+			useRotation = true;
+			/*countEnemy = 100;*/
+		}
+		else if (isFacingRight && /*countEnemy*/ >= 0)
+		{
+			/*countEnemy -= 1;*/
+		}
+		else
+		{
+			useRotation = false;
+			isFacingRight = false;
+		}
+	}
+	if (lengthBetween2 <= XMVectorGetX(triggerCheck) && lengthBetween1 <= 1.5f)
+	{
+		//går höger
+
+		moveValX += 2.5f * dt;
 		/*idle = false;
 		running = true;*/
 		
-		if (this->isFacingRight == false)
+		if (!isFacingRight && /*countEnemy*/ <= 0)
+		{
+			useRotation = true;
+			/*countEnemy = 100;*/
+		}
+		else if (!isFacingRight && /*countEnemy*/ >= 0)
+		{
+			/*countEnemy -= 1;*/
+		}
+		else
+		{
+			useRotation = false;
 			isFacingRight = true;
+		}
 	}
+
 
 	/*if ()
 	{
@@ -282,22 +308,22 @@ void enemyClass::handleMovement(double dt)
 	moveMat = XMMatrixTranslation(moveValX, moveValY + 8, 0.0f);
 }
 
-void enemyClass::setTranslation(float x)
-{
-	oldMoveValX = moveValX;
-	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
-	moveValX = x;
-}
+//void enemyClass::setTranslation(float x)
+//{
+//	oldMoveValX = moveValX;
+//	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
+//	moveValX = x;
+//}
 
 objectClass* enemyClass::getObj()
 {
 	return this->obj;
 }
 
-void enemyClass::getTranslationMat(XMMATRIX & other)
-{
-	other = this->translation;
-}
+//void enemyClass::getTranslationMat(XMMATRIX & other)
+//{
+//	other = this->translation;
+//}
 
 void enemyClass::getTranslationMatStart(XMMATRIX & other)
 {
@@ -309,38 +335,29 @@ void enemyClass::setStartMat(float x)
 	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
 }
 
-float enemyClass::getMove()
-{
-	return moveVal;
-}
 
-void enemyClass::setMove(float x)
-{
-	moveVal -= x;
-}
+//void enemyClass::setMove(float x)
+//{
+//	moveVal -= x;
+//}
 
-void enemyClass::resetMove()
-{
-
-	moveVal = 0;
-}
 
 XMVECTOR enemyClass::getTriggerCheck()
 {
 	return this->triggerCheck;
 }
 
-void enemyClass::updateFalling(double dt)
-{
-	oldMoveValY = temptest;
-	temptest += -10.5 * dt;
-	
-	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
-}
-
-void enemyClass::getFallingMat(XMMATRIX & other)
-{
-	other = this->translationInY;
-}
+//void enemyClass::updateFalling(double dt)
+//{
+//	oldMoveValY = temptest;
+//	temptest += -10.5 * dt;
+//	
+//	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
+//}
+//
+//void enemyClass::getFallingMat(XMMATRIX & other)
+//{
+//	other = this->translationInY;
+//}
 
 

@@ -137,21 +137,6 @@ void playerClass::setStartMat(float x, float y)
 	this->transStart = XMMatrixTranslation(x, y, 0.0f);
 }
 
-float playerClass::getMove()
-{
-	return moveVal;
-}
-
-void playerClass::setMove(float x)
-{
-	moveVal -= x;
-}
-
-void playerClass::resetMove()
-{
-
-	moveVal = 0;
-}
 
 XMVECTOR playerClass::getTriggerCheck()
 {

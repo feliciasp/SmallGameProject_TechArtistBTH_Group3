@@ -13,14 +13,13 @@ class enemyClass
 
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
-		void setTranslation(float x);
 
 		objectClass* getObj();
 
 		void getTranslationMatStart(XMMATRIX& other);
 		void setStartMat(float x);
 
-		float getMove();
+		void getMoveMat(XMMATRIX other);
 		void resetMove();
 
 		XMVECTOR getTriggerCheck();
@@ -47,8 +46,8 @@ class enemyClass
 		void setFacing(bool other);
 		bool getFacing();
 
-		void setRoationCheck(bool other);
-		bool getRoationCheck();
+		void setRotationCheck(bool other);
+		bool getRotationCheck();
 
 		void checkCollisions(bool top, bool left, bool right, bool bot);
 
@@ -88,6 +87,11 @@ class enemyClass
 		float oldMoveValX;
 
 		float upSpeed;
+
+		float lengthBetween1;
+		float lengthBetween2;
+
+
 		
 };
 

@@ -86,7 +86,7 @@ class gameClass
 
 		XMMATRIX world, view, proj;
 		void updateConstantMatrices();
-		XMMATRIX enemyMatPos, matMul;
+		XMMATRIX enemyMatPos, enemyMoveMat;
 		XMMATRIX masterMovementEnemyMat;
 		XMMATRIX enemyTranslationMatrix;
 		void updateEnemy(double dt);

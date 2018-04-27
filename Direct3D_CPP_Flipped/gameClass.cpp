@@ -1093,33 +1093,36 @@ void gameClass::updateConstantMatrices()
 void gameClass::updateEnemy(double dt)
 {
 	enemy->handleMovement(dt);
-	enemy->getTranslationMat(matMul);
+	enemy->getMoveMat(enemyMoveMat);
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	if (!enemy->getRoationCheck())
+	if (!enemy->getRotationCheck())
 	{
-		masterMovementEnemyMat = matMul * enemyMatPos;
-		enemyTranslationMatrix = matMul * enemyMatPos;
+		masterMovementEnemyMat = enemyMoveMat * enemyMatPos;
+		enemyTranslationMatrix = enemyMoveMat * enemyMatPos;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * matMul * enemyMatPos;
-		enemyTranslationMatrix = matMul * enemyMatPos;
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyMoveMat * enemyMatPos;
+		enemyTranslationMatrix = enemyMoveMat * enemyMatPos;
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 	///////////////
-	enemy->checkCollisions(checkCollisionPlatformTop(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(enemy->getObj(), enemyTranslationMatrix));
+	enemy->checkCollisions (checkCollisionPlatformTop(enemy->getObj(), enemyTranslationMatrix), 
+							checkCollisionPlatformLeft(enemy->getObj(), enemyTranslationMatrix),
+							checkCollisionPlatformRight(enemy->getObj(), enemyTranslationMatrix),
+							checkCollisionPlatformBot(enemy->getObj(), enemyTranslationMatrix));
 	///////////////
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	enemy->getTranslationMat(matMul);
-	if (!enemy->getRoationCheck())
+	enemy->getMoveMat(enemyMove);
+	if (!enemy->getRotationCheck())
 	{
-		masterMovementEnemyMat = matMul * enemyMatPos;
-		enemyTranslationMatrix = matMul * enemyMatPos;
+		masterMovementEnemyMat = enemyMoveMat * enemyMatPos;
+		enemyTranslationMatrix = enemyMoveMat * enemyMatPos;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * matMul * enemyMatPos;
-		enemyTranslationMatrix = matMul * enemyMatPos;
+		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyMoveMat * enemyMatPos;
+		enemyTranslationMatrix = enemyMoveMat * enemyMatPos;
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 }
@@ -1130,10 +1133,12 @@ void gameClass::updatePlayer(double dt)
 	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
-	player->checkCollisions(checkCollisionPlatformTop(player->getObj(), playerMove), checkCollisionPlatformLeft(player->getObj(), playerMove), checkCollisionPlatformRight(player->getObj(), playerMove), checkCollisionPlatformBot(player->getObj(), playerMove));
+	player->checkCollisions(checkCollisionPlatformTop(player->getObj(), playerMove),
+							checkCollisionPlatformLeft(player->getObj(), playerMove),
+							checkCollisionPlatformRight(player->getObj(), playerMove),
+							checkCollisionPlatformBot(player->getObj(), playerMove));
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
-	
 }
 
 void gameClass::updateCamera()
@@ -1165,12 +1170,16 @@ void gameClass::updatePickup()
 	pickup->getObj()->setWorldMatrix(pickupStartPosMoveMat);
 }
 
-void gameClass::updateCollision(double dt, enemyClass enemy)
+void gameClass::updateCollision(double dt)
 {
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
 
-	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
+	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && 
+		player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove),
+																 XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove),
+																 XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), 
+																 XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		if(enemy->hurtState())
 		{
@@ -1204,7 +1213,6 @@ void gameClass::updateCollision(double dt, enemyClass enemy)
 	
 	enemy->timeCountdown();
 
-	
 	if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		enemy->resetMove();
@@ -1238,7 +1246,7 @@ void gameClass::updateCollision(double dt, enemyClass enemy)
 		//går åt vänster
 		if (enemy->getFacing() && countEnemy <= 0)
 		{
-			enemy->setRoationCheck(true);
+			enemy->setRotationCheck(true);
 			countEnemy = 100;
 
 		}
@@ -1248,7 +1256,7 @@ void gameClass::updateCollision(double dt, enemyClass enemy)
 		}
 		else
 		{
-			enemy->setRoationCheck(false);
+			enemy->setRotationCheck(false);
 			enemy->setFacing(false);
 		}
 
@@ -1260,7 +1268,7 @@ void gameClass::updateCollision(double dt, enemyClass enemy)
 		//år höger
 		if (!enemy->getFacing() && countEnemy <= 0)
 		{
-			enemy->setRoationCheck(true);
+			enemy->setRotationCheck(true);
 			countEnemy = 100;
 		}
 		else if (!enemy->getFacing() && countEnemy >= 0)
@@ -1269,7 +1277,7 @@ void gameClass::updateCollision(double dt, enemyClass enemy)
 		}
 		else
 		{
-			enemy->setRoationCheck(false);
+			enemy->setRotationCheck(false);
 			enemy->setFacing(true);
 		}
 

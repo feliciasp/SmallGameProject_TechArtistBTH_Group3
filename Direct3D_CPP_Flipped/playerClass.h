@@ -15,15 +15,11 @@ public:
 
 	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
-	void setTranslation(float x);
 	
 	objectClass* getObj();
 	void getTranslationMatStart(XMMATRIX& other);
 	void setStartMat(float x, float y);
 
-	float getMove();
-	void setMove(float x);
-	void resetMove();
 
 	XMVECTOR getTriggerCheck();
 
