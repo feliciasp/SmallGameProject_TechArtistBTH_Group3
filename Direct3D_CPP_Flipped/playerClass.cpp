@@ -60,7 +60,7 @@ playerClass::~playerClass()
 {
 }
 
-bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
+bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
 {
 	bool result;
 

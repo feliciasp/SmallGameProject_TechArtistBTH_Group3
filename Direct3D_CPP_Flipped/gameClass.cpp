@@ -145,7 +145,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = player->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin", hInstance, hwnd);
+	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane.bin", hInstance, hwnd);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",
