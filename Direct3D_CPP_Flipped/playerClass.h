@@ -13,7 +13,7 @@ public:
 	playerClass(const playerClass& other);
 	~playerClass();
 
-	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
+	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
 	void setTranslation(float x);
 
@@ -38,6 +38,8 @@ public:
 	int getPlayerHP();
 
 	void setPlayerHurt(bool x);
+	void setPlayerHurtFromLeft(bool x);
+	void setPlayerHurtFromRight(bool x);
 	bool getPlayerHurt();
 
 	void updateAnimation(double dt);
@@ -59,7 +61,7 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
-	
+	bool getInvulnurable();
 
 	void setHasRing(bool check);
 	bool getHasRing();
@@ -71,8 +73,16 @@ public:
 
 	float getMoveValY();
 
+	bool getShowShadow();
+	bool getIsJumping();
+
 private:
 	bool isHurt;
+	bool hurtFromLeft;
+	bool hurtFromRight;
+	bool fallBack;
+	float hurtFallback;
+	float hurtFallbackValue;
 	int fakeTimer;
 
 	objectClass* obj;
@@ -91,6 +101,20 @@ private:
 	bool falling;
 	bool attacking;
 	bool isHit;
+
+
+	bool inAir;
+
+	bool dodge;
+	bool isDodging;
+	float dodgeFallback;
+	float dodgeFallbackValue;
+	bool dodgeReleased;
+	bool invulnurable;
+
+	bool dodgeCooldownActive;
+	float dodgeCooldown;
+
 
 	bool isJumping;
 	bool justJumped;
@@ -116,18 +140,19 @@ private:
 
 
 	int nrOfLoops;
-	int animationSpeed;
+	float timeBetweenFrames;
 
 	int HP;
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
+	bool attackReleased;
 
 	bool hasRing;
 	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
-
+	bool showShadow;
 
 };
 
