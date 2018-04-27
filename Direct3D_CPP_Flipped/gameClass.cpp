@@ -12,7 +12,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
-	//limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
 
 	countEnemy = 0;
@@ -26,7 +25,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
-	
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -167,6 +165,25 @@ bool gameClass::initialize(int ShowWnd)
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
 
+	//Player Shadow Plane
+	playerShadowPlane = new backgroundClass;
+	if (!playerShadowPlane)
+	{
+		MessageBox(NULL, L"Error create shadowplane obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = playerShadowPlane->initlialize(graphics->getD3D()->GetDevice(), "Shadow.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init shadowplane obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	playerShadowPlane->getObj()->setMaterialName("Shadow.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), playerShadowPlane->getObj()->getMaterialName());
+
+	//addObjectToObjHolder(playerShadowPlane->getObj());
 
 	//enemy
 	enemy = new enemyClass;
@@ -545,6 +562,13 @@ void gameClass::shutdown()
 		limboWalkingPlane = 0;
 	}
 
+	if (playerShadowPlane)
+	{
+		playerShadowPlane->shutdown();
+		delete playerShadowPlane;
+		playerShadowPlane = 0;
+	}
+
 	shutdownWindow();
 
 	/////////////////MENY
@@ -812,6 +836,9 @@ bool gameClass::frameGame(double dt)
 
 	//player stuff
 	updatePlayer(platform, dt);
+
+	//update player shadow
+	updatePlayerShadow();
 
 	//set camera to follow player
 	updateCamera();
@@ -1268,6 +1295,95 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	
+}
+
+void gameClass::updatePlayerShadow()
+{
+	//OutputDebugString(L"\nSHADOW!!!\n");
+	//bool onGround = checkCollisionPlatformBot(platform, player->getObj(), playerMove);
+
+	/*if (player->getShowShadow() == true) {
+		OutputDebugString(L"\nSHADOW ON\n");
+	} else if (player->getShowShadow() == false) {
+		OutputDebugString(L"\nSHADOW OFF\n");
+	}*/
+
+
+	//Om vi inte hopppar/faller
+	if (player->getShowShadow() == true)
+	{
+		OutputDebugString(L"\nSHADOW ON\n");
+		//Om skuggan inte redan finns
+		if (playerShadowPlane->getIsInObjHolder() == false) {
+			//Skapa skuggan
+			
+			addObjectToObjHolder(playerShadowPlane->getObj());
+			playerShadowPlane->setIsInObjHolder(true);
+
+			//Rendera sedan spelaren
+			player->setIfInObjHolder(false);
+			removeObjFromObjHolder(player->getObj());
+		}
+		//Uppdatera skuggans position
+		playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+		XMMATRIX offset = XMMatrixTranslation(0.0f, -1.315f, 0.0f);
+		playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
+	}
+	//Om skuggan inte ska synas
+	else
+	{
+		//Ta bort skuggan
+		OutputDebugString(L"\nSHADOW OFF\n");
+		//playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+		//XMMATRIX offset = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+		//playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
+		playerShadowPlane->setIsInObjHolder(false);
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}
+
+	/*OutputDebugString(L"\nSHADOW!!!\n");
+	if (playerShadowPlane->getIsInObjHolder() == false)
+	{
+	addObjectToObjHolder(playerShadowPlane->getObj());
+	playerShadowPlane->setIsInObjHolder(true);
+
+	player->setIfInObjHolder(false);
+	removeObjFromObjHolder(player->getObj());
+	}
+	shadowMat = playerMove;
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
+
+
+	/*if (playerShadowPlane->getIsInObjHolder() == false) {
+	addObjectToObjHolder(playerShadowPlane->getObj());
+	OutputDebugString(L"\nShadow colission!\n");
+	playerShadowPlane->setIsInObjHolder(true);
+	player->setIfInObjHolder(false);
+	removeObjFromObjHolder(player->getObj());
+	}
+	shadowMat = playerMove;
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
+
+
+	/*else
+	{
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}*/
+
+	/*
+	if ((checkCollisionPlatformBot(platform, player->getObj(), playerMove) == true) && (playerShadowPlane == false))
+	{
+		addObjectToObjHolder(playerShadowPlane->getObj());
+
+	}
+	else
+	{
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}
+	*/
 }
 
 void gameClass::updateCamera()

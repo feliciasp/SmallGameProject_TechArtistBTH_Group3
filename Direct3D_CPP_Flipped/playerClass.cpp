@@ -25,6 +25,7 @@ playerClass::playerClass()
 	isJumping = false;
 	justJumped = false;
 	flipped = false;
+	inAir = false;
 
 	isPlayerHurt = false;
 	frameCount = 2;
@@ -50,6 +51,7 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+	showShadow = true;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -201,7 +203,6 @@ XMVECTOR playerClass::getTriggerCheck()
 
 void playerClass::handleMovement(double dt)
 {
-
 	oldMoveValX = moveValX;
 	oldMoveValY = moveValY;
 
@@ -218,6 +219,7 @@ void playerClass::handleMovement(double dt)
 	currentAnimation = 1;
 	frameCount = 2;
 	timeBetweenFrames = 0.25f;
+	showShadow = true;
 
 	input->readKeyboard(dt);
 	if (this->input->isAPressed())
@@ -269,6 +271,7 @@ void playerClass::handleMovement(double dt)
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
 			spaceReleased = false;
+			inAir = true;
 			if (attacking == false)
 			{
 				currentFrame = 1;
@@ -308,6 +311,18 @@ void playerClass::handleMovement(double dt)
 		running = false;
 		idle = false;
 		jumping = true;
+		showShadow = false;
+		currentAnimation = 3;
+		frameCount = 2;
+		timeBetweenFrames = 0.1f;
+	}
+
+	if (inAir)
+	{
+		running = false;
+		idle = false;
+		jumping = true;
+		showShadow = false;
 		currentAnimation = 3;
 		frameCount = 2;
 		timeBetweenFrames = 0.1f;
@@ -318,6 +333,8 @@ void playerClass::handleMovement(double dt)
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
+
+	
 	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
 	{
 		if (falling == false && attacking == false)
@@ -332,6 +349,8 @@ void playerClass::handleMovement(double dt)
 		idle = false;
 		running = false;
 		falling = true;
+		showShadow = false;
+		inAir = false;
 	}
 
 	if (this->input->isOPressed())
@@ -387,11 +406,11 @@ void playerClass::handleMovement(double dt)
 		timeBetweenFrames = 0.1f;
 	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
-
 }
 
 void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 {
+
 	if (top)
 	{
 		moveValY = oldMoveValY;
@@ -451,6 +470,16 @@ void playerClass::setIfInObjHolder(bool other)
 float playerClass::getMoveValY()
 {
 	return this->moveValY;
+}
+
+bool playerClass::getShowShadow()
+{
+	return this->showShadow;
+}
+
+bool playerClass::getIsJumping()
+{
+	return this->isJumping;
 }
 
 void playerClass::setHasRing(bool check)

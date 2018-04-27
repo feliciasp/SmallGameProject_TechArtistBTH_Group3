@@ -71,6 +71,9 @@ public:
 
 	float getMoveValY();
 
+	bool getShowShadow();
+	bool getIsJumping();
+
 private:
 	bool isHurt;
 	int fakeTimer;
@@ -91,6 +94,8 @@ private:
 	bool falling;
 	bool attacking;
 	bool isHit;
+
+	bool inAir;
 
 	bool isJumping;
 	bool justJumped;
@@ -127,7 +132,7 @@ private:
 	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
-
+	bool showShadow;
 
 };
 

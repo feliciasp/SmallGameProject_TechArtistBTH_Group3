@@ -19,7 +19,6 @@ public:
 
 private:
 	objectClass * obj;
-
 };
 
 
