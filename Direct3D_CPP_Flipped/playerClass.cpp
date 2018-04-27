@@ -25,6 +25,7 @@ playerClass::playerClass()
 	isJumping = false;
 	justJumped = false;
 	flipped = false;
+	inAir = false;
 
 	isPlayerHurt = false;
 	frameCount = 2;
@@ -66,6 +67,7 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+	showShadow = true;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -76,7 +78,7 @@ playerClass::~playerClass()
 {
 }
 
-bool playerClass::initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
+bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
 {
 	bool result;
 
@@ -217,7 +219,6 @@ XMVECTOR playerClass::getTriggerCheck()
 
 void playerClass::handleMovement(double dt)
 {
-
 	oldMoveValX = moveValX;
 	oldMoveValY = moveValY;
 
@@ -234,6 +235,7 @@ void playerClass::handleMovement(double dt)
 	currentAnimation = 1;
 	frameCount = 2;
 	timeBetweenFrames = 0.25f;
+	showShadow = true;
 
 	input->readKeyboard(dt);
 
@@ -398,6 +400,7 @@ void playerClass::handleMovement(double dt)
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
 			spaceReleased = false;
+			inAir = true;
 			if (attacking == false)
 			{
 				currentFrame = 1;
@@ -437,6 +440,18 @@ void playerClass::handleMovement(double dt)
 		running = false;
 		idle = false;
 		jumping = true;
+		showShadow = false;
+		currentAnimation = 3;
+		frameCount = 2;
+		timeBetweenFrames = 0.1f;
+	}
+
+	if (inAir)
+	{
+		running = false;
+		idle = false;
+		jumping = true;
+		showShadow = false;
 		currentAnimation = 3;
 		frameCount = 2;
 		timeBetweenFrames = 0.1f;
@@ -447,7 +462,9 @@ void playerClass::handleMovement(double dt)
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
+
 	else if (upSpeed < -1.0f && !fallBack && !isDodging) //upSpeed less than -1.0f;
+
 	{
 		if (falling == false && attacking == false)
 		{
@@ -461,6 +478,8 @@ void playerClass::handleMovement(double dt)
 		idle = false;
 		running = false;
 		falling = true;
+		showShadow = false;
+		inAir = false;
 	}
 
 	if (this->input->isOPressed() && !fallBack && !isDodging && attackReleased)
@@ -531,11 +550,11 @@ void playerClass::handleMovement(double dt)
 		
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
-
 }
 
 void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 {
+
 	if (top)
 	{
 		moveValY = oldMoveValY;
@@ -600,6 +619,16 @@ bool playerClass::getInvulnurable()
 float playerClass::getMoveValY()
 {
 	return this->moveValY;
+}
+
+bool playerClass::getShowShadow()
+{
+	return this->showShadow;
+}
+
+bool playerClass::getIsJumping()
+{
+	return this->isJumping;
 }
 
 void playerClass::setHasRing(bool check)

@@ -13,7 +13,7 @@ public:
 	playerClass(const playerClass& other);
 	~playerClass();
 
-	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
+	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
 	void setTranslation(float x);
 
@@ -73,6 +73,9 @@ public:
 
 	float getMoveValY();
 
+	bool getShowShadow();
+	bool getIsJumping();
+
 private:
 	bool isHurt;
 	bool hurtFromLeft;
@@ -99,6 +102,9 @@ private:
 	bool attacking;
 	bool isHit;
 
+
+	bool inAir;
+
 	bool dodge;
 	bool isDodging;
 	float dodgeFallback;
@@ -108,6 +114,7 @@ private:
 
 	bool dodgeCooldownActive;
 	float dodgeCooldown;
+
 
 	bool isJumping;
 	bool justJumped;
@@ -145,7 +152,7 @@ private:
 	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
-
+	bool showShadow;
 
 };
 

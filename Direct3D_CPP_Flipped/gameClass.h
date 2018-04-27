@@ -92,6 +92,7 @@ class gameClass
 		void updateEnemy(double dt);
 		XMMATRIX playerMove;
 		void updatePlayer(platformClass* platform, double dt);
+		void updatePlayerShadow();
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
@@ -153,6 +154,9 @@ class gameClass
 		//////////////////////WIN STATE
 		GUItestClass* win;
 		XMMATRIX winMat;
+
+		backgroundClass* playerShadowPlane;
+		XMMATRIX shadowMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
