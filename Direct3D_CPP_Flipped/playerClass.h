@@ -69,6 +69,8 @@ public:
 
 	
 
+	float getMoveValY();
+
 private:
 	bool isHurt;
 	int fakeTimer;
@@ -114,7 +116,7 @@ private:
 
 
 	int nrOfLoops;
-	int animationSpeed;
+	float timeBetweenFrames;
 
 	int HP;
 	bool isPlayerHurt;

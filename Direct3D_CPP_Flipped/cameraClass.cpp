@@ -50,3 +50,10 @@ void cameraClass::getViewMat(XMMATRIX & viewMat)
 {
 	viewMat = this->view;
 }
+
+void cameraClass::reset()
+{
+	this->camPos = { 0.0f, 0.0f, -20.0f, 0.0f };
+	this->camTarget = { 0.0f, 5.0f, 0.0f, 0.0f };
+
+}

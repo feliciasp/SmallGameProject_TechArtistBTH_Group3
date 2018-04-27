@@ -84,14 +84,14 @@ class gameClass
 		XMMATRIX moveMatTest;
 		float moveTest;
 
-		XMMATRIX world, view, proj;
+		XMMATRIX world, view, proj, ortoProj;
 		void updateConstantMatrices();
 		XMMATRIX enemyMatPos, matMul, enemyFallingMat;
 		XMMATRIX masterMovementEnemyMat;
 		XMMATRIX enemyTranslationMatrix;
 		void updateEnemy(double dt);
 		XMMATRIX playerMove;
-		void updatePlayer(double dt);
+		void updatePlayer(platformClass* platform, double dt);
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
@@ -111,10 +111,10 @@ class gameClass
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
-		bool checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformLeft(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 
 	
@@ -144,9 +144,11 @@ class gameClass
 		bool done;
 
 		/////////LIMBO STUFF
-		GUItestClass* limboFrontPlane;
-		GUItestClass* limboBackPlane;
+		backgroundClass* limboFrontPlane;
+		backgroundClass* limboBackPlane;
+		platformClass* limboWalkingPlane;
 		XMMATRIX limboMat;
+		void updateLimboBackground();
 
 		//////////////////////WIN STATE
 		GUItestClass* win;

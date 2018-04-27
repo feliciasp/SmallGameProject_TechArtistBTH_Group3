@@ -12,7 +12,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
-	limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	//limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
+	limboMat = XMMatrixIdentity();
 
 	countEnemy = 0;
 
@@ -314,8 +315,10 @@ bool gameClass::initialize(int ShowWnd)
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
 
+	//////////////////////////
+	//		MENY			//
+	//////////////////////////
 
-	//MENY
 	meny = new GUItestClass;
 	if (!meny)
 	{
@@ -335,49 +338,75 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
 	addObjectToObjHolderMeny(meny->getObj());
 
+	//////////////////////////
+	//////	 LIMBO		//////
+	//////////////////////////
+
 	//LIMBO BACK PLANE
-	limboBackPlane = new GUItestClass;
+	limboBackPlane = new backgroundClass;
 	if (!limboBackPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboBackPlane.bin", hInstance, hwnd);
+	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "limboBack.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboBackPlane->getObj()->setWorldMatrix(limboMat);
 	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
 
 	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
+	//collisionPlane
+	limboWalkingPlane = new platformClass;
+	if (!limboWalkingPlane)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboWalkingPlane->initlialize(graphics->getD3D()->GetDevice(), "limboWalking.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboWalkingPlane->getObj()->setMaterialName("LimboBack.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limboWalkingPlane->getObj());
+	addObjectToObjHolderLimbo(player->getObj());
+
 	//LIMBO FRONT PLANE
-	limboFrontPlane = new GUItestClass;
+	limboFrontPlane = new backgroundClass;
 	if (!limboFrontPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin", hInstance, hwnd);
+	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "limboFront.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+	//addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
-	//WIN
+
+	////////////////////////
+	//WIN				////
+	////////////////////////
 	win = new GUItestClass;
 	if (!win)
 	{
@@ -506,6 +535,14 @@ void gameClass::shutdown()
 		win->shutdown();
 		delete win;
 		win = 0;
+	}
+
+
+	if (limboWalkingPlane)
+	{
+		limboWalkingPlane->shutdown();
+		delete limboWalkingPlane;
+		limboWalkingPlane = 0;
 	}
 
 	shutdownWindow();
@@ -658,8 +695,44 @@ bool gameClass::frameLimbo(double dt)
 
 	//constant MATRICES
 	updateConstantMatrices();
+	//graphics->getD3D()->getOrtoProjMat(ortoProj);
+
+	updateLimboBackground();
+
+	updatePlayer(limboWalkingPlane, dt);
 
 	graphics->beginScene();
+	for (int i = 0; i < objHolderLimbo.size(); i++)
+	{
+		if (objHolderLimbo[i]->getType() == 2)
+		{
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			if (!result)
+
+			{
+				return false;
+			}
+		}
+
+		else if (objHolderLimbo[i]->getType() == 4)
+		{
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), pickup->getFrameCount(), pickup->getCurrentFrame());
+			if (!result)
+			{
+				return false;
+			}
+		}
+
+		else
+		{
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition());
+			if (!result)
+
+			{
+				return false;
+			}
+		}
+	}/*
 	for (int i = 0; i < objHolderLimbo.size(); i++)
 	{
 		result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition());
@@ -667,14 +740,15 @@ bool gameClass::frameLimbo(double dt)
 		{
 			return false;
 		}
-	}
+	}*/
 	graphics->endScene();
 
-	if (inputDirectOther->isEnterPressed() == true)
+	if (player->getMoveValY() < -30.0f)
 	{
 		gameStateLevel = true;
 		gameStateLimbo = false;
 		gameStateMeny = false;
+		player->resetPlayer();
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -682,6 +756,7 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLevel = false;
 		gameStateLimbo = false;
 		gameStateMeny = true;
+		player->resetPlayer();
 		return false;
 	}
 
@@ -736,7 +811,7 @@ bool gameClass::frameGame(double dt)
 	}
 
 	//player stuff
-	updatePlayer(dt);
+	updatePlayer(platform, dt);
 
 	//set camera to follow player
 	updateCamera();
@@ -841,6 +916,7 @@ bool gameClass::frameGame(double dt)
 	if (player->getPlayerHP() == 0)
 	{
 		player->resetPlayer();
+		camera->reset();
 		pickup->resetPickup();
 		enemy->resetEnemy();
 		GUIheart1->resetGUI();
@@ -1164,7 +1240,7 @@ void gameClass::updateEnemy(double dt)
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 	///////////////
-	enemy->checkCollisions(checkCollisionPlatformTop(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(enemy->getObj(), enemyTranslationMatrix));
+	enemy->checkCollisions(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
 	///////////////
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
@@ -1182,13 +1258,13 @@ void gameClass::updateEnemy(double dt)
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 }
 
-void gameClass::updatePlayer(double dt)
+void gameClass::updatePlayer(platformClass* platform, double dt)
 {
 	player->handleMovement(dt);
 	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
-	player->checkCollisions(checkCollisionPlatformTop(player->getObj(), playerMove), checkCollisionPlatformLeft(player->getObj(), playerMove), checkCollisionPlatformRight(player->getObj(), playerMove), checkCollisionPlatformBot(player->getObj(), playerMove));
+	player->checkCollisions(checkCollisionPlatformTop(platform, player->getObj(), playerMove), checkCollisionPlatformLeft(platform, player->getObj(), playerMove), checkCollisionPlatformRight(platform, player->getObj(), playerMove), checkCollisionPlatformBot(platform, player->getObj(), playerMove));
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	
@@ -1204,6 +1280,14 @@ void gameClass::staticBackground()
 {
 	backgroundMat = XMMatrixIdentity();
 	background->getObj()->setWorldMatrix(backgroundMat);
+}
+
+void gameClass::updateLimboBackground()
+{
+	limboMat = XMMatrixIdentity();
+	limboBackPlane->getObj()->setWorldMatrix(limboMat);
+	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
+	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
 }
 
 bool gameClass::updateGUI(double dt, GUItestClass* obj)
@@ -1447,11 +1531,13 @@ void gameClass::updateCollision(double dt)
 	}
 }
 
-bool gameClass::checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld)
+bool gameClass::checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
 {
+
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
 	{
+
 		if (obj->getCollisionClass()->checkCollisionTop(XMVector3Transform(obj->getBoundingBoxMin(), objWorld), XMVector3Transform(obj->getBoundingBoxMax(), objWorld), XMVector3Transform(platform->getObj()->getBoundingBoxMin(i), world), XMVector3Transform(platform->getObj()->getBoundingBoxMax(i), world)))
 		{
 			//OutputDebugString(L"\nCOLLISION PLATFORM TOP TRUE\n");
@@ -1463,7 +1549,7 @@ bool gameClass::checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld)
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld)
+bool gameClass::checkCollisionPlatformLeft(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
@@ -1479,7 +1565,7 @@ bool gameClass::checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld)
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld)
+bool gameClass::checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
@@ -1495,7 +1581,7 @@ bool gameClass::checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld)
 	else
 		return true;
 }
-bool gameClass::checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld)
+bool gameClass::checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
 {
 	bool check = false;
 	for (int i = 0; i < platform->getMeshCount(); i++)
