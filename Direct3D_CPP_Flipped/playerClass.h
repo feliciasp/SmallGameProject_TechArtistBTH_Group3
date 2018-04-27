@@ -38,6 +38,8 @@ public:
 	int getPlayerHP();
 
 	void setPlayerHurt(bool x);
+	void setPlayerHurtFromLeft(bool x);
+	void setPlayerHurtFromRight(bool x);
 	bool getPlayerHurt();
 
 	void updateAnimation(double dt);
@@ -59,7 +61,7 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
-	
+	bool getInvulnurable();
 
 	void setHasRing(bool check);
 	bool getHasRing();
@@ -76,6 +78,11 @@ public:
 
 private:
 	bool isHurt;
+	bool hurtFromLeft;
+	bool hurtFromRight;
+	bool fallBack;
+	float hurtFallback;
+	float hurtFallbackValue;
 	int fakeTimer;
 
 	objectClass* obj;
@@ -95,7 +102,18 @@ private:
 	bool attacking;
 	bool isHit;
 
+
 	bool inAir;
+
+	bool dodge;
+	bool isDodging;
+	float dodgeFallback;
+	float dodgeFallbackValue;
+	bool invulnurable;
+
+	bool dodgeCooldownActive;
+	float dodgeCooldown;
+
 
 	bool isJumping;
 	bool justJumped;

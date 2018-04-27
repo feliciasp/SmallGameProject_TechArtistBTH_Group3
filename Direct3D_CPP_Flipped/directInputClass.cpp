@@ -160,6 +160,15 @@ bool directInput::isOPressed()
 	return false;
 }
 
+bool directInput::isPPressed()
+{
+	if (keyboardState[DIK_P] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 
 //player->handleMovement(player - ZgetObj()->getInput());
