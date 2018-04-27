@@ -134,7 +134,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	camera->setPosition(0.0f, 0.0f, -15.0f, 0.0f);
+	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
 
 
 	///OBJ
@@ -1390,11 +1390,13 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+					player->setPlayerHurt(true);
+					player->setPlayerHurtFromLeft(true);
 					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 					{
 						GUIheart1->setIsDestroy(true);
@@ -1459,11 +1461,13 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween2 <= XMVectorGetX(enemy->getRangeVector()) - 3)
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+					player->setPlayerHurt(true);
+					player->setPlayerHurtFromRight(true);
 					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 					{
 						GUIheart1->setIsDestroy(true);
