@@ -48,6 +48,7 @@ playerClass::playerClass()
 	jumping = false;
 	falling = false;
 	attacking = false;
+	attackReleased = true;
 	isHit = false;
 	timeBetweenFrames = 0.25f;
 	nrOfLoops = 0;
@@ -56,6 +57,7 @@ playerClass::playerClass()
 	isDodging = false;
 	dodgeFallback = 6.2f;
 	dodgeFallbackValue = 0.0f;
+	dodgeReleased = true;
 	invulnurable = false;
 
 	dodgeCooldownActive = false;
@@ -233,6 +235,8 @@ void playerClass::handleMovement(double dt)
 	frameCount = 2;
 	timeBetweenFrames = 0.25f;
 
+	input->readKeyboard(dt);
+
 	if (dodgeCooldownActive)
 	{
 		dodgeFallbackValue += 1 * dt;
@@ -243,10 +247,18 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 
-	if (this->input->isPPressed() && !dodgeCooldownActive)
+	if (!this->input->isPPressed() && !dodgeCooldownActive)
+	{
+		dodgeReleased = true;
+	}
+
+	if (this->input->isPPressed() && !dodgeCooldownActive && dodgeReleased)
 	{
 		dodge = true;
+		dodgeReleased = false;
 	}
+
+	
 	
 	if (isHurt && dodge)
 	{
@@ -337,13 +349,6 @@ void playerClass::handleMovement(double dt)
 			}
 		}
 	}
-
-	if (dodge && !fallBack)
-	{
-
-	}
-
-	input->readKeyboard(dt);
 	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
 		moveValX += -10.0f * dt;
@@ -458,7 +463,7 @@ void playerClass::handleMovement(double dt)
 		falling = true;
 	}
 
-	if (this->input->isOPressed() && !fallBack && !isDodging)
+	if (this->input->isOPressed() && !fallBack && !isDodging && attackReleased)
 	{
 		if (attacking == false)
 		{
@@ -466,6 +471,13 @@ void playerClass::handleMovement(double dt)
 			currentTime = 0;
 			currentFrame = 1;
 		}
+
+		attackReleased = false;
+	}
+
+	if (!this->input->isOPressed())
+	{
+		attackReleased = true;
 	}
 
 	if (attacking == true && !fallBack)
@@ -473,7 +485,7 @@ void playerClass::handleMovement(double dt)
 		currentAnimation = 6;
 		frameCount = 4;
 
-		timeBetweenFrames = 0.1f;
+		timeBetweenFrames = 0.06f;
 
 		idle = false;
 	}
@@ -510,6 +522,14 @@ void playerClass::handleMovement(double dt)
 		currentFrame = 1;
 		timeBetweenFrames = 0.1f;
 	}
+
+	if (isDodging)
+	{
+		moveValY = oldMoveValY;
+		upSpeed = 0.0f;
+	}
+		
+
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }

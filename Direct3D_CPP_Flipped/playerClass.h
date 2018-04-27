@@ -103,6 +103,7 @@ private:
 	bool isDodging;
 	float dodgeFallback;
 	float dodgeFallbackValue;
+	bool dodgeReleased;
 	bool invulnurable;
 
 	bool dodgeCooldownActive;
@@ -138,6 +139,7 @@ private:
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
+	bool attackReleased;
 
 	bool hasRing;
 	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
