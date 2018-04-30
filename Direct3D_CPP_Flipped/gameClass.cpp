@@ -1595,7 +1595,7 @@ void gameClass::updateCollision(double dt)
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
-		if(enemy->hurtState())
+		if (enemy->hurtState())
 		{
 			enemy->resetMove();
 			enemy->getTranslationMatStart(masterMovementEnemyMat);
@@ -1604,7 +1604,7 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
-			
+
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			pickup->setIsDestroy(false);
@@ -1633,9 +1633,9 @@ void gameClass::updateCollision(double dt)
 			player->setIfInObjHolder(false);
 		}
 	}
-	
+
 	enemy->timeCountdown();
-	
+
 	/*if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		enemy->resetMove();
@@ -1673,17 +1673,19 @@ void gameClass::updateCollision(double dt)
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+					player->setPlayerHurt(true);
+					player->setPlayerHurtFromLeft(true);
 
 					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
-          {
-					  player->setPlayerHurt(true);
-					  player->setPlayerHurtFromLeft(true);
-          }
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+
 					{
+
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
 						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)
@@ -1736,29 +1738,18 @@ void gameClass::updateCollision(double dt)
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
-        }
-					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
-          {
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromRight(true);
-          }
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+
 					{
-						GUIheart1->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart1->getObj());
-						GUIheart1->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
-					{
-						GUIheart2->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart2->getObj());
-						GUIheart2->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
-					{
+
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
 						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)

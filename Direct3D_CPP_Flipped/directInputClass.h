@@ -32,7 +32,7 @@ class directInput
 
 		bool isArrowRightPressed();
 		bool isArrowLeftPressed();
-=======
+
 		bool isPPressed();
 
 		bool readKeyboard(double dt);
