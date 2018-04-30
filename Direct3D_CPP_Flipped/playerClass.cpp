@@ -386,6 +386,8 @@ void playerClass::handleMovement(double dt)
 		currentFrame = 1;
 		timeBetweenFrames = 0.1f;
 	}
+
+	
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
 }

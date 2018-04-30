@@ -1266,7 +1266,7 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 	player->getObj()->setWorldMatrix(playerMove);
 	player->checkCollisions(checkCollisionPlatformTop(platform, player->getObj(), playerMove), checkCollisionPlatformLeft(platform, player->getObj(), playerMove), checkCollisionPlatformRight(platform, player->getObj(), playerMove), checkCollisionPlatformBot(platform, player->getObj(), playerMove));
 	player->getMoveMat(playerMove);
-	player->getObj()->setWorldMatrix(playerMove);
+	player->getObj()->setWorldMatrix(XMMatrixScaling(4.0f, 4.0f, 0.0f) * playerMove);
 	
 }
 
