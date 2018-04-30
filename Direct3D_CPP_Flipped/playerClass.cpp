@@ -50,6 +50,8 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+
+	fireballCast = false;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -344,6 +346,11 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 
+	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
+	{
+		fireballCast = true;
+	}
+
 	if (attacking == true)
 	{
 		currentAnimation = 6;
@@ -447,7 +454,6 @@ void playerClass::setIfInObjHolder(bool other)
 	this->isInObjHolder = other;
 }
 
-
 float playerClass::getMoveValY()
 {
 	return this->moveValY;
@@ -471,6 +477,16 @@ void playerClass::setRingType(int other)
 int playerClass::getRingType()
 {
 	return this->ringType;
+}
+
+void playerClass::setFireballCast(bool check)
+{
+	this->fireballCast = check;
+}
+
+bool playerClass::getFireballCast()
+{
+	return this->fireballCast;
 }
 
 void playerClass::getMoveMat(XMMATRIX& mat)
@@ -497,6 +513,8 @@ void playerClass::resetPlayer()
 	isInObjHolder = false;
 
 	hasRing = false;
+
+	fireballCast = false;
 
 }
 

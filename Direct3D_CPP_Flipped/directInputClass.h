@@ -29,6 +29,7 @@ class directInput
 		bool isTPressed();
 		bool isEnterPressed();
 		bool isOPressed();
+		bool isPPressed();
 
 		bool readKeyboard(double dt);
 
