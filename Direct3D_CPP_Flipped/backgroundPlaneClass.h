@@ -15,9 +15,12 @@ public:
 	void shutdown();
 
 	objectClass* getObj();
+	bool getIsInObjHolder();
+	void setIsInObjHolder(bool x);
 
 private:
 	objectClass* obj;
+	bool isInObjHolder;
 
 };
 
