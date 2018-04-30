@@ -14,7 +14,7 @@ public:
 	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
 
-	bool getIsDestry();
+	bool getIsDestroy();
 	void setIsDestroy(bool check);
 
 	bool updateDestroyState(double dt);

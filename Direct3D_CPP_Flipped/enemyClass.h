@@ -3,6 +3,7 @@
 #define ENEMYCLASS_H
 
 #include "objectClass.h"
+#include "playerClass.h"
 
 class enemyClass 
 {
@@ -17,7 +18,7 @@ class enemyClass
 		objectClass* getObj();
 
 		void getTranslationMatStart(XMMATRIX& other);
-		void setStartMat(float x);
+		void setStartMat(float x, float y);
 
 		void getMoveMat(XMMATRIX other);
 		void resetMove();
@@ -41,7 +42,7 @@ class enemyClass
 		int getEnemyHP();
 
 		bool hurtState();
-		void timeCountdown();
+		void timeCountdown(double dt);
 		
 		void setFacing(bool other);
 		bool getFacing();
@@ -51,6 +52,9 @@ class enemyClass
 
 		void checkCollisions(bool top, bool left, bool right, bool bot);
 
+		void setLengthBetween(float length1, float length2);
+
+		void updateInteraction(playerClass player);
 
 	private:
 
@@ -75,7 +79,7 @@ class enemyClass
 
 		int HP;
 		bool isHurt;
-		int fakeTimer;
+		int hurtCooldown;
 
 		void setEnemyHurt(bool check);
 		bool getEnemyHurt();
@@ -90,7 +94,8 @@ class enemyClass
 
 		float lengthBetween1;
 		float lengthBetween2;
-
+		
+		float turningDelay;
 
 		
 };

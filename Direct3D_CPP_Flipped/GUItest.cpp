@@ -79,7 +79,7 @@ void GUItestClass::shutdown()
 	}
 }
 
-bool GUItestClass::getIsDestry()
+bool GUItestClass::getIsDestroy()
 {
 	return this->isDestroy;
 }

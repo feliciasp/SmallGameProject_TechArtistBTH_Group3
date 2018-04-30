@@ -13,7 +13,7 @@ enemyClass::enemyClass()
 	checkIfObjHolder = false;
 	HP = 3;
 	isHurt = false;
-	fakeTimer = 0;
+	hurtCooldown = 0;
 
 	upSpeed = 0;
 
@@ -49,7 +49,7 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 		return false;
 	}
 
-	setStartMat(8.0f);
+	setStartMat(0.0f, 8.0f);
 
 	return true;
 }
@@ -80,7 +80,7 @@ void enemyClass::resetEnemy()
 	checkIfObjHolder = false;
 	HP = 3;
 	isHurt = false;
-	fakeTimer = 0;
+	hurtCooldown = 0;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -118,10 +118,10 @@ int enemyClass::getEnemyHP()
 
 bool enemyClass::hurtState()
 {
-	if (this->isHurt == false && fakeTimer == 0)
+	if (this->isHurt == false && hurtCooldown == 0)
 	{
 		this->isHurt = true;
-		fakeTimer = 150;
+		hurtCooldown = 150;
 		return true;
 	}
 	else
@@ -130,11 +130,11 @@ bool enemyClass::hurtState()
 	}
 }
 
-void enemyClass::timeCountdown()
+void enemyClass::timeCountdown(double dt)
 {
-	if (this->fakeTimer != 0)
+	if (this->hurtCooldown != 0)
 	{
-		this->fakeTimer -= 1;
+		this->hurtCooldown -= 1 * dt;
 		this->isHurt = false;
 	}
 }
@@ -179,6 +179,26 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		moveValX = oldMoveValX;
 	}
 	moveMat = XMMatrixTranslation(moveValX, moveValY, 0.0f);
+	if (useRotation)
+	{
+		moveMat = XMMatrixRotationY(-3.1514f) * moveMat;
+	}
+}
+
+void enemyClass::setLengthBetween(float length1, float length2)
+{
+	this->lengthBetween1 = length1;
+	this->lengthBetween2 = length2;
+}
+
+void enemyClass::updateInteraction(playerClass player)
+{
+	XMMATRIX playerMoveMat;
+	playerMoveMat = player->getMoveMat(playerMoveMat);
+
+
+	lengthBetween1 = XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), player->getMoveMat()));
+	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), player->getMoveMat())) - XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat));
 }
 
 void enemyClass::setEnemyHurt(bool check)
@@ -215,14 +235,14 @@ void enemyClass::handleMovement(double dt)
 		if (this->isFacingRight == true)
 			isFacingRight = false;
 
-		if (isFacingRight && /*countEnemy*/ <= 0)
+		if (isFacingRight && turningDelay <= 0)
 		{
 			useRotation = true;
-			/*countEnemy = 100;*/
+			turningDelay = 100;
 		}
-		else if (isFacingRight && /*countEnemy*/ >= 0)
+		else if (isFacingRight && turningDelay >= 0)
 		{
-			/*countEnemy -= 1;*/
+			turningDelay -= 1;
 		}
 		else
 		{
@@ -238,14 +258,14 @@ void enemyClass::handleMovement(double dt)
 		/*idle = false;
 		running = true;*/
 		
-		if (!isFacingRight && /*countEnemy*/ <= 0)
+		if (!isFacingRight && turningDelay <= 0)
 		{
 			useRotation = true;
-			/*countEnemy = 100;*/
+			turningDelay = 100;
 		}
-		else if (!isFacingRight && /*countEnemy*/ >= 0)
+		else if (!isFacingRight && turningDelay >= 0)
 		{
-			/*countEnemy -= 1;*/
+			turningDelay -= 1;
 		}
 		else
 		{
@@ -330,9 +350,17 @@ void enemyClass::getTranslationMatStart(XMMATRIX & other)
 	other = this->transStart;
 }
 
-void enemyClass::setStartMat(float x)
+void enemyClass::setStartMat(float x, float y)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, y, 0.0f);
+}
+
+void enemyClass::getMoveMat(XMMATRIX other)
+{
+}
+
+void enemyClass::resetMove()
+{
 }
 
 
