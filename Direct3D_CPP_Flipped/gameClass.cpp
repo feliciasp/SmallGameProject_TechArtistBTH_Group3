@@ -939,6 +939,7 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
+
 	if (enemy->getEnemyHP() == 0)
 	{
 		player->resetPlayer();
