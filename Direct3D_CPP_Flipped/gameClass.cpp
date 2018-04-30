@@ -12,7 +12,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
-	//limboMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
 
 	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
@@ -28,7 +27,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
-	
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -175,6 +173,25 @@ bool gameClass::initialize(int ShowWnd)
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
 
+	//Player Shadow Plane
+	playerShadowPlane = new backgroundClass;
+	if (!playerShadowPlane)
+	{
+		MessageBox(NULL, L"Error create shadowplane obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = playerShadowPlane->initlialize(graphics->getD3D()->GetDevice(), "Shadow.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init shadowplane obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	playerShadowPlane->getObj()->setMaterialName("Shadow.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), playerShadowPlane->getObj()->getMaterialName());
+
+	//addObjectToObjHolder(playerShadowPlane->getObj());
 
 	//enemy
 	enemy = new enemyClass;
@@ -610,6 +627,13 @@ void gameClass::shutdown()
 		limboWalkingPlane = 0;
 	}
 
+	if (playerShadowPlane)
+	{
+		playerShadowPlane->shutdown();
+		delete playerShadowPlane;
+		playerShadowPlane = 0;
+	}
+
 	shutdownWindow();
 
 	/////////////////MENY
@@ -877,6 +901,9 @@ bool gameClass::frameGame(double dt)
 
 	//player stuff
 	updatePlayer(platform, dt);
+
+	//update player shadow
+	updatePlayerShadow();
 
 	//set camera to follow player
 	updateCamera();
@@ -1330,6 +1357,95 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 	
 }
 
+void gameClass::updatePlayerShadow()
+{
+	//OutputDebugString(L"\nSHADOW!!!\n");
+	//bool onGround = checkCollisionPlatformBot(platform, player->getObj(), playerMove);
+
+	/*if (player->getShowShadow() == true) {
+		OutputDebugString(L"\nSHADOW ON\n");
+	} else if (player->getShowShadow() == false) {
+		OutputDebugString(L"\nSHADOW OFF\n");
+	}*/
+
+
+	//Om vi inte hopppar/faller
+	if (player->getShowShadow() == true)
+	{
+		OutputDebugString(L"\nSHADOW ON\n");
+		//Om skuggan inte redan finns
+		if (playerShadowPlane->getIsInObjHolder() == false) {
+			//Skapa skuggan
+			
+			addObjectToObjHolder(playerShadowPlane->getObj());
+			playerShadowPlane->setIsInObjHolder(true);
+
+			//Rendera sedan spelaren
+			player->setIfInObjHolder(false);
+			removeObjFromObjHolder(player->getObj());
+		}
+		//Uppdatera skuggans position
+		playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+		XMMATRIX offset = XMMatrixTranslation(0.0f, -1.315f, 0.0f);
+		playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
+	}
+	//Om skuggan inte ska synas
+	else
+	{
+		//Ta bort skuggan
+		OutputDebugString(L"\nSHADOW OFF\n");
+		//playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+		//XMMATRIX offset = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
+		//playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
+		playerShadowPlane->setIsInObjHolder(false);
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}
+
+	/*OutputDebugString(L"\nSHADOW!!!\n");
+	if (playerShadowPlane->getIsInObjHolder() == false)
+	{
+	addObjectToObjHolder(playerShadowPlane->getObj());
+	playerShadowPlane->setIsInObjHolder(true);
+
+	player->setIfInObjHolder(false);
+	removeObjFromObjHolder(player->getObj());
+	}
+	shadowMat = playerMove;
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove);
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
+
+
+	/*if (playerShadowPlane->getIsInObjHolder() == false) {
+	addObjectToObjHolder(playerShadowPlane->getObj());
+	OutputDebugString(L"\nShadow colission!\n");
+	playerShadowPlane->setIsInObjHolder(true);
+	player->setIfInObjHolder(false);
+	removeObjFromObjHolder(player->getObj());
+	}
+	shadowMat = playerMove;
+	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
+	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
+
+
+	/*else
+	{
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}*/
+
+	/*
+	if ((checkCollisionPlatformBot(platform, player->getObj(), playerMove) == true) && (playerShadowPlane == false))
+	{
+		addObjectToObjHolder(playerShadowPlane->getObj());
+
+	}
+	else
+	{
+		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}
+	*/
+}
+
 void gameClass::updateCamera()
 {
 	camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
@@ -1552,12 +1668,18 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+
 					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+          {
+					  player->setPlayerHurt(true);
+					  player->setPlayerHurtFromLeft(true);
+          }
+					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
 					{
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
@@ -1609,12 +1731,30 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween2 <= XMVectorGetX(enemy->getRangeVector()) - 3)
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+        }
 					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+          {
+					player->setPlayerHurt(true);
+					player->setPlayerHurtFromRight(true);
+          }
+					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					{
+						GUIheart1->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart1->getObj());
+						GUIheart1->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
+					{
+						GUIheart2->setIsDestroy(true);
+						removeObjFromObjHolder(GUIheart2->getObj());
+						GUIheart2->setCheckIfObjHolder(false);
+					}
+					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
 					{
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());

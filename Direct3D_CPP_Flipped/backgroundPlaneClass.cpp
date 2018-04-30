@@ -3,6 +3,7 @@
 backgroundClass::backgroundClass()
 {
 	obj = 0;
+	isInObjHolder = false;
 }
 
 backgroundClass::backgroundClass(const backgroundClass & other)
@@ -47,4 +48,14 @@ void backgroundClass::shutdown()
 objectClass * backgroundClass::getObj()
 {
 	return this->obj;
+}
+
+bool backgroundClass::getIsInObjHolder()
+{
+	return isInObjHolder;
+}
+
+void backgroundClass::setIsInObjHolder(bool x)
+{
+	this->isInObjHolder = x;
 }
