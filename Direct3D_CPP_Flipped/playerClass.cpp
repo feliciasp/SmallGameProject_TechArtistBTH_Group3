@@ -505,7 +505,7 @@ void playerClass::handleMovement(double dt)
 	}
 
 
-	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
+	if (this->input->isPPressed() && /*hasRing && ringType == 1 &&*/ !fireballCast)
 	{
 		fireballCast = true;
 	}
