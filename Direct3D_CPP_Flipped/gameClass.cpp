@@ -1151,8 +1151,6 @@ void gameClass::updateCollision(double dt)
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyMove));
 
-	enemy->setLengthBetween(lengthBetween1, lengthBetween2);
-
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && 
 		player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove),
 																 XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove),
@@ -1188,7 +1186,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setIsActive(false);
 		}
 	}
-	
+	/////////////////////////////////////////
 	enemy->timeCountdown(dt);
 
 	if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), 

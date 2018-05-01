@@ -185,21 +185,57 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 	}
 }
 
-void enemyClass::setLengthBetween(float length1, float length2)
-{
-	this->lengthBetween1 = length1;
-	this->lengthBetween2 = length2;
-}
+//void enemyClass::setLengthBetween(float length1, float length2)
+//{
+//	this->lengthBetween1 = length1;
+//	this->lengthBetween2 = length2;
+//}
 
-void enemyClass::updateInteraction(playerClass player)
-{
-	XMMATRIX playerMoveMat;
-	playerMoveMat = player->getMoveMat(playerMoveMat);
-
-
-	lengthBetween1 = XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), player->getMoveMat()));
-	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), player->getMoveMat())) - XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat));
-}
+//void enemyClass::updateInteraction(playerClass *player)
+//{
+//	XMMATRIX playerMoveMat;
+//	player->getMoveMat(playerMoveMat);
+//
+//
+//	lengthBetween1 = XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMoveMat));
+//	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMoveMat)) - XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat));
+//
+//	if (this->getIsActive() && player->getFlipped() && player->getIfAttack() &&
+//		player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMoveMat),
+//			XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMoveMat),
+//			XMVector3Transform(this->getObj()->getBoundingBoxMin(), moveMat),
+//			XMVector3Transform(this->getObj()->getBoundingBoxMax(), moveMat)))
+//	{
+//		if (this->hurtState())
+//		{
+//			this->setEnemyHP(this->HP - 1);
+//			OutputDebugString(L"\nenemy lost hP!\n");
+//		}
+//		if (this->getEnemyHP() <= 0)
+//		{
+//			removeObjFromObjHolder(enemy->getObj());
+//			enemy->setIsActive(false);
+//			player->setIfInObjHolder(false);
+//		}
+//	}
+//	else if (this->getIsActive() && !player->getFlipped() && player->getIfAttack()
+//		&& player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMoveMat),
+//			XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMoveMat),
+//			XMVector3Transform(this->getObj()->getBoundingBoxMin(), moveMat),
+//			XMVector3Transform(this->getObj()->getBoundingBoxMax(), moveMat)))
+//	{
+//		if (enemy->hurtState())
+//		{
+//			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+//			OutputDebugString(L"\nenemy lost hP!\n");
+//		}
+//		if (enemy->getEnemyHP() <= 0)
+//		{
+//			removeObjFromObjHolder(enemy->getObj());
+//			enemy->setIsActive(false);
+//		}
+//	}
+//}
 
 void enemyClass::setEnemyHurt(bool check)
 {
@@ -328,22 +364,10 @@ void enemyClass::handleMovement(double dt)
 	moveMat = XMMatrixTranslation(moveValX, moveValY + 8, 0.0f);
 }
 
-//void enemyClass::setTranslation(float x)
-//{
-//	oldMoveValX = moveValX;
-//	translation = XMMatrixTranslation(x, 0.0f, 0.0f);
-//	moveValX = x;
-//}
-
 objectClass* enemyClass::getObj()
 {
 	return this->obj;
 }
-
-//void enemyClass::getTranslationMat(XMMATRIX & other)
-//{
-//	other = this->translation;
-//}
 
 void enemyClass::getTranslationMatStart(XMMATRIX & other)
 {
@@ -363,29 +387,9 @@ void enemyClass::resetMove()
 {
 }
 
-
-//void enemyClass::setMove(float x)
-//{
-//	moveVal -= x;
-//}
-
-
 XMVECTOR enemyClass::getTriggerCheck()
 {
 	return this->triggerCheck;
 }
-
-//void enemyClass::updateFalling(double dt)
-//{
-//	oldMoveValY = temptest;
-//	temptest += -10.5 * dt;
-//	
-//	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
-//}
-//
-//void enemyClass::getFallingMat(XMMATRIX & other)
-//{
-//	other = this->translationInY;
-//}
 
 
