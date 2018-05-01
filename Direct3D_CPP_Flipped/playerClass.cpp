@@ -15,7 +15,7 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
-	HP = 3;
+	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -67,7 +67,17 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+
+
+	fireballCast = false;
+
+	polygoner = 0;
+	fargments = 0;
+	maxHP = HP;
+
 	showShadow = true;
+
+
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -249,12 +259,12 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 
-	if (!this->input->isPPressed() && !dodgeCooldownActive)
+	if (!this->input->isEPressed() && !dodgeCooldownActive)
 	{
 		dodgeReleased = true;
 	}
 
-	if (this->input->isPPressed() && !dodgeCooldownActive && dodgeReleased)
+	if (this->input->isEPressed() && !dodgeCooldownActive && dodgeReleased)
 	{
 		dodge = true;
 		dodgeReleased = false;
@@ -494,6 +504,13 @@ void playerClass::handleMovement(double dt)
 		attackReleased = false;
 	}
 
+
+	if (this->input->isPPressed() && /*hasRing && ringType == 1 &&*/ !fireballCast)
+	{
+		fireballCast = true;
+	}
+
+
 	if (!this->input->isOPressed())
 	{
 		attackReleased = true;
@@ -610,17 +627,27 @@ void playerClass::setIfInObjHolder(bool other)
 	this->isInObjHolder = other;
 }
 
+
 bool playerClass::getInvulnurable()
 {
 	return this->invulnurable;
 }
-
 
 float playerClass::getMoveValY()
 {
 	return this->moveValY;
 }
 
+
+void playerClass::setMaxHP(int other)
+{
+	this->maxHP = other;
+}
+
+int playerClass::getMaxHP()
+{
+	return this->maxHP;
+}
 bool playerClass::getShowShadow()
 {
 	return this->showShadow;
@@ -651,6 +678,27 @@ int playerClass::getRingType()
 	return this->ringType;
 }
 
+
+void playerClass::setFireballCast(bool check)
+{
+	this->fireballCast = check;
+}
+
+bool playerClass::getFireballCast()
+{
+	return this->fireballCast;
+}
+
+int playerClass::getNrPixelFramgent()
+{
+	return this->fargments;
+}
+
+void playerClass::setNrPixelFragments(int other)
+{
+	this->fargments = other;
+}
+
 void playerClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMat;
@@ -669,12 +717,14 @@ void playerClass::resetPlayer()
 	moveMat = XMMatrixIdentity();
 	upSpeed = 0.0f;
 	isJumping = false;
-	HP = 3;
+	HP = maxHP;
 	isAttacking = false;
 
 	isInObjHolder = false;
 
 	hasRing = false;
+
+	fireballCast = false;
 
 }
 

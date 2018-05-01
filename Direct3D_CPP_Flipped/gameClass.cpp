@@ -14,6 +14,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
 
+	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
+
 	countEnemy = 0;
 
 	player = 0;
@@ -22,9 +24,13 @@ gameClass::gameClass(HINSTANCE hInstance)
 	pickup = 0;
 	background = 0;
 	movementInput = 0;
+	projectile = 0;
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
+
+	projectileMoveMat = XMMatrixIdentity();
+
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -35,6 +41,12 @@ gameClass::gameClass(HINSTANCE hInstance)
 	GUIheart1 = 0;
 	GUIheart2 = 0;
 	GUIheart3 = 0;
+
+	isUpgradeHPAactive = true;
+	nrHPtoBeUpgraded = 0;
+	healthCost = 1;
+	upgradeCooldown = false;
+	upgradeTimer = 0;
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -254,7 +266,25 @@ bool gameClass::initialize(int ShowWnd)
 
 	pickup->setPickupType(3);
 	pickup->setRingType(0);
-	
+
+	//projectile test
+	projectile = new projectileClass;
+	if (!projectile)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	projectile->getObj()->setMaterialName("texture1.jpg");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
+	projectile->getTranslationMatStart(playerMove);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -311,6 +341,13 @@ bool gameClass::initialize(int ShowWnd)
 	GUIheart3->getObj()->setMaterialName("cubeTexture1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart3->getObj()->getMaterialName());
 
+	addHearthToHeartHolder(GUIheart3);
+	GUIheart3->setIsBought(true);
+	addHearthToHeartHolder(GUIheart2);
+	GUIheart2->setIsBought(false);
+	addHearthToHeartHolder(GUIheart1);
+	GUIheart1->setIsBought(false);
+	
 	//platform 
 	platform = new platformClass;
 	if (!platform)
@@ -417,8 +454,48 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
-
 	//addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+
+	//LIMBO UPGRADE
+	upgradeGUI = new GUItestClass;
+	if (!upgradeGUI)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = upgradeGUI->initlialize(graphics->getD3D()->GetDevice(), "upgradeLimbo.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	upgradeGUI->getObj()->setWorldMatrix(shopMat);
+	upgradeGUI->getObj()->setMaterialName("upgradeTexture.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
+	upgradeGUI->setIsDestroy(true);
+	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
+
+	//LIMBO UPGRADE OVERLAY
+	upgradeOverlay = new GUItestClass;
+	if (!upgradeOverlay)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = upgradeOverlay->initlialize(graphics->getD3D()->GetDevice(), "upgradeOverlay.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
+	upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
 
 	////////////////////////
@@ -554,12 +631,30 @@ void gameClass::shutdown()
 		win = 0;
 	}
 
+	if (upgradeOverlay)
+	{
+		upgradeOverlay->shutdown();
+		delete upgradeOverlay;
+		upgradeOverlay = 0;
+	}
+	if (upgradeGUI)
+	{
+		upgradeGUI->shutdown();
+		delete upgradeGUI;
+		upgradeGUI = 0;
+	}
 
 	if (limboWalkingPlane)
 	{
 		limboWalkingPlane->shutdown();
 		delete limboWalkingPlane;
 		limboWalkingPlane = 0;
+	}
+	if (projectile)
+	{
+		projectile->shutdown();
+		delete projectile;
+		projectile = 0;
 	}
 
 	if (playerShadowPlane)
@@ -721,9 +816,14 @@ bool gameClass::frameLimbo(double dt)
 	updateConstantMatrices();
 	//graphics->getD3D()->getOrtoProjMat(ortoProj);
 
+	//enviroment
 	updateLimboBackground();
 
+	//player
 	updatePlayer(limboWalkingPlane, dt);
+	
+	//shop
+	updateShop(dt, upgradeGUI);
 
 	graphics->beginScene();
 	for (int i = 0; i < objHolderLimbo.size(); i++)
@@ -756,15 +856,7 @@ bool gameClass::frameLimbo(double dt)
 				return false;
 			}
 		}
-	}/*
-	for (int i = 0; i < objHolderLimbo.size(); i++)
-	{
-		result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition());
-		if (!result)
-		{
-			return false;
-		}
-	}*/
+	}
 	graphics->endScene();
 
 	if (player->getMoveValY() < -30.0f)
@@ -773,6 +865,7 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLimbo = false;
 		gameStateMeny = false;
 		player->resetPlayer();
+		upgradeGUI->setIsDestroy(true);
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -781,6 +874,7 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLimbo = false;
 		gameStateMeny = true;
 		player->resetPlayer();
+		upgradeGUI->setIsDestroy(true);
 		return false;
 	}
 
@@ -821,6 +915,7 @@ bool gameClass::frameGame(double dt)
 	//platform
 	updatePlatform();
 
+
 	if (!pickup->getIsDestry() && !pickup->getCheckIfObjHolder())
 	{
 		addObjectToObjHolder(pickup->getObj());
@@ -837,8 +932,29 @@ bool gameClass::frameGame(double dt)
 	//player stuff
 	updatePlayer(platform, dt);
 
+
+	//projectile stuff
+	if (!projectile->getIsDestroyed() && !projectile->getCheckIfObjHolder() && player->getFireballCast())
+	{
+		addObjectToObjHolder(projectile->getObj());
+		projectile->setCheckIfObjHolder(true);
+		player->setIfInObjHolder(false);
+		//Set start pos and direction
+		projectile->setTranslationMatStart(playerMove);
+		if (player->getFlipped() == true)
+		{
+			projectile->setGoesRight(false);
+		}
+	}
+
+	if (!projectile->getIsDestroyed() && player->getFireballCast())
+	{
+		updateProjectile(dt);
+	}
+
 	//update player shadow
 	updatePlayerShadow();
+
 
 	//set camera to follow player
 	updateCamera();
@@ -852,42 +968,19 @@ bool gameClass::frameGame(double dt)
 		player->setIfInObjHolder(true);
 	}
 
-	//GUI
-	if (updateGUI(dt, GUIheart1))
+	//initialize starting HP
+	//breaks here because player HP is 3 when it's suppose to be 2.
+	//every hearth that is created will forfill this criteria
+	for (int i = 0; i < player->getPlayerHP(); i++)
 	{
-		player->setPlayerHP(player->getPlayerHP() + 1);
-	}
-	else if (updateGUI(dt, GUIheart2))
-	{
-		player->setPlayerHP(player->getPlayerHP() + 1);
-	}
-	else if (updateGUI(dt, GUIheart3))
-	{
-		player->setPlayerHP(player->getPlayerHP() + 1);
-	}
-
-	if (!GUIheart1->getIsDestry() && !GUIheart1->getCheckIfObjHolder())
-	{
-		addObjectToObjHolder(GUIheart1->getObj());
-		GUIheart1->setCheckIfObjHolder(true);
-	}
-	if (!GUIheart2->getIsDestry() && !GUIheart2->getCheckIfObjHolder())
-	{
-		addObjectToObjHolder(GUIheart2->getObj());
-		GUIheart2->setCheckIfObjHolder(true);
-	}
-	if (!GUIheart3->getIsDestry() && !GUIheart3->getCheckIfObjHolder())
-	{
-		addObjectToObjHolder(GUIheart3->getObj());
-		GUIheart3->setCheckIfObjHolder(true);
-	}
-	if (pickup->getIsDestry() && pickup->getCheckIfObjHolder())
-	{
-		removeObjFromObjHolder(pickup->getObj());
-		pickup->setCheckIfObjHolder(false);
+		if (!hearthArray[i]->getIsDestry() && !hearthArray[i]->getCheckIfObjHolder() && hearthArray[i]->getIsBought())
+		{
+			addObjectToObjHolder(hearthArray[i]->getObj());
+			hearthArray[i]->setCheckIfObjHolder(true);
+			OutputDebugString(L"\nheart was created2!\n");
+		}
 	}
 	
-
 
 	//for render
 	graphics->beginScene();
@@ -924,11 +1017,13 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
+
 	if (enemy->getEnemyHP() == 0)
 	{
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -946,6 +1041,7 @@ bool gameClass::frameGame(double dt)
 		camera->reset();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -962,6 +1058,11 @@ bool gameClass::frameGame(double dt)
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+
+		projectile->resetProjectile();
+
+		camera->reset();
+
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -1241,6 +1342,22 @@ void gameClass::removeObjFromObjHolderWin(objectClass * obj)
 	}
 }
 
+void gameClass::addHearthToHeartHolder(GUItestClass * hearth)
+{
+	hearthArray.push_back(hearth);
+}
+
+void gameClass::removeHearthFromHeartHolder(GUItestClass * hearth)
+{
+	for (int i = 0; i < hearthArray.size(); i++)
+	{
+		if (hearthArray[i] == hearth)
+		{
+			hearthArray.erase(hearthArray.begin() + i);
+		}
+	}
+}
+
 void gameClass::updateConstantMatrices()
 {
 	camera->createViewMatrix();
@@ -1406,9 +1523,107 @@ void gameClass::updateLimboBackground()
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
 }
 
+void gameClass::updateShop()
+{
+	upgradeGUI->getObj()->setWorldMatrix(XMMatrixIdentity());
+	upgradeOverlay->getObj()->setWorldMatrix(XMMatrixIdentity());
+}
+
 bool gameClass::updateGUI(double dt, GUItestClass* obj)
 {
 	return obj->updateDestroyState(dt);
+}
+
+void gameClass::updateShop(double dt, GUItestClass* obj)
+{
+	obj->updateDestroy2(dt);
+	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(upgradeGUI->getObj());
+		upgradeGUI->setCheckIfObjHolder(true);
+	}
+	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
+		upgradeGUI->setCheckIfObjHolder(false);
+	}
+
+	if (!upgradeGUI->getIsDestry())
+	{
+		//now you can upgrade your stuff
+		if (isUpgradeHPAactive)
+		{
+
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
+			{
+				if (player->getNrPixelFramgent() >= healthCost)
+				{
+					nrHPtoBeUpgraded += 1;
+					healthCost = healthCost * 2;
+				}
+			}
+
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && checkUpgradeCooldown())
+			{
+				nrHPtoBeUpgraded -= 1;
+				healthCost = healthCost / 2;
+			}
+			
+			updateShopCooldown();
+
+			if (nrHPtoBeUpgraded > 0)
+			{
+				for (int i = 0; i < nrHPtoBeUpgraded; i++)
+				{
+					if (!hearthArray[player->getMaxHP() + i]->getIsDestry() && !hearthArray[player->getMaxHP() + i]->getCheckIfObjHolder())
+					{
+						addObjectToObjHolder(hearthArray[player->getMaxHP() + i]->getObj());
+						hearthArray[player->getMaxHP() + i]->setCheckIfObjHolder(true);
+						hearthArray[player->getMaxHP() + i]->setIsBought(true);
+						OutputDebugString(L"\nheart was created!\n");
+					}
+				}
+			}
+		}
+	}
+	if (nrHPtoBeUpgraded > 0)
+	{
+		player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
+		nrHPtoBeUpgraded = 0;
+	}
+}
+
+bool gameClass::checkUpgradeCooldown()
+{
+	if (this->upgradeCooldown == false && upgradeTimer == 0)
+	{
+		this->upgradeCooldown = true;
+		upgradeTimer = 300;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int gameClass::getCooldownTimerShop()
+{
+	return this->upgradeTimer;
+}
+
+void gameClass::updateShopCooldown()
+{
+	if (this->upgradeTimer > 0)
+	{
+		upgradeTimer -= 1;
+	}
+	if (this->upgradeTimer == 0)
+	{
+		this->upgradeCooldown = false;
+	}
 }
 
 void gameClass::updatePlatform()
@@ -1426,10 +1641,25 @@ void gameClass::updatePickup(double dt)
 	pickup->updateAnimation(dt);
 }
 
+void gameClass::updateProjectile(double dt)
+{
+	//Move projectile
+	projectile->moveProjectile(dt);
+	projectile->getTransX(projectileMoveMat);
+	projectile->getObj()->setWorldMatrix(projectileMoveMat);
+
+	//CD between fireballs
+	projectile->setLifeTime(dt);
+	if (projectile->getLifeTime() > 5.0)
+	{
+		player->setFireballCast(false);
+		projectile->resetProjectile();
+	}
+	//Check collision
+}
+
 void gameClass::updateCollision(double dt)
 {
-
-	
 	float enemyMove = enemy->getMove();
 
 	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
@@ -1439,7 +1669,7 @@ void gameClass::updateCollision(double dt)
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
-		if(enemy->hurtState())
+		if (enemy->hurtState())
 		{
 			enemy->resetMove();
 			enemy->getTranslationMatStart(masterMovementEnemyMat);
@@ -1448,10 +1678,15 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
+
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			pickup->setIsDestroy(false);
 			player->setIfInObjHolder(false);
+			if (player->getNrPixelFramgent() <= 3)
+			{
+				player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
+			}
 		}
 	}
 	else if (enemy->getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
@@ -1465,15 +1700,16 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
+			player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			pickup->setIsDestroy(false);
 			player->setIfInObjHolder(false);
 		}
 	}
-	
+
 	enemy->timeCountdown();
-	
+
 	/*if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		enemy->resetMove();
@@ -1513,23 +1749,17 @@ void gameClass::updateCollision(double dt)
 					player->setPlayerHP(player->getPlayerHP() - 1);
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromLeft(true);
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+
+					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+
 					{
-						GUIheart1->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart1->getObj());
-						GUIheart1->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
-					{
-						GUIheart2->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart2->getObj());
-						GUIheart2->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
-					{
-						GUIheart3->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart3->getObj());
-						GUIheart3->setCheckIfObjHolder(false);
+
+						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
+						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
+						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)
@@ -1584,23 +1814,16 @@ void gameClass::updateCollision(double dt)
 					player->setPlayerHP(player->getPlayerHP() - 1);
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromRight(true);
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+
 					{
-						GUIheart1->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart1->getObj());
-						GUIheart1->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
-					{
-						GUIheart2->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart2->getObj());
-						GUIheart2->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
-					{
-						GUIheart3->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart3->getObj());
-						GUIheart3->setCheckIfObjHolder(false);
+
+						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
+						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
+						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)

@@ -8,10 +8,19 @@
 #include <vector>
 #include <iostream>
 
+struct BlendShapeFrame
+{
+	BlendShape blendShapeHeader;
+	Vertex* blendShapesVertices;
+};
+
 struct LoadedMesh
 {
 	Mesh meshHeader;
 	Vertex* vertices;
+	////For animations
+	//BlendShapesHeader blendShapesHeader;
+	//BlendShapeFrame* blendShapeTimeline;
 };
 
 class Importer {
@@ -39,7 +48,7 @@ public:
 
 	void getMinBBox(float &minX, float &minY, float &minZ);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ);
-	
+
 	void getMinBBox(float &minX, float &minY, float &minZ, int meshID);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ, int meshID);
 

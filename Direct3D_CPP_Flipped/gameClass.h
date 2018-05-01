@@ -17,6 +17,7 @@
 #include "pickupClass.h"
 #include "playerClass.h"
 #include "platformClass.h"
+#include "projectileClass.h"
 #include "GUItest.h"
 
 using namespace DirectX;
@@ -50,6 +51,9 @@ class gameClass
 		void addObjectToObjHolderWin(objectClass* obj);
 		void removeObjFromObjHolderWin(objectClass* obj);
 
+		void addHearthToHeartHolder(GUItestClass* hearth);
+		void removeHearthFromHeartHolder(GUItestClass* hearth);
+
 	private:
 		bool frameLimbo(double dt);
 		bool frameGame(double dt);
@@ -74,6 +78,7 @@ class gameClass
 		pickupClass* pickup;
 		playerClass* player;
 		platformClass* platform;
+		projectileClass* projectile;
 		GUItestClass* GUItest;
 
 		std::vector<objectClass*> objHolder;
@@ -98,6 +103,8 @@ class gameClass
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
 		void updatePickup(double dt);
+		void updateProjectile(double dt);
+		XMMATRIX projectileMoveMat;
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);
@@ -151,10 +158,28 @@ class gameClass
 		XMMATRIX limboMat;
 		void updateLimboBackground();
 
+		//has to do with shop
+		GUItestClass* upgradeGUI;
+		GUItestClass* upgradeOverlay;
+		void updateShop();
+		XMMATRIX shopMat;
+		void updateShop(double dt, GUItestClass* obj);
+		bool isUpgradeHPAactive;
+		int nrHPtoBeUpgraded;
+		int healthCost;
+		bool upgradeCooldown;
+		int upgradeTimer;
+		bool checkUpgradeCooldown();
+		int getCooldownTimerShop();
+		void updateShopCooldown();
+
 		//////////////////////WIN STATE
 		GUItestClass* win;
 		XMMATRIX winMat;
 
+
+		//////HP
+		std::vector<GUItestClass*> hearthArray;
 		backgroundClass* playerShadowPlane;
 		XMMATRIX shadowMat;
 };
