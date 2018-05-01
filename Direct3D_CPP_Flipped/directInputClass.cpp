@@ -142,7 +142,7 @@ bool directInput::isTPressed()
 
 bool directInput::isEnterPressed()
 {
-	if (keyboardState[DIK_O] & 0x80)
+	if (keyboardState[DIK_RETURN] & 0x80)
 	{
 		return true;
 	}
@@ -166,6 +166,7 @@ bool directInput::isArrowRightPressed()
 	}
 	return false;
 }
+
 bool directInput::isArrowLeftPressed()
 {
 	if (keyboardState[DIK_LEFTARROW] & 0x80)

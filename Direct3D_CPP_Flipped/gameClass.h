@@ -17,6 +17,7 @@
 #include "pickupClass.h"
 #include "playerClass.h"
 #include "platformClass.h"
+#include "projectileClass.h"
 #include "GUItest.h"
 
 using namespace DirectX;
@@ -77,6 +78,7 @@ class gameClass
 		pickupClass* pickup;
 		playerClass* player;
 		platformClass* platform;
+		projectileClass* projectile;
 		GUItestClass* GUItest;
 
 		std::vector<objectClass*> objHolder;
@@ -101,6 +103,8 @@ class gameClass
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
 		void updatePickup(double dt);
+		void updateProjectile(double dt);
+		XMMATRIX projectileMoveMat;
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);

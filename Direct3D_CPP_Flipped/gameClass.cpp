@@ -24,9 +24,13 @@ gameClass::gameClass(HINSTANCE hInstance)
 	pickup = 0;
 	background = 0;
 	movementInput = 0;
+	projectile = 0;
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
+
+	projectileMoveMat = XMMatrixIdentity();
+
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -262,7 +266,25 @@ bool gameClass::initialize(int ShowWnd)
 
 	pickup->setPickupType(3);
 	pickup->setRingType(0);
-	
+
+	//projectile test
+	projectile = new projectileClass;
+	if (!projectile)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	projectile->getObj()->setMaterialName("texture1.jpg");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
+	projectile->getTranslationMatStart(playerMove);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -608,6 +630,7 @@ void gameClass::shutdown()
 		delete win;
 		win = 0;
 	}
+
 	if (upgradeOverlay)
 	{
 		upgradeOverlay->shutdown();
@@ -620,11 +643,18 @@ void gameClass::shutdown()
 		delete upgradeGUI;
 		upgradeGUI = 0;
 	}
+
 	if (limboWalkingPlane)
 	{
 		limboWalkingPlane->shutdown();
 		delete limboWalkingPlane;
 		limboWalkingPlane = 0;
+	}
+	if (projectile)
+	{
+		projectile->shutdown();
+		delete projectile;
+		projectile = 0;
 	}
 
 	if (playerShadowPlane)
@@ -902,8 +932,29 @@ bool gameClass::frameGame(double dt)
 	//player stuff
 	updatePlayer(platform, dt);
 
+
+	//projectile stuff
+	if (!projectile->getIsDestroyed() && !projectile->getCheckIfObjHolder() && player->getFireballCast())
+	{
+		addObjectToObjHolder(projectile->getObj());
+		projectile->setCheckIfObjHolder(true);
+		player->setIfInObjHolder(false);
+		//Set start pos and direction
+		projectile->setTranslationMatStart(playerMove);
+		if (player->getFlipped() == true)
+		{
+			projectile->setGoesRight(false);
+		}
+	}
+
+	if (!projectile->getIsDestroyed() && player->getFireballCast())
+	{
+		updateProjectile(dt);
+	}
+
 	//update player shadow
 	updatePlayerShadow();
+
 
 	//set camera to follow player
 	updateCamera();
@@ -972,6 +1023,7 @@ bool gameClass::frameGame(double dt)
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -989,6 +1041,7 @@ bool gameClass::frameGame(double dt)
 		camera->reset();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -1005,7 +1058,11 @@ bool gameClass::frameGame(double dt)
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+
+		projectile->resetProjectile();
+
 		camera->reset();
+
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -1582,6 +1639,23 @@ void gameClass::updatePickup(double dt)
 	pickup->setTranslationMatStart(yOffset);
 	pickup->getObj()->setWorldMatrix(yOffset);
 	pickup->updateAnimation(dt);
+}
+
+void gameClass::updateProjectile(double dt)
+{
+	//Move projectile
+	projectile->moveProjectile(dt);
+	projectile->getTransX(projectileMoveMat);
+	projectile->getObj()->setWorldMatrix(projectileMoveMat);
+
+	//CD between fireballs
+	projectile->setLifeTime(dt);
+	if (projectile->getLifeTime() > 5.0)
+	{
+		player->setFireballCast(false);
+		projectile->resetProjectile();
+	}
+	//Check collision
 }
 
 void gameClass::updateCollision(double dt)

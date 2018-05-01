@@ -135,7 +135,7 @@ int pickupClass::getCurrentFrame()
 void pickupClass::setPickupType(int other)
 {
 	this->pickupType = other;
-	if (other = 3)
+	if (other == 3)
 	{
 		this->isRing = true;
 		this->isAnimated = false;
