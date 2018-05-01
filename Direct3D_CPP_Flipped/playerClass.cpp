@@ -255,12 +255,12 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 
-	if (!this->input->isPPressed() && !dodgeCooldownActive)
+	if (!this->input->isEPressed() && !dodgeCooldownActive)
 	{
 		dodgeReleased = true;
 	}
 
-	if (this->input->isPPressed() && !dodgeCooldownActive && dodgeReleased)
+	if (this->input->isEPressed() && !dodgeCooldownActive && dodgeReleased)
 	{
 		dodge = true;
 		dodgeReleased = false;

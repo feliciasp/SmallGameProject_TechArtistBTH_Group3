@@ -184,6 +184,15 @@ bool directInput::isPPressed()
 	return false;
 }
 
+bool directInput::isEPressed()
+{
+	if (keyboardState[DIK_E] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
 
 
 //player->handleMovement(player - ZgetObj()->getInput());
