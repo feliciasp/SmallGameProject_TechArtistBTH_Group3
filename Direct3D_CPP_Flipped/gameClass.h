@@ -19,6 +19,7 @@
 #include "platformClass.h"
 #include "projectileClass.h"
 #include "GUItest.h"
+#include <cstdlib>
 
 using namespace DirectX;
 
@@ -150,6 +151,17 @@ class gameClass
 		GUItestClass* meny;
 		XMMATRIX menyMat;
 		bool done;
+		GUItestClass* menyHighlight;
+		XMMATRIX menyHighlightMat;
+		int counterOverlay;
+		void setCounterOverlay(int other);
+		int getCounterOverlay();
+		void updateOverlay();
+		int menyTimer;
+		bool menyCheck;
+		bool menyOnCooldown();
+		void updateMenyCooldown();
+
 
 		/////////LIMBO STUFF
 		backgroundClass* limboFrontPlane;

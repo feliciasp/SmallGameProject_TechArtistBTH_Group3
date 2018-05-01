@@ -725,7 +725,7 @@ void playerClass::resetPlayer()
 	hasRing = false;
 
 	fireballCast = false;
-
+	isHurt = false;
 }
 
 void playerClass::setPlayerHP(int x)
