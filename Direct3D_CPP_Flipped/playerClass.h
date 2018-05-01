@@ -39,6 +39,8 @@ public:
 	int getPlayerHP();
 
 	void setPlayerHurt(bool x);
+	void setPlayerHurtFromLeft(bool x);
+	void setPlayerHurtFromRight(bool x);
 	bool getPlayerHurt();
 
 	void updateAnimation(double dt);
@@ -60,19 +62,39 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
+
+	bool getInvulnurable();
+
 	void setHasRing(bool check);
 	bool getHasRing();
 
 	void setRingType(int other);
 	int getRingType();
 
+
 	void setFireballCast(bool check);
 	bool getFireballCast();
 
+	int getNrPixelFramgent();
+	void setNrPixelFragments(int other);
+
+
 	float getMoveValY();
+
+	void setMaxHP(int other);
+	int getMaxHP();
+
+	bool getShowShadow();
+	bool getIsJumping();
+
 
 private:
 	bool isHurt;
+	bool hurtFromLeft;
+	bool hurtFromRight;
+	bool fallBack;
+	float hurtFallback;
+	float hurtFallbackValue;
 	int fakeTimer;
 
 	objectClass* obj;
@@ -91,6 +113,20 @@ private:
 	bool falling;
 	bool attacking;
 	bool isHit;
+
+
+	bool inAir;
+
+	bool dodge;
+	bool isDodging;
+	float dodgeFallback;
+	float dodgeFallbackValue;
+	bool dodgeReleased;
+	bool invulnurable;
+
+	bool dodgeCooldownActive;
+	float dodgeCooldown;
+
 
 	bool isJumping;
 	bool justJumped;
@@ -119,9 +155,11 @@ private:
 	float timeBetweenFrames;
 
 	int HP;
+	int maxHP;
 	bool isPlayerHurt;
 	bool isAttacking;
 	void checkIfAttacking();
+	bool attackReleased;
 
 	bool fireballCast; //has player cast fireball?
 
@@ -129,6 +167,13 @@ private:
 	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
+
+
+	////PICKUP STATS!!!!!
+	int polygoner;
+	int fargments;
+
+	bool showShadow;
 
 
 };

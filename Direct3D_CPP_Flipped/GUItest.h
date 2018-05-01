@@ -26,6 +26,11 @@ public:
 
 	void resetGUI();
 
+	void updateDestroy2(double dt);
+
+	void setIsBought(bool check);
+	bool getIsBought();
+
 private:
 	objectClass* obj;
 	directInput* input;
@@ -34,6 +39,9 @@ private:
 	bool checkIfSetToObjHolder;
 	bool checkIfKeyStateWasTrueLastFrame;
 	int fakeTimer;
+	int fakeTimer2;
+
+	bool isBought;
 
 };
 

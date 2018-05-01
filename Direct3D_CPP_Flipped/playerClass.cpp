@@ -15,7 +15,7 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
-	HP = 3;
+	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -25,11 +25,17 @@ playerClass::playerClass()
 	isJumping = false;
 	justJumped = false;
 	flipped = false;
+	inAir = false;
 
 	isPlayerHurt = false;
 	frameCount = 2;
 
 	isHurt = false;
+	hurtFromRight = false;
+	hurtFromLeft = false;
+	fallBack = false;
+	hurtFallback = 4.0f;
+	hurtFallbackValue = 0.0f;
 	fakeTimer = 0;
 
 	isAttacking = false;
@@ -43,15 +49,35 @@ playerClass::playerClass()
 	jumping = false;
 	falling = false;
 	attacking = false;
+	attackReleased = true;
 	isHit = false;
 	timeBetweenFrames = 0.25f;
 	nrOfLoops = 0;
+
+	dodge = false;
+	isDodging = false;
+	dodgeFallback = 6.2f;
+	dodgeFallbackValue = 0.0f;
+	dodgeReleased = true;
+	invulnurable = false;
+
+	dodgeCooldownActive = false;
+	dodgeCooldown = 1.2f;
 
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
 
+
 	fireballCast = false;
+
+	polygoner = 0;
+	fargments = 0;
+	maxHP = HP;
+
+	showShadow = true;
+
+
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -203,7 +229,6 @@ XMVECTOR playerClass::getTriggerCheck()
 
 void playerClass::handleMovement(double dt)
 {
-
 	oldMoveValX = moveValX;
 	oldMoveValY = moveValY;
 
@@ -220,9 +245,123 @@ void playerClass::handleMovement(double dt)
 	currentAnimation = 1;
 	frameCount = 2;
 	timeBetweenFrames = 0.25f;
+	showShadow = true;
 
 	input->readKeyboard(dt);
-	if (this->input->isAPressed())
+
+	if (dodgeCooldownActive)
+	{
+		dodgeFallbackValue += 1 * dt;
+		if (dodgeFallbackValue >= dodgeCooldown)
+		{
+			dodgeFallbackValue = 0.0f;
+			dodgeCooldownActive = false;
+		}
+	}
+
+	if (!this->input->isEPressed() && !dodgeCooldownActive)
+	{
+		dodgeReleased = true;
+	}
+
+	if (this->input->isEPressed() && !dodgeCooldownActive && dodgeReleased)
+	{
+		dodge = true;
+		dodgeReleased = false;
+	}
+
+	
+	
+	if (isHurt && dodge)
+	{
+		isHurt = true;
+		dodge = false;
+	}
+
+	if (dodge && !isHurt)
+	{
+		currentFrame = 7;
+		currentTime = 0;
+		dodge = false;
+		isDodging = true;
+	}
+
+	if (isDodging)
+	{
+		invulnurable = true;
+		frameCount = 10;
+		currentAnimation = 2;
+		timeBetweenFrames = 4.0f;
+
+		if (flipped)
+		{
+			moveValX += -17.0f * dt;
+			dodgeFallbackValue += 17.0f * dt;
+			if (dodgeFallbackValue >= dodgeFallback)
+			{
+				isDodging = false;
+				dodgeFallbackValue = 0.0f;
+				invulnurable = false;
+				dodgeCooldownActive = true;
+				currentTime = 0;
+				currentFrame = 1;
+			}
+		}
+
+		if (!flipped)
+		{
+			moveValX += 17.0f * dt;
+			dodgeFallbackValue += 17.0f * dt;
+			if (dodgeFallbackValue >= dodgeFallback)
+			{
+				isDodging = false;
+				dodgeFallbackValue = 0.0f;
+				invulnurable = false;
+				dodgeCooldownActive = true;
+				currentTime = 0;
+				currentFrame = 1;
+			}
+		}
+	}
+
+	if (isHurt && !isDodging)
+	{
+		currentFrame = 1;
+		currentTime = 0;
+		isHurt = false;
+		fallBack = true;
+	}
+
+	if (fallBack)
+	{
+		frameCount = 1;
+		currentAnimation = 5;
+
+		if (hurtFromLeft)
+		{
+			moveValX += -17.0f * dt;
+			hurtFallbackValue += 17.0f * dt;
+			if (hurtFallbackValue >= hurtFallback)
+			{
+				fallBack = false;
+				hurtFromLeft = false;
+				hurtFallbackValue = 0.0f;
+			}
+		}
+
+		else if (hurtFromRight)
+		{
+			moveValX += 17.0f * dt;
+			hurtFallbackValue += 17.0f * dt;
+			if (hurtFallbackValue >= hurtFallback)
+			{
+				fallBack = false;
+				hurtFromRight = false;
+				hurtFallbackValue = 0.0f;
+			}
+		}
+	}
+	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
 		moveValX += -10.0f * dt;
 		if (running == false && attacking == false)
@@ -243,7 +382,7 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 	
-	if (this->input->isDPressed())
+	if (this->input->isDPressed() && !fallBack && !isDodging)
 	{
 		moveValX += 10.0f * dt;
 		if (running == false && attacking == false)
@@ -263,7 +402,7 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 	
-	if (this->input->isSpacePressed())
+	if (this->input->isSpacePressed() && !fallBack && !isDodging)
 	{
 		if (!isJumping)
 		{
@@ -271,6 +410,7 @@ void playerClass::handleMovement(double dt)
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
 			spaceReleased = false;
+			inAir = true;
 			if (attacking == false)
 			{
 				currentFrame = 1;
@@ -296,31 +436,45 @@ void playerClass::handleMovement(double dt)
 		isJumping = true;
 	}
 
-	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5)
+	if (!this->input->isSpacePressed() && upSpeed > upSpeed * 0.5 && !fallBack && !isDodging)
 	{
 		upSpeed -= upSpeed - (upSpeed * 0.99);
 	}
-	if (!this->input->isSpacePressed())
+	if (!this->input->isSpacePressed() && !fallBack)
 	{
 		spaceReleased = true;
 	}
 
-	if (upSpeed > 1)
+	if (upSpeed > 1 && !fallBack)
 	{
 		running = false;
 		idle = false;
 		jumping = true;
+		showShadow = false;
+		currentAnimation = 3;
+		frameCount = 2;
+		timeBetweenFrames = 0.1f;
+	}
+
+	if (inAir)
+	{
+		running = false;
+		idle = false;
+		jumping = true;
+		showShadow = false;
 		currentAnimation = 3;
 		frameCount = 2;
 		timeBetweenFrames = 0.1f;
 	}
 	
-	if (upSpeed > -1.0f)
+	if (upSpeed > -1.0f && !fallBack)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
-	else if (upSpeed < -1.0f) //upSpeed less than -1.0f;
+
+	else if (upSpeed < -1.0f && !fallBack && !isDodging) //upSpeed less than -1.0f;
+
 	{
 		if (falling == false && attacking == false)
 		{
@@ -334,9 +488,11 @@ void playerClass::handleMovement(double dt)
 		idle = false;
 		running = false;
 		falling = true;
+		showShadow = false;
+		inAir = false;
 	}
 
-	if (this->input->isOPressed())
+	if (this->input->isOPressed() && !fallBack && !isDodging && attackReleased)
 	{
 		if (attacking == false)
 		{
@@ -344,24 +500,33 @@ void playerClass::handleMovement(double dt)
 			currentTime = 0;
 			currentFrame = 1;
 		}
+
+		attackReleased = false;
 	}
+
 
 	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
 	{
 		fireballCast = true;
 	}
 
-	if (attacking == true)
+
+	if (!this->input->isOPressed())
+	{
+		attackReleased = true;
+	}
+
+	if (attacking == true && !fallBack)
 	{
 		currentAnimation = 6;
 		frameCount = 4;
 
-		timeBetweenFrames = 0.1f;
+		timeBetweenFrames = 0.06f;
 
 		idle = false;
 	}
 	
-	if (running == true && idle == true && attacking == false)
+	if (running == true && idle == true && attacking == false && !fallBack && !isDodging)
 	{
 		running = false;
 		currentTime = 0;
@@ -369,7 +534,7 @@ void playerClass::handleMovement(double dt)
 		timeBetweenFrames = 0.25f;
 	}
 
-	if (falling == true && idle == true && attacking == false)
+	if (falling == true && idle == true && attacking == false && !fallBack && !isDodging)
 	{
 		falling = false;
 		currentTime = 0;
@@ -377,7 +542,7 @@ void playerClass::handleMovement(double dt)
 		timeBetweenFrames = 0.25f;
 	}
 
-	if (jumping == true && idle == true && attacking == false)
+	if (jumping == true && idle == true && attacking == false && !fallBack && !isDodging)
 	{
 		jumping = false;
 		currentTime = 0;
@@ -393,12 +558,20 @@ void playerClass::handleMovement(double dt)
 		currentFrame = 1;
 		timeBetweenFrames = 0.1f;
 	}
-	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 
+	if (isDodging)
+	{
+		moveValY = oldMoveValY;
+		upSpeed = 0.0f;
+	}
+		
+
+	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 }
 
 void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 {
+
 	if (top)
 	{
 		moveValY = oldMoveValY;
@@ -454,9 +627,35 @@ void playerClass::setIfInObjHolder(bool other)
 	this->isInObjHolder = other;
 }
 
+
+bool playerClass::getInvulnurable()
+{
+	return this->invulnurable;
+}
+
 float playerClass::getMoveValY()
 {
 	return this->moveValY;
+}
+
+
+void playerClass::setMaxHP(int other)
+{
+	this->maxHP = other;
+}
+
+int playerClass::getMaxHP()
+{
+	return this->maxHP;
+}
+bool playerClass::getShowShadow()
+{
+	return this->showShadow;
+}
+
+bool playerClass::getIsJumping()
+{
+	return this->isJumping;
 }
 
 void playerClass::setHasRing(bool check)
@@ -479,6 +678,7 @@ int playerClass::getRingType()
 	return this->ringType;
 }
 
+
 void playerClass::setFireballCast(bool check)
 {
 	this->fireballCast = check;
@@ -487,6 +687,16 @@ void playerClass::setFireballCast(bool check)
 bool playerClass::getFireballCast()
 {
 	return this->fireballCast;
+}
+
+int playerClass::getNrPixelFramgent()
+{
+	return this->fargments;
+}
+
+void playerClass::setNrPixelFragments(int other)
+{
+	this->fargments = other;
 }
 
 void playerClass::getMoveMat(XMMATRIX& mat)
@@ -507,7 +717,7 @@ void playerClass::resetPlayer()
 	moveMat = XMMatrixIdentity();
 	upSpeed = 0.0f;
 	isJumping = false;
-	HP = 3;
+	HP = maxHP;
 	isAttacking = false;
 
 	isInObjHolder = false;
@@ -530,7 +740,17 @@ int playerClass::getPlayerHP()
 
 void playerClass::setPlayerHurt(bool x)
 {
-	this->isPlayerHurt = x;
+	this->isHurt = x;
+}
+
+void playerClass::setPlayerHurtFromLeft(bool x)
+{
+	this->hurtFromLeft = x;
+}
+
+void playerClass::setPlayerHurtFromRight(bool x)
+{
+	this->hurtFromRight = x;
 }
 
 bool playerClass::getPlayerHurt()
@@ -540,6 +760,7 @@ bool playerClass::getPlayerHurt()
 
 void playerClass::updateAnimation(double dt)
 {
+	
 	if (currentTime > timeBetweenFrames)
 	{
 		currentFrame++;

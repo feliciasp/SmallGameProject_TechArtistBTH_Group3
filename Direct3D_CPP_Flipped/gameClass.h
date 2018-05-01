@@ -51,6 +51,9 @@ class gameClass
 		void addObjectToObjHolderWin(objectClass* obj);
 		void removeObjFromObjHolderWin(objectClass* obj);
 
+		void addHearthToHeartHolder(GUItestClass* hearth);
+		void removeHearthFromHeartHolder(GUItestClass* hearth);
+
 	private:
 		bool frameLimbo(double dt);
 		bool frameGame(double dt);
@@ -94,6 +97,7 @@ class gameClass
 		void updateEnemy(double dt);
 		XMMATRIX playerMove;
 		void updatePlayer(platformClass* platform, double dt);
+		void updatePlayerShadow();
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
@@ -154,9 +158,30 @@ class gameClass
 		XMMATRIX limboMat;
 		void updateLimboBackground();
 
+		//has to do with shop
+		GUItestClass* upgradeGUI;
+		GUItestClass* upgradeOverlay;
+		void updateShop();
+		XMMATRIX shopMat;
+		void updateShop(double dt, GUItestClass* obj);
+		bool isUpgradeHPAactive;
+		int nrHPtoBeUpgraded;
+		int healthCost;
+		bool upgradeCooldown;
+		int upgradeTimer;
+		bool checkUpgradeCooldown();
+		int getCooldownTimerShop();
+		void updateShopCooldown();
+
 		//////////////////////WIN STATE
 		GUItestClass* win;
 		XMMATRIX winMat;
+
+
+		//////HP
+		std::vector<GUItestClass*> hearthArray;
+		backgroundClass* playerShadowPlane;
+		XMMATRIX shadowMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
