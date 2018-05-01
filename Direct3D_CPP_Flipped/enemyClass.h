@@ -42,7 +42,11 @@ class enemyClass
 		int getEnemyHP();
 
 		bool hurtState();
+
 		void timeCountdown(double dt);
+
+		bool attackCooldown();
+		void updateAttackCooldownTimer();
 		
 		void setFacing(bool other);
 		bool getFacing();
@@ -52,9 +56,27 @@ class enemyClass
 
 		void checkCollisions(bool top, bool left, bool right, bool bot);
 
-		void setLengthBetween(float length1, float length2);
+		void setRangeVector(XMVECTOR x);
+		XMVECTOR getRangeVector();
 
-		void updateInteraction(playerClass player);
+		bool getIfAttack();
+		
+		int getAttackCooldown();
+
+		//VAPEN
+		void setBboxMaxWeaponRight(XMVECTOR vector);
+		void setBboxMinWeaponRight(XMVECTOR vector);
+
+		XMVECTOR getBboxMaxWeaponRight();
+		XMVECTOR getBboxMinWeaponRight();
+
+		void setBboxMaxWeaponLeft(XMVECTOR vector);
+		void setBboxMinWeaponLeft(XMVECTOR vector);
+
+		XMVECTOR getBboxMaxWeaponLeft();
+		XMVECTOR getBboxMinWeaponLeft();
+
+		XMVECTOR getStartPos();
 
 	private:
 
@@ -77,9 +99,19 @@ class enemyClass
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
 
+		XMVECTOR rangeVector;
+		XMVECTOR rangeCheck;
+
+		XMVECTOR startPos;
+
 		int HP;
 		bool isHurt;
+
 		int hurtCooldown;
+
+		bool isAttack;
+		int fakeTimer;
+
 
 		void setEnemyHurt(bool check);
 		bool getEnemyHurt();
@@ -88,16 +120,30 @@ class enemyClass
 		bool useRotation;
 
 		float oldMoveValY;
+
 		float oldMoveValX;
 
 		float upSpeed;
 
-		float lengthBetween1;
-		float lengthBetween2;
 		
 		float turningDelay;
 
 		
+
+
+		bool isHit;
+		bool isAttacking;
+		void checkIfAttacking();
+
+		//VAPEN
+
+		XMVECTOR bboxMaxLeft;
+		XMVECTOR bboxMinLeft;
+
+		XMVECTOR bboxMaxRight;
+		XMVECTOR bboxMinRight;
+		int tonsOfDmg;
+
 };
 
 

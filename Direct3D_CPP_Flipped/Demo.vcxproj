@@ -111,6 +111,7 @@
     <ClCompile Include="pickupClass.cpp" />
     <ClCompile Include="platformClass.cpp" />
     <ClCompile Include="playerClass.cpp" />
+    <ClCompile Include="projectileClass.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="weaponClass.cpp" />
   </ItemGroup>
@@ -131,6 +132,7 @@
     <ClInclude Include="pickupClass.h" />
     <ClInclude Include="platformClass.h" />
     <ClInclude Include="playerClass.h" />
+    <ClInclude Include="projectileClass.h" />
     <ClInclude Include="shaderClass.h" />
     <ClInclude Include="stb_image2.h" />
     <ClInclude Include="weaponClass.h" />
@@ -147,6 +149,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">GS_main</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">GS_main</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="PickUpPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

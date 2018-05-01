@@ -9,16 +9,31 @@ enemyClass::enemyClass()
 	moveValZ = 0;
 	transStart = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
+	rangeCheck = { 4.0f, 0.0f, 0.0f };
 	isActive = true;
 	checkIfObjHolder = false;
 	HP = 3;
+	isAttack = false;
 	isHurt = false;
+
 	hurtCooldown = 0;
 
 	upSpeed = 0;
 
+	fakeTimer = 1000;
+
+
 	isFacingRight = true;
 	useRotation = false;
+
+	isHit = false;
+
+	//VAPEN
+	bboxMinRight = { 0.0f, 0.0f };
+	bboxMaxRight = { 0.0f,0.0f };
+	bboxMinLeft = { 0.0f, 0.0f };
+	bboxMaxLeft = { 0.0f,0.0f };
+	tonsOfDmg = 0;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -48,8 +63,11 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	obj->setType(3);
+
 
 	setStartMat(0.0f, 8.0f);
+
 
 	return true;
 }
@@ -69,6 +87,11 @@ void enemyClass::setTriggerVector(XMVECTOR x)
 	this->triggerVector = x;
 }
 
+void enemyClass::setRangeVector(XMVECTOR x)
+{
+	this->rangeVector = x;
+}
+
 XMVECTOR enemyClass::getTriggerVector()
 {
 	return this->triggerVector;
@@ -80,10 +103,16 @@ void enemyClass::resetEnemy()
 	checkIfObjHolder = false;
 	HP = 3;
 	isHurt = false;
+
 	hurtCooldown = 0;
+
+	isAttack = false;
+	fakeTimer = 300;
+
 
 	isFacingRight = true;
 	useRotation = false;
+
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -121,7 +150,11 @@ bool enemyClass::hurtState()
 	if (this->isHurt == false && hurtCooldown == 0)
 	{
 		this->isHurt = true;
+
 		hurtCooldown = 150;
+
+		fakeTimer = 300;
+
 		return true;
 	}
 	else
@@ -136,6 +169,29 @@ void enemyClass::timeCountdown(double dt)
 	{
 		this->hurtCooldown -= 1 * dt;
 		this->isHurt = false;
+	}
+}
+
+bool enemyClass::attackCooldown()
+{
+	if (this->isAttack == false && fakeTimer <= 0)
+	{
+		this->isAttack = true;
+		fakeTimer = 300;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void enemyClass::updateAttackCooldownTimer()
+{
+	this->fakeTimer -= 1;
+	if (this->fakeTimer <= 0)
+	{
+		this->isAttack = false;
 	}
 }
 
@@ -157,6 +213,28 @@ void enemyClass::setRotationCheck(bool other)
 bool enemyClass::getRotationCheck()
 {
 	return this->useRotation;
+}
+
+void enemyClass::checkIfAttacking()
+{
+	if (isHit == true)
+	{
+		this->isAttacking = true;
+	}
+	else
+	{
+		this->isAttacking = false;
+	}
+}
+
+bool enemyClass::getIfAttack()
+{
+	return isHit;
+}
+
+int enemyClass::getAttackCooldown()
+{
+	return this->fakeTimer;
 }
 
 void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
@@ -185,57 +263,6 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 	}
 }
 
-//void enemyClass::setLengthBetween(float length1, float length2)
-//{
-//	this->lengthBetween1 = length1;
-//	this->lengthBetween2 = length2;
-//}
-
-//void enemyClass::updateInteraction(playerClass *player)
-//{
-//	XMMATRIX playerMoveMat;
-//	player->getMoveMat(playerMoveMat);
-//
-//
-//	lengthBetween1 = XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMoveMat));
-//	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMoveMat)) - XMVectorGetX(XMVector3Transform(this->getObj()->getPosition(), moveMat));
-//
-//	if (this->getIsActive() && player->getFlipped() && player->getIfAttack() &&
-//		player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMoveMat),
-//			XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMoveMat),
-//			XMVector3Transform(this->getObj()->getBoundingBoxMin(), moveMat),
-//			XMVector3Transform(this->getObj()->getBoundingBoxMax(), moveMat)))
-//	{
-//		if (this->hurtState())
-//		{
-//			this->setEnemyHP(this->HP - 1);
-//			OutputDebugString(L"\nenemy lost hP!\n");
-//		}
-//		if (this->getEnemyHP() <= 0)
-//		{
-//			removeObjFromObjHolder(enemy->getObj());
-//			enemy->setIsActive(false);
-//			player->setIfInObjHolder(false);
-//		}
-//	}
-//	else if (this->getIsActive() && !player->getFlipped() && player->getIfAttack()
-//		&& player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMoveMat),
-//			XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMoveMat),
-//			XMVector3Transform(this->getObj()->getBoundingBoxMin(), moveMat),
-//			XMVector3Transform(this->getObj()->getBoundingBoxMax(), moveMat)))
-//	{
-//		if (enemy->hurtState())
-//		{
-//			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
-//			OutputDebugString(L"\nenemy lost hP!\n");
-//		}
-//		if (enemy->getEnemyHP() <= 0)
-//		{
-//			removeObjFromObjHolder(enemy->getObj());
-//			enemy->setIsActive(false);
-//		}
-//	}
-//}
 
 void enemyClass::setEnemyHurt(bool check)
 {
@@ -262,7 +289,7 @@ void enemyClass::handleMovement(double dt)
 	//input->readKeyboard(dt);
 	if (lengthBetween1 <= XMVectorGetX(triggerCheck) && lengthBetween1 >= 1.5f)
 	{
-		//går vänster
+		//gï¿½r vï¿½nster
 
 		moveValX += -2.5f * dt;
 		/*idle = false;
@@ -288,7 +315,7 @@ void enemyClass::handleMovement(double dt)
 	}
 	if (lengthBetween2 <= XMVectorGetX(triggerCheck) && lengthBetween1 <= 1.5f)
 	{
-		//går höger
+		//gï¿½r hï¿½ger
 
 		moveValX += 2.5f * dt;
 		/*idle = false;
@@ -393,3 +420,54 @@ XMVECTOR enemyClass::getTriggerCheck()
 }
 
 
+XMVECTOR enemyClass::getRangeVector()
+{
+	return this->rangeCheck;
+}
+
+//VAPEN
+
+void enemyClass::setBboxMaxWeaponRight(XMVECTOR vector)
+{
+	this->bboxMaxRight = vector;
+}
+
+void enemyClass::setBboxMinWeaponRight(XMVECTOR vector)
+{
+	this->bboxMinRight = vector;
+}
+
+XMVECTOR enemyClass::getBboxMaxWeaponRight()
+{
+	return this->bboxMaxRight;
+}
+
+XMVECTOR enemyClass::getBboxMinWeaponRight()
+{
+	return this->bboxMinRight;
+}
+
+void enemyClass::setBboxMaxWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMaxLeft = vector;
+}
+
+void enemyClass::setBboxMinWeaponLeft(XMVECTOR vector)
+{
+	this->bboxMinLeft = vector;
+}
+
+XMVECTOR enemyClass::getBboxMaxWeaponLeft()
+{
+	return this->bboxMaxLeft;
+}
+
+XMVECTOR enemyClass::getBboxMinWeaponLeft()
+{
+	return this->bboxMinLeft;
+}
+
+XMVECTOR enemyClass::getStartPos()
+{
+	return this->startPos;
+}

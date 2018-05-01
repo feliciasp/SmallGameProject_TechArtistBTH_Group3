@@ -8,6 +8,8 @@ GUItestClass::GUItestClass()
 	checkIfSetToObjHolder = false;
 	checkIfKeyStateWasTrueLastFrame = false;
 	fakeTimer = 0;
+	fakeTimer2 = 0;
+	isBought = false;
 }
 void GUItestClass::resetGUI()
 {
@@ -15,6 +17,38 @@ void GUItestClass::resetGUI()
 	checkIfSetToObjHolder = false;
 	checkIfKeyStateWasTrueLastFrame = false;
 	fakeTimer = 0;
+	fakeTimer2 = 0;
+}
+
+void GUItestClass::updateDestroy2(double dt)
+{
+	input->readKeyboard(dt);
+	if (this->input->isTPressed() && fakeTimer2 <= 0)
+	{
+		fakeTimer2 = 200;
+		if (this->isDestroy == true)
+		{
+			this->isDestroy = false;
+		}
+		else if(this->isDestroy == false)
+		{
+			this->isDestroy = true;
+		}
+	}
+	else
+	{
+		fakeTimer2 -= 1;
+	}
+}
+
+void GUItestClass::setIsBought(bool check)
+{
+	this->isBought = check;
+}
+
+bool GUItestClass::getIsBought()
+{
+	return this->isBought;
 }
 
 

@@ -21,6 +21,8 @@ class cameraClass
 		void createViewMatrix();
 		void getViewMat(XMMATRIX& viewMat);
 
+		void reset();
+
 	private:
 		XMVECTOR camPos;
 		XMVECTOR camTarget;

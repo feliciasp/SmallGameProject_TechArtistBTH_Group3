@@ -77,6 +77,7 @@ Importer::~Importer()
 //	return false;
 //
 //}
+//Derp
 
 bool Importer::loadMesh(const char * filename)
 {
@@ -108,7 +109,17 @@ bool Importer::loadMesh(const char * filename)
 			infile.read((char*)&loadedMeshes[i].meshHeader, sizeof(Mesh));
 			this->loadedMeshes[i].vertices = new Vertex[loadedMeshes[i].meshHeader.vertexCount];
 			infile.read((char*)loadedMeshes[i].vertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
+
+			////For animations
+			//infile.read((char*)&loadedMeshes[i].blendShapesHeader, sizeof(BlendShapesHeader));
+
+			//for (int j = 0; j < loadedMeshes[i].blendShapesHeader.nrOfBlendShapes; j++)
+			//{
+			//	infile.read((char*)&loadedMeshes[i].blendShapeTimeline[j].blendShapeHeader, sizeof(BlendShape));
+			//	infile.read((char*)loadedMeshes[i].blendShapeTimeline[j].blendShapesVertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
+			//}
 		}
+
 
 		return true;
 	}

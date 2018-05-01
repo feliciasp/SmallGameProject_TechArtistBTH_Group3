@@ -17,6 +17,7 @@
 #include "pickupClass.h"
 #include "playerClass.h"
 #include "platformClass.h"
+#include "projectileClass.h"
 #include "GUItest.h"
 
 using namespace DirectX;
@@ -50,6 +51,9 @@ class gameClass
 		void addObjectToObjHolderWin(objectClass* obj);
 		void removeObjFromObjHolderWin(objectClass* obj);
 
+		void addHearthToHeartHolder(GUItestClass* hearth);
+		void removeHearthFromHeartHolder(GUItestClass* hearth);
+
 	private:
 		bool frameLimbo(double dt);
 		bool frameGame(double dt);
@@ -74,6 +78,7 @@ class gameClass
 		pickupClass* pickup;
 		playerClass* player;
 		platformClass* platform;
+		projectileClass* projectile;
 		GUItestClass* GUItest;
 
 		std::vector<objectClass*> objHolder;
@@ -84,35 +89,46 @@ class gameClass
 		XMMATRIX moveMatTest;
 		float moveTest;
 
-		XMMATRIX world, view, proj;
+		XMMATRIX world, view, proj, ortoProj;
 		void updateConstantMatrices();
 		void updateEnemy(double dt);
 		
 		
 		XMMATRIX playerMove;
+
 		XMMATRIX enemyMove;
 
 		XMMATRIX enemyStartPosMat;
 
-		void updatePlayer(double dt);
+	
+
+		void updatePlayer(platformClass* platform, double dt);
+		void updatePlayerShadow();
 		void updateCamera();
 		XMMATRIX backgroundMat;
 		void staticBackground();
 		XMMATRIX pickupStartPosMoveMat;
-		void updatePickup();
+		void updatePickup(double dt);
+		void updateProjectile(double dt);
+		XMMATRIX projectileMoveMat;
 		float lengthBetween1;
 		float lengthBetween2;
 		void updateCollision(double dt);
 		XMMATRIX platformMat;
 
+		XMMATRIX enemyTrans;
 
+		float lengthBetweenEnemyStartAndEnemyCurrentPos1;
+		float lengthBetweenEnemyStartAndEnemyCurrentPos2;
+
+		XMVECTOR tempBboxMin;
 		int countEnemy;
 		/*bool checkCollisionPlatform();*/
 
-		bool checkCollisionPlatformTop(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformLeft(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformRight(objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformBot(objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformLeft(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+		bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 
 	
@@ -123,6 +139,7 @@ class gameClass
 		void setGameStateLevel(bool other);
 		void setGameStateMeny(bool other);
 		void setGameStateLimbo(bool other);
+
 
 		//GUI
 		GUItestClass* GUIheart1;
@@ -141,12 +158,36 @@ class gameClass
 		bool done;
 
 		/////////LIMBO STUFF
-		GUItestClass* limbo;
+		backgroundClass* limboFrontPlane;
+		backgroundClass* limboBackPlane;
+		platformClass* limboWalkingPlane;
 		XMMATRIX limboMat;
+		void updateLimboBackground();
+
+		//has to do with shop
+		GUItestClass* upgradeGUI;
+		GUItestClass* upgradeOverlay;
+		void updateShop();
+		XMMATRIX shopMat;
+		void updateShop(double dt, GUItestClass* obj);
+		bool isUpgradeHPAactive;
+		int nrHPtoBeUpgraded;
+		int healthCost;
+		bool upgradeCooldown;
+		int upgradeTimer;
+		bool checkUpgradeCooldown();
+		int getCooldownTimerShop();
+		void updateShopCooldown();
 
 		//////////////////////WIN STATE
 		GUItestClass* win;
 		XMMATRIX winMat;
+
+
+		//////HP
+		std::vector<GUItestClass*> hearthArray;
+		backgroundClass* playerShadowPlane;
+		XMMATRIX shadowMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
