@@ -37,12 +37,13 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
-
 private:
 	objectClass * obj;
 	bool isDestroy;
 	XMMATRIX transStart;
 	bool checkIfSetToObjHolder;
+
+	//std::vector<pickupClass> pickupArrayHolder;
 
 	int frameCount;
 	int currentFrame;

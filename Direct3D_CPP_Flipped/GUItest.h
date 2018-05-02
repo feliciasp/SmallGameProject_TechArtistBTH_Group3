@@ -31,6 +31,7 @@ public:
 	void setIsBought(bool check);
 	bool getIsBought();
 
+	void clone(GUItestClass& other);
 private:
 	objectClass* obj;
 	directInput* input;

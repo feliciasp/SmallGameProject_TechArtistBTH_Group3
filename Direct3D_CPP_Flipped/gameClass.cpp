@@ -16,11 +16,14 @@ gameClass::gameClass(HINSTANCE hInstance)
 	menyHighlightMat = XMMatrixScaling(0.38f, 0.07f, 0.0f) * XMMatrixTranslation(-0.027f, 0.16f, 0.0f);
 	counterOverlay = 0;
 	menyCheck = true; 
-	counterOverlay = 0;
+	shopOverlayCount = 0;
+	shopOverlayMat = XMMatrixScaling(0.38f, 0.07f, 0.0f);
+	nrSpeedToBeUpgraded = 0;
 
 	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
 
 	countEnemy = 0;
+	SpeedCost = 1;
 
 	player = 0;
 	camera = 0;
@@ -853,6 +856,9 @@ bool gameClass::frameLimbo(double dt)
 	//enviroment
 	updateLimboBackground();
 
+	//updateShopMats
+	updateShopWorldMat();
+
 	//player
 	updatePlayer(limboWalkingPlane, dt);
 	
@@ -1569,10 +1575,22 @@ void gameClass::updateLimboBackground()
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
 }
 
-void gameClass::updateShop()
+void gameClass::updateShopWorldMat()
 {
-	upgradeGUI->getObj()->setWorldMatrix(XMMatrixIdentity());
-	upgradeOverlay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	upgradeGUI->getObj()->setWorldMatrix(shopMat);
+	//overlay update
+	if (inputDirectOther->isArrowDownPressed() && checkUpgradeCooldown() && getShopOverlayCounter() < 2)
+	{
+		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
+		setShopOverlayCounter(getShopOverlayCounter() + 1);
+	}
+	if (inputDirectOther->isArrowUpPressed() && checkUpgradeCooldown() && getShopOverlayCounter() > 0)
+	{
+		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
+		setShopOverlayCounter(getShopOverlayCounter() - 1);
+	}
+	updateShopCooldown();
+	upgradeOverlay->getObj()->setWorldMatrix(shopOverlayMat);
 }
 
 bool gameClass::updateGUI(double dt, GUItestClass* obj)
@@ -1593,18 +1611,28 @@ void gameClass::updateShop(double dt, GUItestClass* obj)
 		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
 		upgradeGUI->setCheckIfObjHolder(false);
 	}
+	if (!upgradeOverlay->getIsDestry() && !upgradeOverlay->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(upgradeOverlay->getObj());
+		upgradeOverlay->setCheckIfObjHolder(true);
+	}
+	if (upgradeOverlay->getIsDestry() && upgradeOverlay->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(upgradeOverlay->getObj());
+		upgradeOverlay->setCheckIfObjHolder(false);
+	}
 
 	if (!upgradeGUI->getIsDestry())
 	{
 		//now you can upgrade your stuff
-		if (isUpgradeHPAactive)
+		if (shopOverlayCount == 0)
 		{
-
 			inputDirectOther->readKeyboard(dt);
 			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
 			{
 				if (player->getNrPixelFramgent() >= healthCost)
 				{
+					player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);
 					nrHPtoBeUpgraded += 1;
 					healthCost = healthCost * 2;
 				}
@@ -1613,32 +1641,70 @@ void gameClass::updateShop(double dt, GUItestClass* obj)
 			inputDirectOther->readKeyboard(dt);
 			if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && checkUpgradeCooldown())
 			{
+				player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
 				nrHPtoBeUpgraded -= 1;
 				healthCost = healthCost / 2;
 			}
-			
-			updateShopCooldown();
 
-			if (nrHPtoBeUpgraded > 0)
+		}
+		if (shopOverlayCount == 1)
+		{
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
 			{
-				for (int i = 0; i < nrHPtoBeUpgraded; i++)
+				if (player->getNrPixelFramgent() >= SpeedCost)
 				{
-					if (!hearthArray[player->getMaxHP() + i]->getIsDestry() && !hearthArray[player->getMaxHP() + i]->getCheckIfObjHolder())
+					player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
+					nrSpeedToBeUpgraded += 1;
+					SpeedCost = SpeedCost * 2;
+				}
+			}
+
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && checkUpgradeCooldown())
+			{
+				player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
+				nrSpeedToBeUpgraded -= 1;
+				SpeedCost = SpeedCost / 2;
+			}
+
+		}
+		if (shopOverlayCount == 2)
+		{
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
+			{
+				if (nrHPtoBeUpgraded > 0)
+				{
+					for (int i = 0; i < nrHPtoBeUpgraded; i++)
 					{
-						addObjectToObjHolder(hearthArray[player->getMaxHP() + i]->getObj());
-						hearthArray[player->getMaxHP() + i]->setCheckIfObjHolder(true);
-						hearthArray[player->getMaxHP() + i]->setIsBought(true);
-						OutputDebugString(L"\nheart was created!\n");
+						if (!hearthArray[player->getMaxHP() + i]->getIsDestry() && !hearthArray[player->getMaxHP() + i]->getCheckIfObjHolder())
+						{
+							addObjectToObjHolder(hearthArray[player->getMaxHP() + i]->getObj());
+							hearthArray[player->getMaxHP() + i]->setCheckIfObjHolder(true);
+							hearthArray[player->getMaxHP() + i]->setIsBought(true);
+							OutputDebugString(L"\nheart was created!\n");
+						}
 					}
+				}
+				if (nrHPtoBeUpgraded > 0)
+				{
+					player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
+					nrHPtoBeUpgraded = 0;
+				}
+				if (nrSpeedToBeUpgraded > 0)
+				{
+					for (int i = 0; i < nrSpeedToBeUpgraded; i++)
+					{
+						player->setSpeedVal(player->getSpeedVal() + 1.0f);
+						OutputDebugString(L"\nSpeed was created!\n");
+					}
+					nrSpeedToBeUpgraded = 0;
 				}
 			}
 		}
 	}
-	if (nrHPtoBeUpgraded > 0)
-	{
-		player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
-		nrHPtoBeUpgraded = 0;
-	}
+	updateShopCooldown();
 }
 
 bool gameClass::checkUpgradeCooldown()
@@ -1670,6 +1736,16 @@ void gameClass::updateShopCooldown()
 	{
 		this->upgradeCooldown = false;
 	}
+}
+
+int gameClass::getShopOverlayCounter()
+{
+	return this->shopOverlayCount;
+}
+
+void gameClass::setShopOverlayCounter(int x)
+{
+	this->shopOverlayCount = x;
 }
 
 void gameClass::updatePlatform()

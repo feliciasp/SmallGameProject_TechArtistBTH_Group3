@@ -7,6 +7,7 @@ struct VS_OUT
 	float3 Color : COLOR;
 	//float4 pointOnSurface : POSITION;
 	float2 TexCoord : TEXCOORD;
+	float4 Tangent : TANGENT;
 };
 
 
