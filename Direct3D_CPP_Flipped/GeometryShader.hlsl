@@ -6,6 +6,7 @@ struct VS_OUT
 	float4 pointOnSurface : POSITION;
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
+	int hurtColor : HURT;
 };
 
 struct GS_OUT
@@ -16,6 +17,7 @@ struct GS_OUT
 	float4 pointOnSurface : POSITION;
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
+	int hurtColor : HURT;
 };
 
 [maxvertexcount(3)]
@@ -35,6 +37,7 @@ void GS_main(
 		output.pointOnSurface = input[i].pointOnSurface;
 
 		output.cameraPos = input[i].cameraPos;
+		output.hurtColor = input[i].hurtColor;
 
 		outputStream.Append(output);
 		

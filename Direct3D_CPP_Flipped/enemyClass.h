@@ -77,6 +77,7 @@ class enemyClass
 		XMVECTOR getBboxMinWeaponLeft();
 
 		XMVECTOR getStartPos();
+		int getHurt();
 
 	private:
 		objectClass* obj;
@@ -122,6 +123,7 @@ class enemyClass
 		XMVECTOR bboxMaxRight;
 		XMVECTOR bboxMinRight;
 		int tonsOfDmg;
+		int hurt;
 };
 
 

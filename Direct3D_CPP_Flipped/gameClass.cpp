@@ -382,7 +382,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "limboBack.bin");
+	result = limboBackPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboBackPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -402,14 +402,14 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limboWalkingPlane->initlialize(graphics->getD3D()->GetDevice(), "limboWalking.bin");
+	result = limboWalkingPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboPlatform.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboWalkingPlane->getObj()->setMaterialName("LimboBack.png");
+	limboWalkingPlane->getObj()->setMaterialName("Shadow.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getMaterialName());
 
 	addObjectToObjHolderLimbo(limboWalkingPlane->getObj());
@@ -423,7 +423,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "limboFront.bin");
+	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -432,7 +432,7 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
-	//addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
 	//LIMBO UPGRADE
 	upgradeGUI = new GUItestClass;
@@ -751,7 +751,7 @@ bool gameClass::frameWin(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderWin.size(); i++)
 	{
-		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition());
+		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), 0);
 		if (!result)
 		{
 			return false;
@@ -800,7 +800,7 @@ bool gameClass::frameLimbo(double dt)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -810,7 +810,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), pickup->getFrameCount(), pickup->getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, pickup->getFrameCount(), pickup->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -819,7 +819,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition());
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0);
 			if (!result)
 
 			{
@@ -937,7 +937,7 @@ bool gameClass::frameGame(double dt)
 	{
 		if (objHolder[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -947,16 +947,25 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), pickup->getFrameCount(), pickup->getCurrentFrame());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0,  pickup->getFrameCount(), pickup->getCurrentFrame());
 			if (!result)
 			{
 				return false;
 			}
 		}
 
+		else if (objHolder[i]->getType() == 3) {
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), enemy->getHurt());
+			if (!result)
+			{
+				return false;
+			}
+
+		}
+
 		else
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0);
 			if (!result)
 
 			{
@@ -1035,7 +1044,7 @@ bool gameClass::frameMeny(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderMeny.size(); i++)
 	{
-		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition());
+		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), 0);
 		if (!result)
 
 		{
@@ -1358,91 +1367,29 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 
 void gameClass::updatePlayerShadow()
 {
-	//OutputDebugString(L"\nSHADOW!!!\n");
-	//bool onGround = checkCollisionPlatformBot(platform, player->getObj(), playerMove);
-
-	/*if (player->getShowShadow() == true) {
-		OutputDebugString(L"\nSHADOW ON\n");
-	} else if (player->getShowShadow() == false) {
-		OutputDebugString(L"\nSHADOW OFF\n");
-	}*/
-
-
-	//Om vi inte hopppar/faller
-	if (player->getShowShadow() == true)
-	{
-		OutputDebugString(L"\nSHADOW ON\n");
-		//Om skuggan inte redan finns
+	//If we're not jumping/falling
+	if (player->getShowShadow() == true){
+		//If shadow is'nt rendered
 		if (playerShadowPlane->getIsInObjHolder() == false) {
-			//Skapa skuggan
-			
+			//Render shadow
 			addObjectToObjHolder(playerShadowPlane->getObj());
 			playerShadowPlane->setIsInObjHolder(true);
 
-			//Rendera sedan spelaren
+			//Then render player
 			player->setIfInObjHolder(false);
 			removeObjFromObjHolder(player->getObj());
 		}
-		//Uppdatera skuggans position
+		//Update shadow position
 		playerShadowPlane->getObj()->setWorldMatrix(playerMove);
 		XMMATRIX offset = XMMatrixTranslation(0.0f, -1.315f, 0.0f);
 		playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
 	}
-	//Om skuggan inte ska synas
-	else
-	{
-		//Ta bort skuggan
-		OutputDebugString(L"\nSHADOW OFF\n");
-		//playerShadowPlane->getObj()->setWorldMatrix(playerMove);
-		//XMMATRIX offset = XMMatrixTranslation(0.0f, 1.0f, 0.0f);
-		//playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
+	//If we're jumping/falling
+	else{
+		//Remove shadow
 		playerShadowPlane->setIsInObjHolder(false);
 		removeObjFromObjHolder(playerShadowPlane->getObj());
 	}
-
-	/*OutputDebugString(L"\nSHADOW!!!\n");
-	if (playerShadowPlane->getIsInObjHolder() == false)
-	{
-	addObjectToObjHolder(playerShadowPlane->getObj());
-	playerShadowPlane->setIsInObjHolder(true);
-
-	player->setIfInObjHolder(false);
-	removeObjFromObjHolder(player->getObj());
-	}
-	shadowMat = playerMove;
-	playerShadowPlane->getObj()->setWorldMatrix(playerMove);
-	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
-	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
-
-
-	/*if (playerShadowPlane->getIsInObjHolder() == false) {
-	addObjectToObjHolder(playerShadowPlane->getObj());
-	OutputDebugString(L"\nShadow colission!\n");
-	playerShadowPlane->setIsInObjHolder(true);
-	player->setIfInObjHolder(false);
-	removeObjFromObjHolder(player->getObj());
-	}
-	shadowMat = playerMove;
-	XMMATRIX offset = XMMatrixTranslation(0.0f, 0.0f, 1.0f);
-	playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);*/
-
-
-	/*else
-	{
-		removeObjFromObjHolder(playerShadowPlane->getObj());
-	}*/
-
-	/*
-	if ((checkCollisionPlatformBot(platform, player->getObj(), playerMove) == true) && (playerShadowPlane == false))
-	{
-		addObjectToObjHolder(playerShadowPlane->getObj());
-
-	}
-	else
-	{
-		removeObjFromObjHolder(playerShadowPlane->getObj());
-	}
-	*/
 }
 
 void gameClass::updateCamera()
@@ -1596,8 +1543,8 @@ void gameClass::updateCollision(double dt)
 	{
 		if(enemy->hurtState())
 		{
-			enemy->resetMove();
-			enemy->getTranslationMatStart(masterMovementEnemyMat);
+			//enemy->resetMove();
+			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
@@ -1618,8 +1565,8 @@ void gameClass::updateCollision(double dt)
 	{
 		if (enemy->hurtState())
 		{
-			enemy->resetMove();
-			enemy->getTranslationMatStart(masterMovementEnemyMat);
+			//enemy->resetMove();
+			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
@@ -1735,7 +1682,6 @@ void gameClass::updateCollision(double dt)
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
-        }
 					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
           {
 					player->setPlayerHurt(true);
