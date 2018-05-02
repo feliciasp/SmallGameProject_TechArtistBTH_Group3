@@ -53,7 +53,9 @@ bool GUItestClass::getIsBought()
 
 void GUItestClass::clone(GUItestClass & other)
 {
-
+	obj = new objectClass;
+	obj->clone(*other.obj);
+	obj->setType(1);
 	
 }
 

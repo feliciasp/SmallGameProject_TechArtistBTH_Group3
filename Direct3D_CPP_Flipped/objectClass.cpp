@@ -24,6 +24,7 @@ void objectClass::clone(const objectClass & other)
 	memcpy(vertexBuffer, other.vertexBuffer, sizeof(other.vertexBuffer));
 	collision = new collisionClass;
 	memcpy(collision, other.collision, sizeof(other.collision));
+	matName = other.matName;
 }
 
 bool objectClass::initlialize(ID3D11Device * device, const char* filename)

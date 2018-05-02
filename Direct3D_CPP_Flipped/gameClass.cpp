@@ -35,6 +35,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
+	heartHolder = 0;
 
 	projectileMoveMat = XMMatrixIdentity();
 
@@ -46,8 +47,6 @@ gameClass::gameClass(HINSTANCE hInstance)
 	done = false;
 	
 	GUIheart1 = 0;
-	GUIheart2 = 0;
-	GUIheart3 = 0;
 
 	isUpgradeHPAactive = true;
 	nrHPtoBeUpgraded = 0;
@@ -274,11 +273,6 @@ bool gameClass::initialize(int ShowWnd)
 	pickup->setPickupType(3);
 	pickup->setRingType(1);
 
-	pickup2 = new pickupClass;
-	pickup2->clone(*pickup);
-	pickup2->setPickupType(3);
-	pickup2->setRingType(0);
-
 	if (pickup->getRingType() == 0)
 	{
 		OutputDebugString(L"\ringtype is 0\n");
@@ -326,48 +320,19 @@ bool gameClass::initialize(int ShowWnd)
 	GUIheart1->getObj()->setMaterialName("cubeTexture1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart1->getObj()->getMaterialName());
 
-	GUIheart2 = new GUItestClass;
-	if (!GUIheart2)
-	{
-		MessageBox(NULL, L"Error create pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = GUIheart2->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	GUIheart2->getObj()->setWorldMatrix(heart2);
-	GUIheart2->getObj()->setMaterialName("cubeTexture1.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart2->getObj()->getMaterialName());
 
-	GUIheart3 = new GUItestClass;
-	if (!GUIheart3)
-	{
-		MessageBox(NULL, L"Error create pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = GUIheart3->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	GUIheart3->getObj()->setWorldMatrix(heart3);
-	GUIheart3->getObj()->setMaterialName("cubeTexture1.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart3->getObj()->getMaterialName());
 
-	addHearthToHeartHolder(GUIheart3);
-	GUIheart3->setIsBought(true);
-	addHearthToHeartHolder(GUIheart2);
-	GUIheart2->setIsBought(false);
-	addHearthToHeartHolder(GUIheart1);
-	GUIheart1->setIsBought(false);
+	addHearthToHeartHolder(*GUIheart1, 1);
+	addHearthToHeartHolder(*GUIheart1, 2);
+	addHearthToHeartHolder(*GUIheart1, 3);
+
+
+	heartHolder[0].setIsBought(true);
+	heartHolder[0].getObj()->setWorldMatrix(heart3);
+	heartHolder[1].getObj()->setWorldMatrix(heart2);
+	heartHolder[2].getObj()->setWorldMatrix(heart1);
+
+
 	
 	//platform 
 	platform = new platformClass;
@@ -389,7 +354,6 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
-	addObjectToObjHolder(pickup2->getObj());
 
 	//////////////////////////
 	//		MENY			//
@@ -636,18 +600,16 @@ void gameClass::shutdown()
 		delete GUIheart1;
 		GUIheart1 = 0;
 	}
-	if (GUIheart2)
+	if (heartHolder)
 	{
-		GUIheart2->shutdown();
-		delete GUIheart2;
-		GUIheart2 = 0;
+		for (int i = 0; i < 3; i++)
+		{
+			heartHolder[i].shutdown();
+		}
+
+		delete[] heartHolder;
 	}
-	if (GUIheart3)
-	{
-		GUIheart3->shutdown();
-		delete GUIheart3;
-		GUIheart3 = 0;
-	}
+	
 	if (meny)
 	{
 		meny->shutdown();
@@ -1020,10 +982,10 @@ bool gameClass::frameGame(double dt)
 	//every hearth that is created will forfill this criteria
 	for (int i = 0; i < player->getPlayerHP(); i++)
 	{
-		if (!hearthArray[i]->getIsDestry() && !hearthArray[i]->getCheckIfObjHolder() && hearthArray[i]->getIsBought())
+		if (!heartHolder[i].getIsDestry() && !heartHolder[i].getCheckIfObjHolder() && heartHolder[i].getIsBought())
 		{
-			addObjectToObjHolder(hearthArray[i]->getObj());
-			hearthArray[i]->setCheckIfObjHolder(true);
+			addObjectToObjHolder(heartHolder[i].getObj());
+			heartHolder[i].setCheckIfObjHolder(true);
 			OutputDebugString(L"\nheart was created2!\n");
 		}
 	}
@@ -1080,9 +1042,10 @@ bool gameClass::frameGame(double dt)
 		pickup->resetPickup();
 		enemy->resetEnemy();
 		projectile->resetProjectile();
-		GUIheart1->resetGUI();
-		GUIheart2->resetGUI();
-		GUIheart3->resetGUI();
+		for (int i = 0; i < 3; i++)
+		{
+			heartHolder[i].resetGUI();
+		}
 
 		gameStateLevel = false;
 		gameStateMeny = false;
@@ -1098,9 +1061,10 @@ bool gameClass::frameGame(double dt)
 		pickup->resetPickup();
 		enemy->resetEnemy();
 		projectile->resetProjectile();
-		GUIheart1->resetGUI();
-		GUIheart2->resetGUI();
-		GUIheart3->resetGUI();
+		for (int i = 0; i < 3; i++)
+		{
+			heartHolder[i].resetGUI();
+		}
 		pickup->setRingType(rand() % 2);
 
 		gameStateLevel = false;
@@ -1120,9 +1084,10 @@ bool gameClass::frameGame(double dt)
 
 		camera->reset();
 
-		GUIheart1->resetGUI();
-		GUIheart2->resetGUI();
-		GUIheart3->resetGUI();
+		for (int i = 0; i < 3; i++)
+		{
+			heartHolder[i].resetGUI();
+		}
 
 		gameStateLevel = false;
 		gameStateMeny = true;
@@ -1407,19 +1372,52 @@ void gameClass::removeObjFromObjHolderWin(objectClass * obj)
 	}
 }
 
-void gameClass::addHearthToHeartHolder(GUItestClass * hearth)
+void gameClass::addHearthToHeartHolder(GUItestClass &heart, int playerHP)
 {
-	hearthArray.push_back(hearth);
+	GUItestClass* tempArray = new GUItestClass[playerHP];
+
+	for (int i = 0; i < playerHP - 1; i++)
+	{
+		tempArray[i] = heartHolder[i];
+	}
+
+	if (heartHolder != nullptr)
+	{
+		OutputDebugString(L"\nNULLPTR!\n");
+	}
+	
+	delete[] heartHolder;
+
+	heartHolder = tempArray;
+	heartHolder[playerHP - 1].clone(heart);
 }
 
-void gameClass::removeHearthFromHeartHolder(GUItestClass * hearth)
+void gameClass::removeHearthFromHeartHolder(GUItestClass hearth, int playerHP)
 {
-	for (int i = 0; i < hearthArray.size(); i++)
+	int index = -1;
+	for (int i = 0; i < playerHP + 1; i++)
 	{
-		if (hearthArray[i] == hearth)
+		if (heartHolder->getObj() == hearth.getObj())
 		{
-			hearthArray.erase(hearthArray.begin() + i);
+			index = i;
 		}
+	}
+
+	if (index != -1)
+	{
+		GUItestClass* tempArray = new GUItestClass[playerHP];
+		int j = 0;
+		for (int i = 0; i < playerHP - 1; i++)
+		{
+			if (i != index)
+			{
+				tempArray[j] = heartHolder[i];
+				j++;
+			}	
+		}
+
+		delete[] heartHolder;
+		heartHolder = tempArray;
 	}
 }
 
@@ -1682,7 +1680,6 @@ void gameClass::updateShop(double dt, GUItestClass* obj)
 				nrSpeedToBeUpgraded -= 1;
 				SpeedCost = SpeedCost / 2;
 			}
-
 		}
 		if (shopOverlayCount == 2)
 		{
@@ -1693,11 +1690,11 @@ void gameClass::updateShop(double dt, GUItestClass* obj)
 				{
 					for (int i = 0; i < nrHPtoBeUpgraded; i++)
 					{
-						if (!hearthArray[player->getMaxHP() + i]->getIsDestry() && !hearthArray[player->getMaxHP() + i]->getCheckIfObjHolder())
+						if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
 						{
-							addObjectToObjHolder(hearthArray[player->getMaxHP() + i]->getObj());
-							hearthArray[player->getMaxHP() + i]->setCheckIfObjHolder(true);
-							hearthArray[player->getMaxHP() + i]->setIsBought(true);
+							addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
+							heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
+							heartHolder[player->getMaxHP() + i].setIsBought(true);
 							OutputDebugString(L"\nheart was created!\n");
 						}
 					}
@@ -1775,7 +1772,6 @@ void gameClass::updatePickup(double dt)
 	XMMATRIX yOffset = enemyTranslationMatrix * XMMatrixTranslation(0.0f, 1.4f, 0.0f);
 	pickup->setTranslationMatStart(yOffset);
 	pickup->getObj()->setWorldMatrix(yOffset);
-	pickup2->getObj()->setWorldMatrix(playerMove);
 	pickup->updateAnimation(dt);
 }
 
@@ -1848,33 +1844,6 @@ void gameClass::updateCollision(double dt)
 
 	enemy->timeCountdown();
 
-	/*if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
-	{
-		enemy->resetMove();
-		enemy->getTranslationMatStart(masterMovementEnemyMat);
-		player->setPlayerHP(player->getPlayerHP() - 1);
-		player->setPlayerHurt(true);
-		OutputDebugString(L"\nplayer lost hP!\n");
-		if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
-		{
-			GUIheart1->setIsDestroy(true);
-			removeObjFromObjHolder(GUIheart1->getObj());
-			GUIheart1->setCheckIfObjHolder(false);
-		}
-		else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
-		{
-			GUIheart2->setIsDestroy(true);
-			removeObjFromObjHolder(GUIheart2->getObj());
-			GUIheart2->setCheckIfObjHolder(false);
-		}
-		else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
-		{
-			GUIheart3->setIsDestroy(true);
-			removeObjFromObjHolder(GUIheart3->getObj());
-			GUIheart3->setCheckIfObjHolder(false);
-		}
-	}*/
-
 	if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
 	{
 		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
@@ -1888,15 +1857,15 @@ void gameClass::updateCollision(double dt)
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromLeft(true);
 
-					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+					if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
 
 					{
 
-						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+						heartHolder[player->getPlayerHP()].setIsDestroy(true);
 
-						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+						removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
 
-						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+						heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
 
 					}
 				}
@@ -1953,15 +1922,15 @@ void gameClass::updateCollision(double dt)
 
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromRight(true);
-					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+					if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
 
 					{
 
-						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+						heartHolder[player->getPlayerHP()].setIsDestroy(true);
 
-						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+						removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
 
-						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+						heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
 
 					}
 				}

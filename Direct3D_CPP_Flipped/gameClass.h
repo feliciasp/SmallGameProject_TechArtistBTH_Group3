@@ -52,8 +52,8 @@ class gameClass
 		void addObjectToObjHolderWin(objectClass* obj);
 		void removeObjFromObjHolderWin(objectClass* obj);
 
-		void addHearthToHeartHolder(GUItestClass* hearth);
-		void removeHearthFromHeartHolder(GUItestClass* hearth);
+		void addHearthToHeartHolder(GUItestClass &heart, int playerHP);
+		void removeHearthFromHeartHolder(GUItestClass heart, int playerHP);
 
 	private:
 		bool frameLimbo(double dt);
@@ -77,11 +77,11 @@ class gameClass
 		enemyClass* enemy;
 		backgroundClass* background;
 		pickupClass* pickup;
-		pickupClass* pickup2;
 		playerClass* player;
 		platformClass* platform;
 		projectileClass* projectile;
 		GUItestClass* GUItest;
+		GUItestClass* heartHolder;
 
 		std::vector<objectClass*> objHolder;
 		std::vector<objectClass*> objHolderMeny;
@@ -139,8 +139,6 @@ class gameClass
 
 		//GUI
 		GUItestClass* GUIheart1;
-		GUItestClass* GUIheart2;
-		GUItestClass* GUIheart3;
 		void updatePlatform();
 		XMMATRIX guiMat;
 		bool updateGUI(double dt, GUItestClass* obj);
@@ -197,9 +195,6 @@ class gameClass
 		GUItestClass* win;
 		XMMATRIX winMat;
 
-
-		//////HP
-		std::vector<GUItestClass*> hearthArray;
 		backgroundClass* playerShadowPlane;
 		XMMATRIX shadowMat;
 };
