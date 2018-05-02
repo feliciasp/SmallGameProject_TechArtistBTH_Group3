@@ -4,6 +4,7 @@
 struct MyFormat {
 	int meshCount;
 	int materialCount;
+	//int fps;
 };
 
 struct Material {
@@ -18,6 +19,18 @@ struct Mesh {
 	int vertexCount;
 	char materialName[100];
 	float minX, maxX, minY, maxY, minZ, maxZ;
+	//int animationCount;
+};
+
+struct BlendShapesHeader
+{
+	int nrOfBlendShapes;
+	int nrOfKeyFrames;
+};
+struct BlendShape
+{
+	int keyFrame;
+	//vertexArray
 };
 
 struct Vertex {

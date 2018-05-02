@@ -5,6 +5,7 @@
 #include "objectClass.h"
 #include "directInputClass.h"
 #include "weaponClass.h"
+#include "projectileClass.h"
 
 class playerClass
 {
@@ -61,6 +62,7 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
+
 	bool getInvulnurable();
 
 	void setHasRing(bool check);
@@ -69,8 +71,13 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
+
+	void setFireballCast(bool check);
+	bool getFireballCast();
+
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
+
 
 	float getMoveValY();
 
@@ -154,8 +161,10 @@ private:
 	void checkIfAttacking();
 	bool attackReleased;
 
+	bool fireballCast; //has player cast fireball?
+
 	bool hasRing;
-	int ringType; // 0 = DOUBLEJUMP, 1 = ???, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
+	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
 

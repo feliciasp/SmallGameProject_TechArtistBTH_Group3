@@ -13,6 +13,10 @@ gameClass::gameClass(HINSTANCE hInstance)
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
+	menyHighlightMat = XMMatrixScaling(0.38f, 0.07f, 0.0f) * XMMatrixTranslation(-0.027f, 0.16f, 0.0f);
+	counterOverlay = 0;
+	menyCheck = true; 
+	counterOverlay = 0;
 
 	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
 
@@ -24,9 +28,13 @@ gameClass::gameClass(HINSTANCE hInstance)
 	pickup = 0;
 	background = 0;
 	movementInput = 0;
+	projectile = 0;
 	moveTest = 2.0f;
 	enemyFallingMat = XMMatrixIdentity();
 	enemyTranslationMatrix = XMMatrixIdentity();
+
+	projectileMoveMat = XMMatrixIdentity();
+
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -261,8 +269,34 @@ bool gameClass::initialize(int ShowWnd)
 	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
 	pickup->setPickupType(3);
-	pickup->setRingType(0);
-	
+	pickup->setRingType(rand() % 2);
+	if (pickup->getRingType() == 0)
+	{
+		OutputDebugString(L"\ringtype is 0\n");
+	}
+	if (pickup->getRingType() == 1)
+	{
+		OutputDebugString(L"\ringtype is 1\n");
+	}
+
+	//projectile test
+	projectile = new projectileClass;
+	if (!projectile)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	projectile->getObj()->setMaterialName("texture1.jpg");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
+	projectile->getTranslationMatStart(playerMove);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -366,9 +400,29 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	meny->getObj()->setWorldMatrix(menyMat);
-	meny->getObj()->setMaterialName("menyTexture.png");
+	meny->getObj()->setMaterialName("textureMeny.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
+
+	menyHighlight= new GUItestClass;
+	if (!menyHighlight)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = menyHighlight->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
+	menyHighlight->getObj()->setMaterialName("textureMenyOverlay.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), menyHighlight->getObj()->getMaterialName());
+	addObjectToObjHolderMeny(menyHighlight->getObj());
 	addObjectToObjHolderMeny(meny->getObj());
+
 
 	//////////////////////////
 	//////	 LIMBO		//////
@@ -608,6 +662,7 @@ void gameClass::shutdown()
 		delete win;
 		win = 0;
 	}
+
 	if (upgradeOverlay)
 	{
 		upgradeOverlay->shutdown();
@@ -620,11 +675,18 @@ void gameClass::shutdown()
 		delete upgradeGUI;
 		upgradeGUI = 0;
 	}
+
 	if (limboWalkingPlane)
 	{
 		limboWalkingPlane->shutdown();
 		delete limboWalkingPlane;
 		limboWalkingPlane = 0;
+	}
+	if (projectile)
+	{
+		projectile->shutdown();
+		delete projectile;
+		projectile = 0;
 	}
 
 	if (playerShadowPlane)
@@ -632,6 +694,12 @@ void gameClass::shutdown()
 		playerShadowPlane->shutdown();
 		delete playerShadowPlane;
 		playerShadowPlane = 0;
+	}
+	if (menyHighlight)
+	{
+		menyHighlight->shutdown();
+		delete menyHighlight;
+		menyHighlight = 0;
 	}
 
 	shutdownWindow();
@@ -705,10 +773,6 @@ void gameClass::run()
 					fakeTimer -= 1;
 				}
 
-				if (inputDirectOther->isEnterPressed())
-				{
-					gameStateLevel = true;
-				}
 			}
 			else if (gameStateLimbo)
 			{
@@ -902,8 +966,29 @@ bool gameClass::frameGame(double dt)
 	//player stuff
 	updatePlayer(platform, dt);
 
+
+	//projectile stuff
+	if (!projectile->getIsDestroyed() && !projectile->getCheckIfObjHolder() && player->getFireballCast())
+	{
+		addObjectToObjHolder(projectile->getObj());
+		projectile->setCheckIfObjHolder(true);
+		player->setIfInObjHolder(false);
+		//Set start pos and direction
+		projectile->setTranslationMatStart(playerMove);
+		if (player->getFlipped() == true)
+		{
+			projectile->setGoesRight(false);
+		}
+	}
+
+	if (!projectile->getIsDestroyed() && player->getFireballCast())
+	{
+		updateProjectile(dt);
+	}
+
 	//update player shadow
 	updatePlayerShadow();
+
 
 	//set camera to follow player
 	updateCamera();
@@ -975,11 +1060,13 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
+
 	if (enemy->getEnemyHP() == 0)
 	{
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -997,9 +1084,11 @@ bool gameClass::frameGame(double dt)
 		camera->reset();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+		projectile->resetProjectile();
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
+		pickup->setRingType(rand() % 2);
 
 		gameStateLevel = false;
 		gameStateMeny = false;
@@ -1013,7 +1102,11 @@ bool gameClass::frameGame(double dt)
 		player->resetPlayer();
 		pickup->resetPickup();
 		enemy->resetEnemy();
+
+		projectile->resetProjectile();
+
 		camera->reset();
+
 		GUIheart1->resetGUI();
 		GUIheart2->resetGUI();
 		GUIheart3->resetGUI();
@@ -1041,6 +1134,9 @@ bool gameClass::frameMeny(double dt)
 	//constant MATRICES
 	updateConstantMatrices();
 
+	//overlay
+	updateOverlay();
+
 	graphics->beginScene();
 	for (int i = 0; i < objHolderMeny.size(); i++)
 	{
@@ -1053,7 +1149,12 @@ bool gameClass::frameMeny(double dt)
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEscapePressed() == true)
+	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
+	{
+		gameStateLevel = true;
+	}
+
+	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
 	{
 		return false;
 	}
@@ -1367,9 +1468,11 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 
 void gameClass::updatePlayerShadow()
 {
-	//If we're not jumping/falling
-	if (player->getShowShadow() == true){
-		//If shadow is'nt rendered
+
+	//Om vi inte hopppar/faller
+	if (player->getShowShadow() == true)
+	{
+		//Om skuggan inte redan finns
 		if (playerShadowPlane->getIsInObjHolder() == false) {
 			//Render shadow
 			addObjectToObjHolder(playerShadowPlane->getObj());
@@ -1384,9 +1487,11 @@ void gameClass::updatePlayerShadow()
 		XMMATRIX offset = XMMatrixTranslation(0.0f, -1.315f, 0.0f);
 		playerShadowPlane->getObj()->setWorldMatrix(playerMove * offset);
 	}
-	//If we're jumping/falling
-	else{
-		//Remove shadow
+	//Om skuggan inte ska synas
+	else
+	{
+		//Ta bort skuggan
+		
 		playerShadowPlane->setIsInObjHolder(false);
 		removeObjFromObjHolder(playerShadowPlane->getObj());
 	}
@@ -1394,14 +1499,74 @@ void gameClass::updatePlayerShadow()
 
 void gameClass::updateCamera()
 {
-	camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-	camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) > -27)
+	{
+		camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->setTempX(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->setTempY(XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+	}
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -27)
+	{
+		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+	}
 }
 
 void gameClass::staticBackground()
 {
 	backgroundMat = XMMatrixIdentity();
 	background->getObj()->setWorldMatrix(backgroundMat);
+}
+
+void gameClass::setCounterOverlay(int other)
+{
+	this->counterOverlay = other;
+}
+
+int gameClass::getCounterOverlay()
+{
+	return this->counterOverlay;
+}
+
+void gameClass::updateOverlay()
+{
+	updateMenyCooldown();
+	if (inputDirectOther->isArrowDownPressed() && menyOnCooldown() && getCounterOverlay() < 3)
+	{
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
+		setCounterOverlay(getCounterOverlay() + 1);
+	}
+	if (inputDirectOther->isArrowUpPressed() && menyOnCooldown() && getCounterOverlay() > 0)
+	{
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
+		setCounterOverlay(getCounterOverlay() - 1);
+	}
+	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
+}
+
+bool gameClass::menyOnCooldown()
+{
+	if (menyTimer <= 0 && menyCheck == true)
+	{
+		menyTimer = 150;
+		menyCheck = false;
+		return true;
+	}
+	
+	return false;
+}
+
+void gameClass::updateMenyCooldown()
+{
+	if (menyTimer > 0)
+	{
+		menyTimer -= 1;
+	}
+	if (menyTimer <= 0 && menyCheck == false)
+	{
+		menyCheck = true;
+	}
 }
 
 void gameClass::updateLimboBackground()
@@ -1530,6 +1695,23 @@ void gameClass::updatePickup(double dt)
 	pickup->updateAnimation(dt);
 }
 
+void gameClass::updateProjectile(double dt)
+{
+	//Move projectile
+	projectile->moveProjectile(dt);
+	projectile->getTransX(projectileMoveMat);
+	projectile->getObj()->setWorldMatrix(projectileMoveMat);
+
+	//CD between fireballs
+	projectile->setLifeTime(dt);
+	if (projectile->getLifeTime() > 5.0)
+	{
+		player->setFireballCast(false);
+		projectile->resetProjectile();
+	}
+	//Check collision
+}
+
 void gameClass::updateCollision(double dt)
 {
 	float enemyMove = enemy->getMove();
@@ -1541,7 +1723,7 @@ void gameClass::updateCollision(double dt)
 
 	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
-		if(enemy->hurtState())
+		if (enemy->hurtState())
 		{
 			//enemy->resetMove();
 			//enemy->getTranslationMatStart(masterMovementEnemyMat);
@@ -1550,7 +1732,7 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
-			
+
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			pickup->setIsDestroy(false);
@@ -1579,9 +1761,9 @@ void gameClass::updateCollision(double dt)
 			player->setIfInObjHolder(false);
 		}
 	}
-	
+
 	enemy->timeCountdown();
-	
+
 	/*if (enemy->getIsActive() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix)))
 	{
 		enemy->resetMove();
@@ -1619,17 +1801,19 @@ void gameClass::updateCollision(double dt)
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
+					player->setPlayerHurt(true);
+					player->setPlayerHurtFromLeft(true);
 
 					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
-          {
-					  player->setPlayerHurt(true);
-					  player->setPlayerHurtFromLeft(true);
-          }
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+
 					{
+
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
 						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)
@@ -1682,28 +1866,19 @@ void gameClass::updateCollision(double dt)
 				if (enemy->attackCooldown())
 				{
 					player->setPlayerHP(player->getPlayerHP() - 1);
-					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
-          {
+
 					player->setPlayerHurt(true);
 					player->setPlayerHurtFromRight(true);
-          }
-					if (!GUIheart1->getIsDestry() && GUIheart1->getCheckIfObjHolder())
+					if (!hearthArray[player->getPlayerHP()]->getIsDestry() && hearthArray[player->getPlayerHP()]->getCheckIfObjHolder())
+
 					{
-						GUIheart1->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart1->getObj());
-						GUIheart1->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart2->getIsDestry() && GUIheart2->getCheckIfObjHolder() && GUIheart1->getIsDestry())
-					{
-						GUIheart2->setIsDestroy(true);
-						removeObjFromObjHolder(GUIheart2->getObj());
-						GUIheart2->setCheckIfObjHolder(false);
-					}
-					else if (!GUIheart3->getIsDestry() && GUIheart3->getCheckIfObjHolder() && GUIheart1->getIsDestry() && GUIheart2->getIsDestry())
-					{
+
 						hearthArray[player->getPlayerHP()]->setIsDestroy(true);
+
 						removeObjFromObjHolder(hearthArray[player->getPlayerHP()]->getObj());
+
 						hearthArray[player->getPlayerHP()]->setCheckIfObjHolder(false);
+
 					}
 				}
 				if (enemy->getAttackCooldown() >= 0)

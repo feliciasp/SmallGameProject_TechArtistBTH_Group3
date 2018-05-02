@@ -21,12 +21,20 @@ class cameraClass
 		void createViewMatrix();
 		void getViewMat(XMMATRIX& viewMat);
 
+		void setTempX(float x);
+		void setTempY(float y);
+		float getTempX();
+		float getTempY();
+
 		void reset();
 
 	private:
 		XMVECTOR camPos;
 		XMVECTOR camTarget;
 		XMVECTOR camUp;
+
+		float tempX;
+		float tempY;
 
 		XMMATRIX view;
 };

@@ -68,11 +68,15 @@ playerClass::playerClass()
 
 	spaceReleased = true;
 
+
+	fireballCast = false;
+
 	polygoner = 0;
 	fargments = 0;
 	maxHP = HP;
 
 	showShadow = true;
+
 
 }
 
@@ -255,12 +259,12 @@ void playerClass::handleMovement(double dt)
 		}
 	}
 
-	if (!this->input->isPPressed() && !dodgeCooldownActive)
+	if (!this->input->isEPressed() && !dodgeCooldownActive)
 	{
 		dodgeReleased = true;
 	}
 
-	if (this->input->isPPressed() && !dodgeCooldownActive && dodgeReleased)
+	if (this->input->isEPressed() && !dodgeCooldownActive && dodgeReleased)
 	{
 		dodge = true;
 		dodgeReleased = false;
@@ -500,6 +504,13 @@ void playerClass::handleMovement(double dt)
 		attackReleased = false;
 	}
 
+
+	if (this->input->isPPressed() && /*hasRing && ringType == 1 &&*/ !fireballCast)
+	{
+		fireballCast = true;
+	}
+
+
 	if (!this->input->isOPressed())
 	{
 		attackReleased = true;
@@ -616,11 +627,11 @@ void playerClass::setIfInObjHolder(bool other)
 	this->isInObjHolder = other;
 }
 
+
 bool playerClass::getInvulnurable()
 {
 	return this->invulnurable;
 }
-
 
 float playerClass::getMoveValY()
 {
@@ -667,6 +678,17 @@ int playerClass::getRingType()
 	return this->ringType;
 }
 
+
+void playerClass::setFireballCast(bool check)
+{
+	this->fireballCast = check;
+}
+
+bool playerClass::getFireballCast()
+{
+	return this->fireballCast;
+}
+
 int playerClass::getNrPixelFramgent()
 {
 	return this->fargments;
@@ -702,6 +724,8 @@ void playerClass::resetPlayer()
 
 	hasRing = false;
 
+	fireballCast = false;
+	isHurt = false;
 }
 
 void playerClass::setPlayerHP(int x)

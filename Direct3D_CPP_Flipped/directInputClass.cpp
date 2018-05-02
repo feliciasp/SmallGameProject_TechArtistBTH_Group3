@@ -142,7 +142,7 @@ bool directInput::isTPressed()
 
 bool directInput::isEnterPressed()
 {
-	if (keyboardState[DIK_O] & 0x80)
+	if (keyboardState[DIK_RETURN] & 0x80)
 	{
 		return true;
 	}
@@ -166,18 +166,46 @@ bool directInput::isArrowRightPressed()
 	}
 	return false;
 }
+
 bool directInput::isArrowLeftPressed()
 {
 	if (keyboardState[DIK_LEFTARROW] & 0x80)
-    {
+	{
 		return true;
 	}
 	return false;
- }
+}
+
+bool directInput::isArrowUpPressed()
+{
+	if (keyboardState[DIK_UPARROW] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool directInput::isArrowDownPressed()
+{
+	if (keyboardState[DIK_DOWNARROW] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
 
 bool directInput::isPPressed()
 {
 	if (keyboardState[DIK_P] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool directInput::isEPressed()
+{
+	if (keyboardState[DIK_E] & 0x80)
 	{
 		return true;
 	}
