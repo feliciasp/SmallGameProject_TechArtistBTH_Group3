@@ -24,12 +24,12 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
 	//set shader parameters that we will use for rendering
-	result = setShaderParameters(devCon, world, view, proj, camPos);
+	result = setShaderParameters(devCon, world, view, proj, camPos, hurt);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error setting shader parameters",
@@ -524,7 +524,7 @@ bool shaderClass::createPlayerConstantBuffer(ID3D11Device * device)
 	return true;
 }
 
-bool shaderClass::setShaderParameters(ID3D11DeviceContext *devCon, XMMATRIX world, XMMATRIX view, XMMATRIX proj, XMVECTOR camPos)
+bool shaderClass::setShaderParameters(ID3D11DeviceContext *devCon, XMMATRIX world, XMMATRIX view, XMMATRIX proj, XMVECTOR camPos, int hurt)
 {
 	//used to set global variables in the shader easier and more accessble
 	HRESULT result;
@@ -553,6 +553,7 @@ bool shaderClass::setShaderParameters(ID3D11DeviceContext *devCon, XMMATRIX worl
 	dataPtr->view = view;
 	dataPtr->proj = proj;
 	dataPtr->camPos = camPos;
+	dataPtr->hurtColor = hurt;
 	//unlock it
 	devCon->Unmap(constBuffer, 0);
 

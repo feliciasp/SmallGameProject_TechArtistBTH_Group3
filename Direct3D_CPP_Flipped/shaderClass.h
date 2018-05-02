@@ -35,7 +35,7 @@ class shaderClass
 		shaderClass(const shaderClass& other);
 		~shaderClass();
 
-		bool render(ID3D11DeviceContext* devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped);
+		bool render(ID3D11DeviceContext* devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped);
 		bool createShaderClass(ID3D11Device* device);
 		bool createTextureReasourceAndTextureView(ID3D11Device* device, std::string name);
 		
@@ -82,6 +82,7 @@ class shaderClass
 			XMMATRIX view;
 			XMMATRIX proj;
 			XMVECTOR camPos;
+			int hurtColor;
 		};
 
 		struct playerCBuffer
@@ -100,7 +101,7 @@ class shaderClass
 
 		bool createBlendState(ID3D11Device* device);
 
-		bool setShaderParameters(ID3D11DeviceContext* devCon, XMMATRIX world, XMMATRIX view, XMMATRIX proj, XMVECTOR camPos);
+		bool setShaderParameters(ID3D11DeviceContext* devCon, XMMATRIX world, XMMATRIX view, XMMATRIX proj, XMVECTOR camPos, int hurt = 0);
 		bool setPlayerShaderParameters(ID3D11DeviceContext* devCon, bool flipped, int frameCount, int currentFrame, int currentAnimation);
 		void renderShader(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderShaderScreenSpace(ID3D11DeviceContext* devCon, int indexCount, std::string name);

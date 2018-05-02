@@ -88,11 +88,11 @@ void graphicsClass::shutdown()
 	}
 }
 
-bool graphicsClass::frame(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool graphicsClass::frame(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 	//render graphics scene
-	result = render(object, view, proj, type, name, camPos, frameCount, currentFrame, currentAnimation, flipped);
+	result = render(object, view, proj, type, name, camPos, hurt, frameCount, currentFrame, currentAnimation, flipped);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error rendering",
@@ -113,7 +113,7 @@ shaderClass * graphicsClass::getShaders()
 	return this->shaders;
 }
 
-bool graphicsClass::render(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool graphicsClass::render(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	HRESULT result;
 	XMMATRIX tempWorld;
@@ -125,7 +125,7 @@ bool graphicsClass::render(objectClass* object, XMMATRIX view, XMMATRIX proj, in
 	{
 		object->setVtrxIndexBufferToPipline(direct3D->GetDeviceContect(), i);
 		//redner using shaders
-		result = shaders->render(direct3D->GetDeviceContect(), object->getVertexCount(i), tempWorld, view, proj, type, name, camPos, frameCount, currentFrame, currentAnimation, flipped);
+		result = shaders->render(direct3D->GetDeviceContect(), object->getVertexCount(i), tempWorld, view, proj, type, name, camPos, hurt, frameCount, currentFrame, currentAnimation, flipped);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error rendering tri1",

@@ -4,6 +4,7 @@ cbuffer constBuffer : register(b0)
 	matrix view;
 	matrix proj;
 	float4 cameraPos;
+	int hurtColor;
 };
 struct VS_IN
 {
@@ -22,7 +23,8 @@ struct VS_OUT
 	float4 pointOnSurface : POSITION;
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
-	float4 Tangent : TANGENT;
+	int hurtColor : HURT;
+	//float4 Tangent : TANGENT;
 };
 
 VS_OUT VS_main(VS_IN input)
@@ -38,6 +40,7 @@ VS_OUT VS_main(VS_IN input)
 	output.Color = input.Color;
 	output.pointOnSurface = mul(input.Pos, world);
 	output.cameraPos = cameraPos;
+	output.hurtColor = hurtColor;
 	//output.Tangent = float4(input.Tangent, 1.0f);
 
 	return output;

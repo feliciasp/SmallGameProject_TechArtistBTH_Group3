@@ -32,6 +32,7 @@ class directInput
 		bool isPPressed();
 		bool isArrowRightPressed();
 		bool isArrowLeftPressed();
+
 		bool isArrowUpPressed();
 		bool isArrowDownPressed();
 
