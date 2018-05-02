@@ -51,9 +51,16 @@ bool GUItestClass::getIsBought()
 	return this->isBought;
 }
 
+void GUItestClass::clone(GUItestClass & other)
+{
+
+	
+}
+
 
 GUItestClass::GUItestClass(const GUItestClass & other)
 {
+
 }
 
 GUItestClass::~GUItestClass()

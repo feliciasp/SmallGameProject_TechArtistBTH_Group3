@@ -174,7 +174,7 @@ class gameClass
 		//has to do with shop
 		GUItestClass* upgradeGUI;
 		GUItestClass* upgradeOverlay;
-		void updateShop();
+		void updateShopWorldMat();
 		XMMATRIX shopMat;
 		void updateShop(double dt, GUItestClass* obj);
 		bool isUpgradeHPAactive;
@@ -185,6 +185,13 @@ class gameClass
 		bool checkUpgradeCooldown();
 		int getCooldownTimerShop();
 		void updateShopCooldown();
+
+		int shopOverlayCount;
+		XMMATRIX shopOverlayMat;
+		int getShopOverlayCounter();
+		void setShopOverlayCounter(int x);
+		int nrSpeedToBeUpgraded;
+		int SpeedCost;
 
 		//////////////////////WIN STATE
 		GUItestClass* win;

@@ -137,8 +137,8 @@ bool Importer::loadMesh(const char * filename)
 			//	infile.read((char*)&loadedMeshes[i].blendShapeTimeline[j].blendShapeHeader, sizeof(BlendShape));
 			//	infile.read((char*)loadedMeshes[i].blendShapeTimeline[j].blendShapesVertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
 			//}
-		}
 
+		}
 
 		return true;
 	}
