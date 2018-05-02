@@ -9,6 +9,8 @@ struct VS_OUT
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
 	int hurtColor : HURT;
+	//float4 Tangent : TANGENT;
+
 };
 
 float4 main(VS_OUT input) : SV_TARGET

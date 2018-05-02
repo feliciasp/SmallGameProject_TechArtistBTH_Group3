@@ -11,6 +11,8 @@ public:
 	pickupClass(const pickupClass& other);
 	~pickupClass();
 
+	void clone(const pickupClass& other);
+
 	bool initlialize(ID3D11Device* device, const char* filename);
 	void shutdown();
 
@@ -37,12 +39,13 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
-
 private:
 	objectClass * obj;
 	bool isDestroy;
 	XMMATRIX transStart;
 	bool checkIfSetToObjHolder;
+
+	//std::vector<pickupClass> pickupArrayHolder;
 
 	int frameCount;
 	int currentFrame;

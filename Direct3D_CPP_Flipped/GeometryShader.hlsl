@@ -7,6 +7,7 @@ struct VS_OUT
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
 	int hurtColor : HURT;
+  //float3 Tangent : TANGENT;
 };
 
 struct GS_OUT
@@ -18,6 +19,7 @@ struct GS_OUT
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
 	int hurtColor : HURT;
+	//float4 Tangent : TANGENT;
 };
 
 [maxvertexcount(3)]
@@ -35,11 +37,11 @@ void GS_main(
 		output.Normal = input[i].Normal;
 		output.Color = input[i].Color;
 		output.pointOnSurface = input[i].pointOnSurface;
-
 		output.cameraPos = input[i].cameraPos;
 		output.hurtColor = input[i].hurtColor;
+		//output.Tangent = mul(input[i].Tangent, world);
 
 		outputStream.Append(output);
-		
+
 	}
 }

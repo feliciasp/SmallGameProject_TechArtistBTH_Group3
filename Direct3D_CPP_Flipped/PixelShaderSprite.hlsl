@@ -17,6 +17,7 @@ struct VS_OUT
 	float4 pointOnSurface : POSITION;
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
+	float4 Tangent : TANGENT;
 };
 
 

@@ -51,6 +51,12 @@ class shaderClass
 		ID3D11Buffer* playerConstBuffer;
 		ID3D11GeometryShader* geometryShader;
 
+		//normal
+		texImage normalMap;
+		ID3D11Texture2D *normalTexture;
+		ID3D11ShaderResourceView* textureViewNorm;
+		void createNormalMapInfo(ID3D11Device * device);
+
 		//texture2
 		texImage texture;
 		std::vector<ID3D11Texture2D*> textureInfo;

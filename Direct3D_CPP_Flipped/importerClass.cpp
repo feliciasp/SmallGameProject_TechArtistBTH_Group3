@@ -25,7 +25,26 @@ Importer::~Importer()
 	}
 }
 
-
+void Importer::clone(const Importer & other)
+{
+	//header = other.header;
+	header.meshCount = other.header.meshCount;
+	header.materialCount = other.header.materialCount;
+	loadedMeshes = new LoadedMesh[other.header.meshCount];
+	for (int i = 0; i < other.header.meshCount; i++)
+	{
+		//loadedMeshes[i].meshHeader = other.loadedMeshes[i].meshHeader;
+		loadedMeshes[i].meshHeader.vertexCount = other.loadedMeshes[i].meshHeader.vertexCount;
+		loadedMeshes[i].meshHeader.minX = other.loadedMeshes[i].meshHeader.minX;
+		loadedMeshes[i].meshHeader.minY = other.loadedMeshes[i].meshHeader.minY;
+		loadedMeshes[i].meshHeader.minZ = other.loadedMeshes[i].meshHeader.minZ;
+		loadedMeshes[i].meshHeader.maxX = other.loadedMeshes[i].meshHeader.maxX;
+		loadedMeshes[i].meshHeader.maxY = other.loadedMeshes[i].meshHeader.maxY;
+		loadedMeshes[i].meshHeader.maxZ = other.loadedMeshes[i].meshHeader.maxZ;
+		loadedMeshes[i].vertices = new Vertex[other.loadedMeshes[i].meshHeader.vertexCount];
+		memcpy(loadedMeshes[i].vertices, other.loadedMeshes[i].vertices, sizeof(other.loadedMeshes[i].vertices));
+	}
+}
 
 //bool Importer::loadMesh(const char * filename, const char * meshName)
 //{
@@ -118,8 +137,8 @@ bool Importer::loadMesh(const char * filename)
 			//	infile.read((char*)&loadedMeshes[i].blendShapeTimeline[j].blendShapeHeader, sizeof(BlendShape));
 			//	infile.read((char*)loadedMeshes[i].blendShapeTimeline[j].blendShapesVertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
 			//}
-		}
 
+		}
 
 		return true;
 	}

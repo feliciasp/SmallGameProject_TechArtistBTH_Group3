@@ -11,6 +11,9 @@ shaderClass::shaderClass()
 	textureSample = 0;
 	vertexShaderNoTransformation = 0;
 	pixelShaderNoShading = 0;
+
+	normalTexture = 0;
+	textureViewNorm = 0;
 }
 
 shaderClass::shaderClass(const shaderClass & other)
@@ -311,6 +314,7 @@ bool shaderClass::createShaders(ID3D11Device* device)
 		{ "NORMAL",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	result = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &this->vertexLayout);
 	if (FAILED(result))
@@ -739,6 +743,66 @@ void shaderClass::shutdown()
 		pixelShaderNoShading->Release();
 		pixelShaderNoShading = 0;
 	}
-
+	if (normalTexture)
+	{
+		normalTexture->Release();
+		normalTexture = 0;
+	}
+	if (textureViewNorm)
+	{
+		textureViewNorm->Release();
+		textureViewNorm = 0;
+	}
 }
 
+
+void shaderClass::createNormalMapInfo(ID3D11Device * device)
+{
+	HRESULT result;
+	normalMap.texHeight = 1024;
+	normalMap.texWidth = 1024;
+	normalMap.texPixels = stbi_load("normal_3.jpg", &normalMap.texHeight, &normalMap.texWidth, &normalMap.texBBP, 4);
+
+	// -------------DESCRIBE TEXTURE--------------
+	D3D11_TEXTURE2D_DESC normalMapInfo;
+	ZeroMemory(&normalMapInfo, sizeof(normalMapInfo));
+	normalMapInfo.Width = normalMap.texWidth;
+	normalMapInfo.Height = normalMap.texHeight;
+	normalMapInfo.MipLevels = normalMapInfo.ArraySize = 1;
+	normalMapInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	normalMapInfo.SampleDesc.Count = 1;
+	normalMapInfo.SampleDesc.Quality = 0;
+	normalMapInfo.Usage = D3D11_USAGE_DEFAULT;
+	normalMapInfo.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	normalMapInfo.MiscFlags = 0;
+	normalMapInfo.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA normalMapData;
+	ZeroMemory(&normalMapData, sizeof(normalMapData));
+	normalMapData.pSysMem = (void*)normalMap.texPixels;
+	normalMapData.SysMemPitch = normalMap.texWidth * 4 * sizeof(char);
+
+	result = device->CreateTexture2D(&normalMapInfo, &normalMapData, &normalTexture);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creatibg normal map",
+			L"Error", MB_OK | MB_ICONERROR);
+	}
+
+	// ------------DESCRIBE SHADER RESOURCE VIEW-------------
+	D3D11_SHADER_RESOURCE_VIEW_DESC viewDescNorm;
+	ZeroMemory(&viewDescNorm, sizeof(viewDescNorm));
+	viewDescNorm.Format = normalMapInfo.Format;
+	viewDescNorm.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	viewDescNorm.Texture2D.MipLevels = normalMapInfo.MipLevels;
+	viewDescNorm.Texture2D.MostDetailedMip = 0;
+	result = device->CreateShaderResourceView(normalTexture, &viewDescNorm, &textureViewNorm);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creatibg normal map2",
+			L"Error", MB_OK | MB_ICONERROR);
+	}
+
+	stbi_image_free(normalMap.texPixels);
+
+}

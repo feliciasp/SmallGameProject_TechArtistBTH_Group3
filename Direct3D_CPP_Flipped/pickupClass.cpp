@@ -19,10 +19,32 @@ pickupClass::pickupClass()
 
 pickupClass::pickupClass(const pickupClass & other)
 {
+	//objectClass * obj;
+	
+	/*pickupClass *newPickup = new pickupClass;
+	newPickup->obj = new objectClass;
+	newPickup->transStart = other.transStart;
+	newPickup->isDestroy = other.isDestroy;
+	newPickup->checkIfSetToObjHolder = other.checkIfSetToObjHolder;
+	newPickup->frameCount = other.frameCount;
+	newPickup->currentFrame = other.currentFrame;
+	newPickup->animationSpeed = other.animationSpeed;
+	newPickup->isAnimated = other.isAnimated;
+	newPickup->isRing = other.isRing;
+
+	newPickup->ringType = other.ringType;
+	newPickup->pickupType = other.pickupType;*/
+	
 }
 
 pickupClass::~pickupClass()
 {
+}
+
+void pickupClass::clone(const pickupClass& other)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
 }
 
 bool pickupClass::initlialize(ID3D11Device * device, const char* filename)

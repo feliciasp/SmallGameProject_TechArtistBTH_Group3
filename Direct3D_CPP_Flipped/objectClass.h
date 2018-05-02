@@ -22,6 +22,8 @@ class objectClass
 		objectClass(const objectClass& other);
 		~objectClass();
 
+		void clone(const objectClass& other);
+
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
 		void setVtrxIndexBufferToPipline(ID3D11DeviceContext* deviceCon, int meshID);

@@ -87,6 +87,8 @@ public:
 	bool getShowShadow();
 	bool getIsJumping();
 
+	float getSpeedVal();
+	void setSpeedVal(float x);
 
 private:
 	bool isHurt;
@@ -174,6 +176,8 @@ private:
 	int fargments;
 
 	bool showShadow;
+
+	float speedVal;
 
 
 };
