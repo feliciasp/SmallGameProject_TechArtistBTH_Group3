@@ -11,6 +11,8 @@ public:
 	pickupClass(const pickupClass& other);
 	~pickupClass();
 
+	void clone(const pickupClass& other);
+
 	bool initlialize(ID3D11Device* device, const char* filename);
 	void shutdown();
 

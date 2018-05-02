@@ -77,6 +77,7 @@ class gameClass
 		enemyClass* enemy;
 		backgroundClass* background;
 		pickupClass* pickup;
+		pickupClass* pickup2;
 		playerClass* player;
 		platformClass* platform;
 		projectileClass* projectile;

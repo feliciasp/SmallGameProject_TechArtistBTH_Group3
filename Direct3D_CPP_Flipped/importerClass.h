@@ -35,6 +35,8 @@ public:
 	Importer();
 	~Importer();
 
+	void clone(const Importer& other);
+
 	//bool loadMesh(const char* filename, const char* meshName);
 	bool loadMesh(const char* filename);
 

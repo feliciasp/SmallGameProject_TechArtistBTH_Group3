@@ -25,6 +25,12 @@ pickupClass::~pickupClass()
 {
 }
 
+void pickupClass::clone(const pickupClass& other)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
+}
+
 bool pickupClass::initlialize(ID3D11Device * device, const char* filename)
 {
 	bool result;

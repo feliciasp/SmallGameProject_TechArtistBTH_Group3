@@ -269,7 +269,13 @@ bool gameClass::initialize(int ShowWnd)
 	pickup->getTranslationMatStart(pickupStartPosMoveMat);
 
 	pickup->setPickupType(3);
-	pickup->setRingType(rand() % 2);
+	pickup->setRingType(1);
+
+	pickup2 = new pickupClass;
+	pickup2->clone(*pickup);
+	pickup2->setPickupType(3);
+	pickup2->setRingType(0);
+
 	if (pickup->getRingType() == 0)
 	{
 		OutputDebugString(L"\ringtype is 0\n");
@@ -380,6 +386,7 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
+	addObjectToObjHolder(pickup2->getObj());
 
 	//////////////////////////
 	//		MENY			//
@@ -1684,6 +1691,7 @@ void gameClass::updatePickup(double dt)
 	XMMATRIX yOffset = enemyTranslationMatrix * XMMatrixTranslation(0.0f, 1.4f, 0.0f);
 	pickup->setTranslationMatStart(yOffset);
 	pickup->getObj()->setWorldMatrix(yOffset);
+	pickup2->getObj()->setWorldMatrix(playerMove);
 	pickup->updateAnimation(dt);
 }
 
