@@ -28,7 +28,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	player = 0;
 	camera = 0;
 	platform = 0;
-	pickup = 0;
+	expFragment = 0;
+	ring = 0;
 	background = 0;
 	movementInput = 0;
 	projectile = 0;
@@ -255,35 +256,27 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
 
 	//pickup test
-	pickup = new pickupClass;
-	if (!pickup)
+	expFragment = new pickupClass;
+	if (!expFragment)
 	{
 		MessageBox(NULL, L"Error create pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = pickup->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	result = expFragment->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	pickup->getObj()->setMaterialName("pixelFragmentSprite.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickup->getObj()->getMaterialName());
-	pickup->getTranslationMatStart(pickupStartPosMoveMat);
+	expFragment->getObj()->setMaterialName("pixelFragmentSprite.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), expFragment->getObj()->getMaterialName());
+	expFragment->getTranslationMatStart(pickupStartPosMoveMat);
 
-	pickup->setPickupType(3);
-	pickup->setRingType(1);
-	
-	if (pickup->getRingType() == 0)
-	{
-		OutputDebugString(L"\ringtype is 0\n");
-	}
-	if (pickup->getRingType() == 1)
-	{
-		OutputDebugString(L"\ringtype is 1\n");
-	}
+	expFragment->setPickupType(3);
+	expFragment->setRingType(1);
+
 
 	//projectile test
 	projectile = new projectileClass;
@@ -579,11 +572,11 @@ void gameClass::shutdown()
 		delete background;
 		background = 0;
 	}
-	if (pickup)
+	if (expFragment)
 	{
-		pickup->shutdown();
-		delete pickup;
-		pickup = 0;
+		expFragment->shutdown();
+		delete expFragment;
+		expFragment = 0;
 	}
 	if (pickupHolder)
 	{
@@ -861,7 +854,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, pickup->getFrameCount(), pickup->getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, expFragment->getFrameCount(), expFragment->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -1904,7 +1897,7 @@ void gameClass::updateCollision(double dt)
 				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, -1 + (i / 10.0f));
 				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
 				pickupClass pickup2;
-				pickup2.clone(*pickup);
+				pickup2.clone(*expFragment);
 				nrOfVisiblePickups++;
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();
@@ -1934,7 +1927,7 @@ void gameClass::updateCollision(double dt)
 				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, -1 + (i / 10.0f));
 				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
 				pickupClass pickup2;
-				pickup2.clone(*pickup);
+				pickup2.clone(*expFragment);
 				nrOfVisiblePickups++;
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();

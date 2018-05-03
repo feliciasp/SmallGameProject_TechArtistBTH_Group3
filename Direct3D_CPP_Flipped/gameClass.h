@@ -79,7 +79,8 @@ class gameClass
 		directInput* movementInput;
 		enemyClass* enemy;
 		backgroundClass* background;
-		pickupClass* pickup;
+		pickupClass* expFragment;
+		pickupClass* ring;
 		playerClass* player;
 		platformClass* platform;
 		projectileClass* projectile;
