@@ -958,6 +958,9 @@ bool gameClass::frameGame(double dt)
 		{
 			removeObjFromObjHolder(pickupHolder[i].getObj());
 			pickupHolder[i].setCheckIfObjHolder(false);
+			nrOfVisiblePickups--;
+			removePickupFromPickupHolder(pickupHolder[i], nrOfVisiblePickups);
+			i = 0;
 		}
 	}
 
@@ -1426,7 +1429,7 @@ void gameClass::removeHearthFromHeartHolder(GUItestClass hearth, int playerHP)
 	int index = -1;
 	for (int i = 0; i < playerHP + 1; i++)
 	{
-		if (heartHolder->getObj() == hearth.getObj())
+		if (heartHolder[i].getObj() == hearth.getObj())
 		{
 			index = i;
 		}
@@ -1471,7 +1474,7 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 	int index = -1;
 	for (int i = 0; i < nrOfVisiblePickups + 1; i++)
 	{
-		if (heartHolder->getObj() == pickup.getObj())
+		if (pickupHolder[i].getObj() == pickup.getObj())
 		{
 			index = i;
 		}
@@ -1479,19 +1482,21 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 
 	if (index != -1)
 	{
-		GUItestClass* tempArray = new GUItestClass[nrOfVisiblePickups];
+		pickupClass* tempArray = new pickupClass[nrOfVisiblePickups];
+		pickupHolder[index].shutdown();
 		int j = 0;
-		for (int i = 0; i < nrOfVisiblePickups - 1; i++)
+		for (int i = 0; i < nrOfVisiblePickups + 1; i++)
 		{
 			if (i != index)
 			{
-				tempArray[j] = heartHolder[i];
+				OutputDebugString(L"\nTransferring\n");
+				tempArray[j] = pickupHolder[i];
 				j++;
 			}
 		}
 
-		delete[] heartHolder;
-		heartHolder = tempArray;
+		delete[] pickupHolder;
+		pickupHolder = tempArray;
 	}
 }
 
@@ -1905,12 +1910,9 @@ void gameClass::updateCollision(double dt)
 				pickup2.shutdown();
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 			}
 			player->setIfInObjHolder(false);
-			if (player->getNrPixelFramgent() <= 3)
-			{
-				player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
-			}
 		}
 	}
 	else if (enemy->getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
@@ -2070,6 +2072,11 @@ void gameClass::updateCollision(double dt)
 		pickupHolder[i].getTranslationMatStart(yOffset);
 		if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
 		{
+			if (pickupHolder[i].getPickupType() == 1)
+			{
+				player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
+			}
+			
 			if (pickupHolder[i].getPickupType() == 3) //type 3 means it's a RING
 			{
 				this->player->setHasRing(true);
