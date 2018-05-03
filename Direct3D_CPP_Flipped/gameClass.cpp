@@ -277,6 +277,20 @@ bool gameClass::initialize(int ShowWnd)
 	expFragment->setPickupType(3);
 	expFragment->setRingType(1);
 
+	ring = new pickupClass;
+	if (!ring)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = ring->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
 
 	//projectile test
 	projectile = new projectileClass;
@@ -586,7 +600,12 @@ void gameClass::shutdown()
 		}
 		delete[] pickupHolder;
 	}
-	
+	if (ring)
+	{
+		ring->shutdown();
+		delete ring;
+		ring = 0;
+	}
 	if (player)
 	{
 		player->shutdown();
@@ -1894,7 +1913,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setIsActive(false);
 			for (int i = 0; i < 2; i++)
 			{
-				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, -1 + (i / 10.0f));
+				XMMATRIX offset = XMMatrixTranslation(i, 1.2f, -1 + (i / 10.0f));
 				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
 				pickupClass pickup2;
 				pickup2.clone(*expFragment);
@@ -1924,7 +1943,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setIsActive(false);
 			for (int i = 0; i < 2; i++)
 			{
-				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, -1 + (i / 10.0f));
+				XMMATRIX offset = XMMatrixTranslation(i, 1.2f, -1 + (i / 10.0f));
 				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
 				pickupClass pickup2;
 				pickup2.clone(*expFragment);
