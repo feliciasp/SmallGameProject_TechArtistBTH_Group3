@@ -55,6 +55,9 @@ class gameClass
 		void addHearthToHeartHolder(GUItestClass &heart, int playerHP);
 		void removeHearthFromHeartHolder(GUItestClass heart, int playerHP);
 
+		void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
+		void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
+
 	private:
 		bool frameLimbo(double dt);
 		bool frameGame(double dt);
@@ -81,7 +84,9 @@ class gameClass
 		platformClass* platform;
 		projectileClass* projectile;
 		GUItestClass* GUItest;
+
 		GUItestClass* heartHolder;
+		pickupClass* pickupHolder;
 
 		std::vector<objectClass*> objHolder;
 		std::vector<objectClass*> objHolderMeny;
@@ -126,7 +131,7 @@ class gameClass
 		bool checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 		bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
-
+		int nrOfVisiblePickups;
 	
 		bool gameStateLevel;
 		bool gameStateMeny;
