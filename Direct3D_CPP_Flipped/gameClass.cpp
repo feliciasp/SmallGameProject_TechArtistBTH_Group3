@@ -476,6 +476,7 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
+	
 	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
 	//LIMBO Text PLANE
@@ -517,6 +518,7 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeGUI->getObj()->setMaterialName("upgradeTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
+
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
 	//LIMBO UPGRADE OVERLAY
@@ -537,6 +539,7 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
 	upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
 
@@ -1710,6 +1713,8 @@ void gameClass::updateLimboBackground()
 	limboBackPlane->getObj()->setWorldMatrix(limboMat);
 	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
+	limboSmithPlane->getObj()->setWorldMatrix(limboMat);
+	limboTextPlane->getObj()->setWorldMatrix(limboMat);
 }
 
 void gameClass::updateShopWorldMat()
