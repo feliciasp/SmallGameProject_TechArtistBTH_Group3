@@ -170,7 +170,9 @@ class gameClass
 
 		/////////LIMBO STUFF
 		backgroundClass* limboFrontPlane;
+		backgroundClass* limboSmithPlane;
 		backgroundClass* limboBackPlane;
+		backgroundClass* limboTextPlane;
 		platformClass* limboWalkingPlane;
 		XMMATRIX limboMat;
 		void updateLimboBackground();

@@ -418,6 +418,26 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
+	//LIMBO Smith PLANE
+	limboSmithPlane = new backgroundClass;
+	if (!limboSmithPlane)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboSmithPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboSmithPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboSmithPlane->getObj()->setMaterialName("LimboSmith.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limboSmithPlane->getObj());
+
 	//collisionPlane
 	limboWalkingPlane = new platformClass;
 	if (!limboWalkingPlane)
@@ -457,6 +477,26 @@ bool gameClass::initialize(int ShowWnd)
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
 	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+
+	//LIMBO Text PLANE
+	limboTextPlane = new backgroundClass;
+	if (!limboTextPlane)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboTextPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboTextPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboTextPlane->getObj()->setMaterialName("SmithText.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
+
+	addObjectToObjHolderLimbo(limboTextPlane->getObj());
 
 	//LIMBO UPGRADE
 	upgradeGUI = new GUItestClass;
@@ -632,6 +672,18 @@ void gameClass::shutdown()
 		limboBackPlane->shutdown();
 		delete limboBackPlane;
 		limboBackPlane = 0;
+	}
+	if (limboSmithPlane)
+	{
+		limboSmithPlane->shutdown();
+		delete limboSmithPlane;
+		limboSmithPlane = 0;
+	}
+	if (limboTextPlane)
+	{
+		limboTextPlane->shutdown();
+		delete limboTextPlane;
+		limboTextPlane = 0;
 	}
 	if (win)
 	{
