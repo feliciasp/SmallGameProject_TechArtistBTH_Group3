@@ -11,6 +11,8 @@ public:
 	GUItestClass(const GUItestClass& other);
 	~GUItestClass();
 
+
+
 	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
 	void shutdown();
 
@@ -31,6 +33,7 @@ public:
 	void setIsBought(bool check);
 	bool getIsBought();
 
+	void clone(GUItestClass& other);
 private:
 	objectClass* obj;
 	directInput* input;

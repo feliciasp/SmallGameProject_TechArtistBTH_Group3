@@ -51,6 +51,26 @@ void cameraClass::getViewMat(XMMATRIX & viewMat)
 	viewMat = this->view;
 }
 
+void cameraClass::setTempX(float x)
+{
+	this->tempX = x;
+}
+
+void cameraClass::setTempY(float y)
+{
+	this->tempY = y;
+}
+
+float cameraClass::getTempX()
+{
+	return this->tempX;
+}
+
+float cameraClass::getTempY()
+{
+	return this->tempY;
+}
+
 void cameraClass::reset()
 {
 	this->camPos = { 0.0f, 0.0f, -20.0f, 0.0f };

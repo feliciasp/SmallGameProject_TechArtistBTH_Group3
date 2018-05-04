@@ -20,7 +20,7 @@ class graphicsClass
 
 		bool initialize(int width, int height, HWND hwnd, HINSTANCE hInstance);
 		void shutdown();
-		bool frame(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount = 1, int currentFrame = 1, int currentAnimation = 1, bool flipped = false);
+		bool frame(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt = 0, int frameCount = 1, int currentFrame = 1, int currentAnimation = 1, bool flipped = false);
 		void endScene();
 		void beginScene();
 
@@ -31,7 +31,7 @@ class graphicsClass
 		d3dClass* direct3D;
 		shaderClass* shaders;
 
-		bool render(objectClass* obj, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int frameCount, int currentFrame, int currentAnimation, bool flipped);
+		bool render(objectClass* obj, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped);
 
 };
 

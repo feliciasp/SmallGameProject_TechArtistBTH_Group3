@@ -16,6 +16,17 @@ objectClass::~objectClass()
 {
 }
 
+void objectClass::clone(const objectClass & other)
+{
+	mesh.clone(other.mesh);
+	vertexBuffer = new ID3D11Buffer*[other.mesh.getMeshCount()];
+
+	memcpy(vertexBuffer, other.vertexBuffer, sizeof(other.vertexBuffer));
+	collision = new collisionClass;
+	memcpy(collision, other.collision, sizeof(other.collision));
+	matName = other.matName;
+}
+
 bool objectClass::initlialize(ID3D11Device * device, const char* filename)
 {
 	if (this->mesh.loadMesh(filename))

@@ -170,11 +170,29 @@ bool directInput::isArrowRightPressed()
 bool directInput::isArrowLeftPressed()
 {
 	if (keyboardState[DIK_LEFTARROW] & 0x80)
-    {
+	{
 		return true;
 	}
 	return false;
- }
+}
+
+bool directInput::isArrowUpPressed()
+{
+	if (keyboardState[DIK_UPARROW] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool directInput::isArrowDownPressed()
+{
+	if (keyboardState[DIK_DOWNARROW] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
 
 bool directInput::isPPressed()
 {

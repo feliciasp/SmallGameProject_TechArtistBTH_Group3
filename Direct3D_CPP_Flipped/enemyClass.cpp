@@ -27,6 +27,7 @@ enemyClass::enemyClass()
 	bboxMinLeft = { 0.0f, 0.0f };
 	bboxMaxLeft = { 0.0f,0.0f };
 	tonsOfDmg = 0;
+	hurt = 0;
 }
 
 enemyClass::enemyClass(const enemyClass & other)
@@ -137,10 +138,11 @@ int enemyClass::getEnemyHP()
 
 bool enemyClass::hurtState()
 {
-	if (this->isHurt == false && fakeTimer == 0)
+	if (this->isHurt == false && fakeTimer <= 0)
 	{
 		this->isHurt = true;
 		fakeTimer = 300;
+		this->hurt = 1;
 		return true;
 	}
 	else
@@ -151,10 +153,11 @@ bool enemyClass::hurtState()
 
 void enemyClass::timeCountdown()
 {
-	if (this->fakeTimer != 0)
+	this->fakeTimer -= 1;
+	if (this->fakeTimer <= 0)
 	{
-		this->fakeTimer -= 1;
 		this->isHurt = false;
+		this->hurt = 0;
 	}
 }
 
@@ -371,4 +374,9 @@ XMVECTOR enemyClass::getBboxMinWeaponLeft()
 XMVECTOR enemyClass::getStartPos()
 {
 	return this->startPos;
+}
+
+int enemyClass::getHurt()
+{
+	return this->hurt;
 }

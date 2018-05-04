@@ -74,6 +74,7 @@ playerClass::playerClass()
 	polygoner = 0;
 	fargments = 0;
 	maxHP = HP;
+	speedVal = 10.0f;
 
 	showShadow = true;
 
@@ -229,6 +230,7 @@ XMVECTOR playerClass::getTriggerCheck()
 
 void playerClass::handleMovement(double dt)
 {
+	
 	oldMoveValX = moveValX;
 	oldMoveValY = moveValY;
 
@@ -363,7 +365,7 @@ void playerClass::handleMovement(double dt)
 	}
 	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
-		moveValX += -10.0f * dt;
+		moveValX += -speedVal * dt;
 		if (running == false && attacking == false)
 		{
 			currentTime = 0;
@@ -384,7 +386,7 @@ void playerClass::handleMovement(double dt)
 	
 	if (this->input->isDPressed() && !fallBack && !isDodging)
 	{
-		moveValX += 10.0f * dt;
+		moveValX += speedVal * dt;
 		if (running == false && attacking == false)
 		{
 			currentTime = 0;
@@ -505,7 +507,7 @@ void playerClass::handleMovement(double dt)
 	}
 
 
-	if (this->input->isPPressed() && /*hasRing && ringType == 1 &&*/ !fireballCast)
+	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
 	{
 		fireballCast = true;
 	}
@@ -658,6 +660,16 @@ bool playerClass::getIsJumping()
 	return this->isJumping;
 }
 
+float playerClass::getSpeedVal()
+{
+	return this->speedVal;
+}
+
+void playerClass::setSpeedVal(float x)
+{
+	this->speedVal = x;
+}
+
 void playerClass::setHasRing(bool check)
 {
 	this->hasRing = check;
@@ -725,7 +737,7 @@ void playerClass::resetPlayer()
 	hasRing = false;
 
 	fireballCast = false;
-
+	isHurt = false;
 }
 
 void playerClass::setPlayerHP(int x)

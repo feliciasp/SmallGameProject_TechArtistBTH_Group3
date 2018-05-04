@@ -51,9 +51,18 @@ bool GUItestClass::getIsBought()
 	return this->isBought;
 }
 
+void GUItestClass::clone(GUItestClass & other)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
+	obj->setType(1);
+	
+}
+
 
 GUItestClass::GUItestClass(const GUItestClass & other)
 {
+
 }
 
 GUItestClass::~GUItestClass()
