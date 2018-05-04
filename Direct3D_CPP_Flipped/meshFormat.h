@@ -4,7 +4,7 @@
 struct MyFormat {
 	int meshCount;
 	int materialCount;
-	//int fps;
+	int poseCount;
 };
 
 struct Material {

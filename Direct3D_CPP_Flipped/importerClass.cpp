@@ -46,58 +46,6 @@ void Importer::clone(const Importer & other)
 	}
 }
 
-//bool Importer::loadMesh(const char * filename, const char * meshName)
-//{
-//
-//
-//	if (this->header.meshCount > 0)
-//	{
-//		for (int i = 0; i < this->header.meshCount; i++)
-//			delete[] this->loadedMeshes[i].vertices;
-//
-//		delete[] this->loadedMeshes;
-//		this->header.meshCount = 0;
-//	}
-//
-//
-//	std::ifstream infile(filename, std::ifstream::binary);
-//
-//
-//	if (infile)
-//	{
-//
-//		MyFormat h;
-//
-//		LoadedMesh test;
-//
-//		infile.read((char*)&h, sizeof(MyFormat));
-//		std::cout << h.meshCount << "\n";
-//
-//		for (int i = 0; i < h.meshCount; i++)
-//		{
-//			infile.read((char*)&test.meshHeader, sizeof(Mesh));
-//			if (!strcmp(test.meshHeader.meshName, meshName))
-//			{
-//				this->header.meshCount = 1;
-//				this->loadedMeshes = new LoadedMesh[1];
-//				this->loadedMeshes[0].meshHeader = test.meshHeader;
-//				this->loadedMeshes[0].vertices = new Vertex[this->loadedMeshes[0].meshHeader.vertexCount];
-//
-//				infile.read((char*)this->loadedMeshes[0].vertices, this->loadedMeshes[0].meshHeader.vertexCount * sizeof(Vertex));
-//				return true;
-//			}
-//
-//
-//			else
-//				infile.ignore(test.meshHeader.vertexCount * sizeof(Vertex));
-//		}
-//	}
-//
-//	return false;
-//
-//}
-//Derp
-
 bool Importer::loadMesh(const char * filename)
 {
 	if (this->header.meshCount > 0)
@@ -121,6 +69,7 @@ bool Importer::loadMesh(const char * filename)
 		infile.read((char*)&h, sizeof(MyFormat));
 
 		this->header.meshCount = h.meshCount;
+		this->header.poseCount = h.poseCount;
 		this->loadedMeshes = new LoadedMesh[h.meshCount];
 
 		for (int i = 0; i < h.meshCount; i++)
@@ -129,21 +78,20 @@ bool Importer::loadMesh(const char * filename)
 			this->loadedMeshes[i].vertices = new Vertex[loadedMeshes[i].meshHeader.vertexCount];
 			infile.read((char*)loadedMeshes[i].vertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
 
-			////For animations
-			//infile.read((char*)&loadedMeshes[i].blendShapesHeader, sizeof(BlendShapesHeader));
+			this->loadedMeshes[i].poses = new Pose[h.poseCount];
+			for (int j = 0; j < h.poseCount; j++)
+			{
+				OutputDebugString(L"\nPose created!\n");
 
-			//for (int j = 0; j < loadedMeshes[i].blendShapesHeader.nrOfBlendShapes; j++)
-			//{
-			//	infile.read((char*)&loadedMeshes[i].blendShapeTimeline[j].blendShapeHeader, sizeof(BlendShape));
-			//	infile.read((char*)loadedMeshes[i].blendShapeTimeline[j].blendShapesVertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
-			//}
+				this->loadedMeshes[i].poses[j].vertices = new Vertex[loadedMeshes[i].meshHeader.vertexCount];
+				infile.read((char*)loadedMeshes[i].poses[j].vertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
+			}
+			
 
 		}
 
 		return true;
 	}
-
-
 
 	return false;
 }
@@ -193,6 +141,11 @@ int Importer::getMeshCount() const
 	return this->header.meshCount;
 }
 
+int Importer::getPoseCount() const
+{
+	return this->header.poseCount;
+}
+
 void Importer::getMinBBox(float & minX, float & minY, float & minZ)
 {
 	minX = this->loadedMeshes->meshHeader.minX;
@@ -219,6 +172,11 @@ void Importer::getMaxBBox(float & maxX, float & maxY, float & maxZ, int meshID)
 	maxX = this->loadedMeshes[meshID].meshHeader.maxX;
 	maxY = this->loadedMeshes[meshID].meshHeader.maxY;
 	maxZ = this->loadedMeshes[meshID].meshHeader.maxZ;
+}
+
+Vertex * Importer::getPoseVertices(int posIndex)
+{
+	return this->loadedMeshes[0].poses[posIndex].vertices;
 }
 
 LoadedMesh Importer::getMesh() const

@@ -161,7 +161,7 @@ bool gameClass::initialize(int ShowWnd)
 	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
 
 
-	///OBJ
+	//OBJ
 	//player test
 	player = new playerClass;
 	if (!player)
@@ -219,7 +219,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonBoi.bin");
+	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "animationTest.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",
@@ -420,7 +420,7 @@ bool gameClass::initialize(int ShowWnd)
 	//////////////////////////
 
 	//LIMBO BACK PLANE
-	limboBackPlane = new backgroundClass;
+	/*limboBackPlane = new backgroundClass;
 	if (!limboBackPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
@@ -437,10 +437,10 @@ bool gameClass::initialize(int ShowWnd)
 	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboBackPlane->getObj());
+	addObjectToObjHolderLimbo(limboBackPlane->getObj());*/
 
 	//LIMBO Smith PLANE
-	limboSmithPlane = new backgroundClass;
+	/*limboSmithPlane = new backgroundClass;
 	if (!limboSmithPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
@@ -457,109 +457,109 @@ bool gameClass::initialize(int ShowWnd)
 	limboSmithPlane->getObj()->setMaterialName("LimboSmith.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboSmithPlane->getObj());
+	addObjectToObjHolderLimbo(limboSmithPlane->getObj());*/
 
 	//collisionPlane
-	limboWalkingPlane = new platformClass;
-	if (!limboWalkingPlane)
-	{
-		MessageBox(NULL, L"Error create limbo obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = limboWalkingPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboPlatform.bin");
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	limboWalkingPlane->getObj()->setMaterialName("Shadow.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getMaterialName());
+	//limboWalkingPlane = new platformClass;
+	//if (!limboWalkingPlane)
+	//{
+	//	MessageBox(NULL, L"Error create limbo obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//result = limboWalkingPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboPlatform.bin");
+	//if (!result)
+	//{
+	//	MessageBox(NULL, L"Error init pickup obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//limboWalkingPlane->getObj()->setMaterialName("Shadow.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboWalkingPlane->getObj());
-	addObjectToObjHolderLimbo(player->getObj());
+	//addObjectToObjHolderLimbo(limboWalkingPlane->getObj());
+	//addObjectToObjHolderLimbo(player->getObj());
 
-	//LIMBO FRONT PLANE
-	limboFrontPlane = new backgroundClass;
-	if (!limboFrontPlane)
-	{
-		MessageBox(NULL, L"Error create limbo obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin");
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
-	
-	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
+	////LIMBO FRONT PLANE
+	//limboFrontPlane = new backgroundClass;
+	//if (!limboFrontPlane)
+	//{
+	//	MessageBox(NULL, L"Error create limbo obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//result = limboFrontPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin");
+	//if (!result)
+	//{
+	//	MessageBox(NULL, L"Error init pickup obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
+	//
+	//addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
-	//LIMBO Text PLANE
-	limboTextPlane = new backgroundClass;
-	if (!limboTextPlane)
-	{
-		MessageBox(NULL, L"Error create limbo obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = limboTextPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboTextPlane.bin");
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	limboTextPlane->getObj()->setMaterialName("SmithText.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
+	////LIMBO Text PLANE
+	//limboTextPlane = new backgroundClass;
+	//if (!limboTextPlane)
+	//{
+	//	MessageBox(NULL, L"Error create limbo obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//result = limboTextPlane->initlialize(graphics->getD3D()->GetDevice(), "LimboTextPlane.bin");
+	//if (!result)
+	//{
+	//	MessageBox(NULL, L"Error init pickup obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//limboTextPlane->getObj()->setMaterialName("SmithText.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboTextPlane->getObj());
+	//addObjectToObjHolderLimbo(limboTextPlane->getObj());
 
-	//LIMBO UPGRADE
-	upgradeGUI = new GUItestClass;
-	if (!upgradeGUI)
-	{
-		MessageBox(NULL, L"Error create limbo obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = upgradeGUI->initlialize(graphics->getD3D()->GetDevice(), "upgradeLimbo.bin", hInstance, hwnd);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	upgradeGUI->getObj()->setWorldMatrix(shopMat);
-	upgradeGUI->getObj()->setMaterialName("upgradeTexture.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
-	upgradeGUI->setIsDestroy(true);
+	////LIMBO UPGRADE
+	//upgradeGUI = new GUItestClass;
+	//if (!upgradeGUI)
+	//{
+	//	MessageBox(NULL, L"Error create limbo obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//result = upgradeGUI->initlialize(graphics->getD3D()->GetDevice(), "upgradeLimbo.bin", hInstance, hwnd);
+	//if (!result)
+	//{
+	//	MessageBox(NULL, L"Error init pickup obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//upgradeGUI->getObj()->setWorldMatrix(shopMat);
+	//upgradeGUI->getObj()->setMaterialName("upgradeTexture.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
+	//upgradeGUI->setIsDestroy(true);
 
-	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
+	////addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
-	//LIMBO UPGRADE OVERLAY
-	upgradeOverlay = new GUItestClass;
-	if (!upgradeOverlay)
-	{
-		MessageBox(NULL, L"Error create limbo obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = upgradeOverlay->initlialize(graphics->getD3D()->GetDevice(), "upgradeOverlay.bin", hInstance, hwnd);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error init pickup obj",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
-	upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	////LIMBO UPGRADE OVERLAY
+	//upgradeOverlay = new GUItestClass;
+	//if (!upgradeOverlay)
+	//{
+	//	MessageBox(NULL, L"Error create limbo obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//result = upgradeOverlay->initlialize(graphics->getD3D()->GetDevice(), "upgradeOverlay.bin", hInstance, hwnd);
+	//if (!result)
+	//{
+	//	MessageBox(NULL, L"Error init pickup obj",
+	//		L"Error", MB_OK | MB_ICONERROR);
+	//	return false;
+	//}
+	//upgradeOverlay->getObj()->setWorldMatrix(shopMat);
+	//upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
@@ -981,7 +981,8 @@ bool gameClass::frameLimbo(double dt)
 //where all the processing for our app is done here. right now it checks if user has precces anything. if its escape then quit. if no then we call our graphics obj to do its frame processing and render the graphics for the frame
 bool gameClass::frameGame(double dt)
 {
-	//DO STUFFS
+	//DO STUFFs
+	
 	bool result;
 
 	checkReleasedKeys();
@@ -1008,6 +1009,7 @@ bool gameClass::frameGame(double dt)
 		updateEnemy(dt);
 	}
 
+	enemy->getObj()->playAnimation(graphics->getD3D()->GetDeviceContect(), dt);
 	////background stff
 	staticBackground();
 

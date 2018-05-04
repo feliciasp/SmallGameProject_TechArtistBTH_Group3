@@ -54,12 +54,16 @@ class objectClass
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
+		void playAnimation(ID3D11DeviceContext* deviceCon, float dt);
+
 	private:
 
 		Importer mesh;
 		collisionClass* collision;
 		ID3D11Buffer** vertexBuffer;
 		int type;
+		float frame;
+		float timer;
 
 		bool initializeBuffer(ID3D11Device* device, int count, int meshID);
 		void shutdownBuffer();

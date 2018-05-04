@@ -8,19 +8,16 @@
 #include <vector>
 #include <iostream>
 
-struct BlendShapeFrame
+struct Pose
 {
-	BlendShape blendShapeHeader;
-	Vertex* blendShapesVertices;
+	Vertex* vertices;
 };
 
 struct LoadedMesh
 {
 	Mesh meshHeader;
 	Vertex* vertices;
-	////For animations
-	//BlendShapesHeader blendShapesHeader;
-	//BlendShapeFrame* blendShapeTimeline;
+	Pose* poses;
 };
 
 class Importer {
@@ -47,6 +44,7 @@ public:
 	int getVertexCount(int meshID) const;
 	char* getMaterialID(const char * meshName) const;
 	int getMeshCount() const;
+	int getPoseCount() const;
 
 	void getMinBBox(float &minX, float &minY, float &minZ);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ);
@@ -54,6 +52,7 @@ public:
 	void getMinBBox(float &minX, float &minY, float &minZ, int meshID);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ, int meshID);
 
+	Vertex * getPoseVertices(int posIndex);
 
 	LoadedMesh getMesh() const;
 
