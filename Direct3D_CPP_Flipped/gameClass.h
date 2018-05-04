@@ -180,7 +180,7 @@ class gameClass
 		GUItestClass* upgradeOverlay;
 		void updateShopWorldMat();
 		XMMATRIX shopMat;
-		void updateShop(double dt, GUItestClass* obj);
+		void updateShop(double dt, GUItestClass* obj, GUItestClass* obj2);
 		bool isUpgradeHPAactive;
 		int nrHPtoBeUpgraded;
 		int healthCost;

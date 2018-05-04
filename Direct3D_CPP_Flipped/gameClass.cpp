@@ -466,7 +466,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = upgradeGUI->initlialize(graphics->getD3D()->GetDevice(), "upgradeLimbo.bin", hInstance, hwnd);
+	result = upgradeGUI->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin", hInstance, hwnd);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -474,7 +474,7 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	upgradeGUI->getObj()->setWorldMatrix(shopMat);
-	upgradeGUI->getObj()->setMaterialName("upgradeTexture.png");
+	upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
@@ -487,7 +487,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = upgradeOverlay->initlialize(graphics->getD3D()->GetDevice(), "upgradeOverlay.bin", hInstance, hwnd);
+	result = upgradeOverlay->initlialize(graphics->getD3D()->GetDevice(), "LimboFrontPlane.bin", hInstance, hwnd);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -495,9 +495,10 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
-	upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
+	upgradeOverlay->getObj()->setMaterialName("Selected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
+	upgradeOverlay->setIsDestroy(true);
 
 
 	////////////////////////
@@ -837,7 +838,7 @@ bool gameClass::frameLimbo(double dt)
 	updatePlayer(limboWalkingPlane, dt);
 	
 	//shop
-	updateShop(dt, upgradeGUI);
+	updateShop(dt, upgradeGUI, upgradeOverlay);
 
 	graphics->beginScene();
 	for (int i = 0; i < objHolderLimbo.size(); i++)
@@ -1683,19 +1684,11 @@ bool gameClass::updateGUI(double dt, GUItestClass* obj)
 	return obj->updateDestroyState(dt);
 }
 
-void gameClass::updateShop(double dt, GUItestClass* obj)
+void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 {
 	obj->updateDestroy2(dt);
-	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
-	{
-		addObjectToObjHolderLimbo(upgradeGUI->getObj());
-		upgradeGUI->setCheckIfObjHolder(true);
-	}
-	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
-	{
-		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
-		upgradeGUI->setCheckIfObjHolder(false);
-	}
+	obj2->updateDestroy2(dt);
+
 	if (!upgradeOverlay->getIsDestry() && !upgradeOverlay->getCheckIfObjHolder())
 	{
 		addObjectToObjHolderLimbo(upgradeOverlay->getObj());
@@ -1707,6 +1700,17 @@ void gameClass::updateShop(double dt, GUItestClass* obj)
 		upgradeOverlay->setCheckIfObjHolder(false);
 	}
 
+	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(upgradeGUI->getObj());
+		upgradeGUI->setCheckIfObjHolder(true);
+	}
+	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
+		upgradeGUI->setCheckIfObjHolder(false);
+	}
+	
 	if (!upgradeGUI->getIsDestry())
 	{
 		//now you can upgrade your stuff
