@@ -174,11 +174,14 @@ private:
 
 
 	/////////LIMBO STUFF
-	backgroundClass* limboFrontPlane;
-	backgroundClass* limboBackPlane;
-	platformClass* limboWalkingPlane;
-	XMMATRIX limboMat;
-	void updateLimboBackground();
+	/////////LIMBO STUFF
+		backgroundClass* limboFrontPlane;
+		backgroundClass* limboSmithPlane;
+		backgroundClass* limboBackPlane;
+		backgroundClass* limboTextPlane;
+		platformClass* limboWalkingPlane;
+		XMMATRIX limboMat;
+		void updateLimboBackground();
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;
