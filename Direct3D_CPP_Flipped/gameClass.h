@@ -24,151 +24,157 @@
 using namespace DirectX;
 
 
-class gameClass 
+class gameClass
 {
-	public:
-		gameClass(HINSTANCE hInstance);
-		gameClass(const gameClass& other);
-		~gameClass();
+public:
+	gameClass(HINSTANCE hInstance);
+	gameClass(const gameClass& other);
+	~gameClass();
 
-		bool initialize(int ShowWnd);
-		void run();
-		void shutdown();
+	bool initialize(int ShowWnd);
+	void run();
+	void shutdown();
 
-		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);		//handles our messages from window
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);		//handles our messages from window
 
-		void getMoveMat(XMMATRIX& mat);
-		void setMoveMat(float x);
+	void getMoveMat(XMMATRIX& mat);
+	void setMoveMat(float x);
 
-		void addObjectToObjHolder(objectClass* obj);
-		void removeObjFromObjHolder(objectClass* obj);
+	void addObjectToObjHolder(objectClass* obj);
+	void removeObjFromObjHolder(objectClass* obj);
 
-		void addObjectToObjHolderLimbo(objectClass* obj);
-		void removeObjFromObjHolderLimbo(objectClass* obj);
+	void addObjectToObjHolderLimbo(objectClass* obj);
+	void removeObjFromObjHolderLimbo(objectClass* obj);
 
-		void addObjectToObjHolderMeny(objectClass* obj);
-		void removeObjFromObjHolderMeny(objectClass* obj);
+	void addObjectToObjHolderMeny(objectClass* obj);
+	void removeObjFromObjHolderMeny(objectClass* obj);
 
-		void addObjectToObjHolderWin(objectClass* obj);
-		void removeObjFromObjHolderWin(objectClass* obj);
+	void addObjectToObjHolderWin(objectClass* obj);
+	void removeObjFromObjHolderWin(objectClass* obj);
 
-		void addHearthToHeartHolder(GUItestClass &heart, int playerHP);
-		void removeHearthFromHeartHolder(GUItestClass heart, int playerHP);
+	void addHearthToHeartHolder(GUItestClass &heart, int playerHP);
+	void removeHearthFromHeartHolder(GUItestClass heart, int playerHP);
 
-		void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
-		void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
+	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
+	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
-	private:
-		bool frameLimbo(double dt);
-		bool frameGame(double dt);
-		bool frameMeny(double dt);
-		bool frameWin(double dt);
-		bool initializeWindow(int ShowWnd, int& width, int& height);
-		void shutdownWindow();
-		
-		
-		LPCWSTR appName;
-		HINSTANCE hInstance;
-		HWND hwnd;
+	void initializeRings();
 
-		directInput* inputDirectOther;
-		graphicsClass* graphics;
-		deltatime* dt;
+	void checkReleasedKeys();
 
-		cameraClass* camera;
-		directInput* movementInput;
-		enemyClass* enemy;
-		backgroundClass* background;
-		pickupClass* expFragment;
-		pickupClass* ring;
-		playerClass* player;
-		platformClass* platform;
-		projectileClass* projectile;
-		GUItestClass* GUItest;
+private:
+	bool frameLimbo(double dt);
+	bool frameGame(double dt);
+	bool frameMeny(double dt);
+	bool frameWin(double dt);
+	bool initializeWindow(int ShowWnd, int& width, int& height);
+	void shutdownWindow();
 
-		GUItestClass* heartHolder;
-		pickupClass* pickupHolder;
+	bool ringsInitialized;
 
-		std::vector<objectClass*> objHolder;
-		std::vector<objectClass*> objHolderMeny;
-		std::vector<objectClass*> objHolderLimbo;
-		std::vector<objectClass*> objHolderWin;
+	LPCWSTR appName;
+	HINSTANCE hInstance;
+	HWND hwnd;
 
-		XMMATRIX moveMatTest;
-		float moveTest;
+	directInput* inputDirectOther;
+	graphicsClass* graphics;
+	deltatime* dt;
 
-		XMMATRIX world, view, proj, ortoProj;
-		void updateConstantMatrices();
-		XMMATRIX enemyMatPos, matMul, enemyFallingMat;
-		XMMATRIX masterMovementEnemyMat;
-		XMMATRIX enemyTranslationMatrix;
-		void updateEnemy(double dt);
-		XMMATRIX playerMove;
-		void updatePlayer(platformClass* platform, double dt);
-		void updatePlayerShadow();
-		void updateCamera();
-		XMMATRIX backgroundMat;
-		void staticBackground();
-		XMMATRIX pickupStartPosMoveMat;
-		void updatePickup(double dt);
-		void updateProjectile(double dt);
-		XMMATRIX projectileMoveMat;
-		float lengthBetween1;
-		float lengthBetween2;
-		void updateCollision(double dt);
-		XMMATRIX platformMat;
+	cameraClass* camera;
+	directInput* movementInput;
+	enemyClass* enemy;
+	backgroundClass* background;
+	pickupClass* expFragment;
+	pickupClass* ring;
+	playerClass* player;
+	platformClass* platform;
+	projectileClass* projectile;
+	GUItestClass* GUItest;
 
-		XMMATRIX enemyTrans;
+	GUItestClass* heartHolder;
+	pickupClass* pickupHolder;
 
-		float lengthBetweenEnemyStartAndEnemyCurrentPos1;
-		float lengthBetweenEnemyStartAndEnemyCurrentPos2;
+	std::vector<objectClass*> objHolder;
+	std::vector<objectClass*> objHolderMeny;
+	std::vector<objectClass*> objHolderLimbo;
+	std::vector<objectClass*> objHolderWin;
 
-		XMVECTOR tempBboxMin;
-		int countEnemy;
-		/*bool checkCollisionPlatform();*/
+	XMMATRIX moveMatTest;
+	float moveTest;
 
-		bool checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformLeft(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
-		bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+	XMMATRIX world, view, proj, ortoProj;
+	void updateConstantMatrices();
+	XMMATRIX enemyMatPos, matMul, enemyFallingMat;
+	XMMATRIX masterMovementEnemyMat;
+	XMMATRIX enemyTranslationMatrix;
+	void updateEnemy(double dt);
+	XMMATRIX playerMove;
+	void updatePlayer(platformClass* platform, double dt);
+	void updatePlayerShadow();
+	void updateCamera();
+	XMMATRIX backgroundMat;
+	void staticBackground();
+	XMMATRIX pickupStartPosMoveMat;
+	void updatePickup(double dt);
+	void updateProjectile(double dt);
+	XMMATRIX projectileMoveMat;
+	float lengthBetween1;
+	float lengthBetween2;
+	void updateCollision(double dt);
+	XMMATRIX platformMat;
 
-		int nrOfVisiblePickups;
-	
-		bool gameStateLevel;
-		bool gameStateMeny;
-		bool gameStateLimbo;
-		bool gameStateWin;
-		void setGameStateLevel(bool other);
-		void setGameStateMeny(bool other);
-		void setGameStateLimbo(bool other);
+	XMMATRIX enemyTrans;
 
+	float lengthBetweenEnemyStartAndEnemyCurrentPos1;
+	float lengthBetweenEnemyStartAndEnemyCurrentPos2;
 
-		//GUI
-		GUItestClass* GUIheart1;
-		void updatePlatform();
-		XMMATRIX guiMat;
-		bool updateGUI(double dt, GUItestClass* obj);
-		XMMATRIX heart1;
-		XMMATRIX heart2;
-		XMMATRIX heart3;
+	XMVECTOR tempBboxMin;
+	int countEnemy;
+	/*bool checkCollisionPlatform();*/
 
-		////////////////////////MENY 
-		GUItestClass* meny;
-		XMMATRIX menyMat;
-		bool done;
-		GUItestClass* menyHighlight;
-		XMMATRIX menyHighlightMat;
-		int counterOverlay;
-		void setCounterOverlay(int other);
-		int getCounterOverlay();
-		void updateOverlay();
-		int menyTimer;
-		bool menyCheck;
-		bool menyOnCooldown();
-		void updateMenyCooldown();
+	bool checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+	bool checkCollisionPlatformLeft(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+	bool checkCollisionPlatformRight(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+	bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
+
+	int nrOfVisiblePickups;
+
+	bool gameStateLevel;
+	bool gameStateMeny;
+	bool gameStateLimbo;
+	bool gameStateWin;
+	void setGameStateLevel(bool other);
+	void setGameStateMeny(bool other);
+	void setGameStateLimbo(bool other);
 
 
-		/////////LIMBO STUFF
+	//GUI
+	GUItestClass* GUIheart1;
+	void updatePlatform();
+	XMMATRIX guiMat;
+	bool updateGUI(double dt, GUItestClass* obj);
+	XMMATRIX heart1;
+	XMMATRIX heart2;
+	XMMATRIX heart3;
+
+	////////////////////////MENY 
+	GUItestClass* meny;
+	XMMATRIX menyMat;
+	bool done;
+	GUItestClass* menyHighlight;
+	XMMATRIX menyHighlightMat;
+	int counterOverlay;
+	void setCounterOverlay(int other);
+	int getCounterOverlay();
+	void updateOverlay();
+	int menyTimer;
+	bool menyCheck;
+	bool menyOnCooldown();
+	void updateMenyCooldown();
+
+
+	/////////LIMBO STUFF
+	/////////LIMBO STUFF
 		backgroundClass* limboFrontPlane;
 		backgroundClass* limboSmithPlane;
 		backgroundClass* limboBackPlane;
@@ -177,34 +183,36 @@ class gameClass
 		XMMATRIX limboMat;
 		void updateLimboBackground();
 
-		//has to do with shop
-		GUItestClass* upgradeGUI;
-		GUItestClass* upgradeOverlay;
-		void updateShopWorldMat();
-		XMMATRIX shopMat;
-		void updateShop(double dt, GUItestClass* obj);
-		bool isUpgradeHPAactive;
-		int nrHPtoBeUpgraded;
-		int healthCost;
-		bool upgradeCooldown;
-		int upgradeTimer;
-		bool checkUpgradeCooldown();
-		int getCooldownTimerShop();
-		void updateShopCooldown();
+	//has to do with shop
+	GUItestClass* upgradeGUI;
+	GUItestClass* upgradeOverlay;
+	void updateShopWorldMat();
+	XMMATRIX shopMat;
+	void updateShop(double dt, GUItestClass* obj);
+	bool isUpgradeHPAactive;
+	int nrHPtoBeUpgraded;
+	int healthCost;
+	bool upgradeCooldown;
+	int upgradeTimer;
+	bool checkUpgradeCooldown();
+	int getCooldownTimerShop();
+	void updateShopCooldown();
 
-		int shopOverlayCount;
-		XMMATRIX shopOverlayMat;
-		int getShopOverlayCounter();
-		void setShopOverlayCounter(int x);
-		int nrSpeedToBeUpgraded;
-		int SpeedCost;
+	bool enterReleased;
 
-		//////////////////////WIN STATE
-		GUItestClass* win;
-		XMMATRIX winMat;
+	int shopOverlayCount;
+	XMMATRIX shopOverlayMat;
+	int getShopOverlayCounter();
+	void setShopOverlayCounter(int x);
+	int nrSpeedToBeUpgraded;
+	int SpeedCost;
 
-		backgroundClass* playerShadowPlane;
-		XMMATRIX shadowMat;
+	//////////////////////WIN STATE
+	GUItestClass* win;
+	XMMATRIX winMat;
+
+	backgroundClass* playerShadowPlane;
+	XMMATRIX shadowMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

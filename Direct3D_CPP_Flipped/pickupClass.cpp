@@ -10,7 +10,8 @@ pickupClass::pickupClass()
 	frameCount = 8;
 	currentFrame = 2;
 	currentTime = 0;
-	animationSpeed = 50;
+	animationSpeed = 0.2;
+	frameCount = 9;
 
 	isAnimated = true;
 	isRing = false;
@@ -20,7 +21,7 @@ pickupClass::pickupClass()
 pickupClass::pickupClass(const pickupClass & other)
 {
 	//objectClass * obj;
-	
+
 	/*pickupClass *newPickup = new pickupClass;
 	newPickup->obj = new objectClass;
 	newPickup->transStart = other.transStart;
@@ -34,7 +35,7 @@ pickupClass::pickupClass(const pickupClass & other)
 
 	newPickup->ringType = other.ringType;
 	newPickup->pickupType = other.pickupType;*/
-	
+
 }
 
 pickupClass::~pickupClass()
@@ -130,9 +131,23 @@ void pickupClass::setCheckIfObjHolder(bool check)
 
 void pickupClass::updateAnimation(double dt)
 {
+	if (pickupType == 3)
+	{
+		isAnimated = false;
+		if (ringType == 0)
+		{
+			currentFrame = 6;
+		}
+
+		if (ringType == 1)
+		{
+			currentFrame = 3;
+		}
+	}
+
 	if (isAnimated)
 	{
-		if (currentTime > animationSpeed * dt)
+		if (currentTime > animationSpeed)
 		{
 			currentTime = 0;
 			currentFrame++;
@@ -168,7 +183,7 @@ void pickupClass::setPickupType(int other)
 		this->isRing = false;
 		this->isAnimated = true;
 	}
-		
+
 }
 
 int pickupClass::getPickupType()
