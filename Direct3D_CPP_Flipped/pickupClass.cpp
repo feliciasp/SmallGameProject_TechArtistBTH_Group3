@@ -9,9 +9,11 @@ pickupClass::pickupClass()
 
 	frameCount = 8;
 	currentFrame = 2;
+	currentAnimation = 1;
+	animationCount = 1;
 	currentTime = 0;
 	animationSpeed = 0.2;
-	frameCount = 9;
+
 
 	isAnimated = true;
 	isRing = false;
@@ -20,22 +22,7 @@ pickupClass::pickupClass()
 
 pickupClass::pickupClass(const pickupClass & other)
 {
-	//objectClass * obj;
-
-	/*pickupClass *newPickup = new pickupClass;
-	newPickup->obj = new objectClass;
-	newPickup->transStart = other.transStart;
-	newPickup->isDestroy = other.isDestroy;
-	newPickup->checkIfSetToObjHolder = other.checkIfSetToObjHolder;
-	newPickup->frameCount = other.frameCount;
-	newPickup->currentFrame = other.currentFrame;
-	newPickup->animationSpeed = other.animationSpeed;
-	newPickup->isAnimated = other.isAnimated;
-	newPickup->isRing = other.isRing;
-
-	newPickup->ringType = other.ringType;
-	newPickup->pickupType = other.pickupType;*/
-
+	
 }
 
 pickupClass::~pickupClass()
@@ -145,6 +132,15 @@ void pickupClass::updateAnimation(double dt)
 		}
 	}
 
+	else if (pickupType == 4)
+	{
+		isAnimated = false;
+		currentFrame = 1;
+	}
+
+	else
+		isAnimated = true;
+
 	if (isAnimated)
 	{
 		if (currentTime > animationSpeed)
@@ -160,6 +156,11 @@ void pickupClass::updateAnimation(double dt)
 	}
 }
 
+void pickupClass::setFrameCount(int frameCount)
+{
+	this->frameCount = frameCount;
+}
+
 int pickupClass::getFrameCount()
 {
 	return this->frameCount;
@@ -168,6 +169,26 @@ int pickupClass::getFrameCount()
 int pickupClass::getCurrentFrame()
 {
 	return this->currentFrame;
+}
+
+void pickupClass::setCurrentAnimation(int currentAnimation)
+{
+	this->currentAnimation = currentAnimation;
+}
+
+int pickupClass::getCurrentAnimation()
+{
+	return this->currentAnimation;
+}
+
+void pickupClass::setAnimationCount(int animationCount)
+{
+	this->animationCount = animationCount;
+}
+
+int pickupClass::getAnimationCount()
+{
+	return this->animationCount;
 }
 
 void pickupClass::setPickupType(int other)
