@@ -2053,7 +2053,7 @@ void gameClass::updateCollision(double dt)
 		}
 	}
 
-	enemy->timeCountdown();
+	enemy->timeCountdown(dt);
 
 	if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
 	{
@@ -2100,7 +2100,7 @@ void gameClass::updateCollision(double dt)
 			{
 				enemy->setRoationCheck(false);
 				enemy->setFacing(false);
-				enemy->updateAttackCooldownTimer();
+				enemy->updateAttackCooldownTimer(dt);
 			}
 
 			enemy->setMove(2.5f * dt);
@@ -2160,7 +2160,7 @@ void gameClass::updateCollision(double dt)
 			{
 				enemy->setRoationCheck(false);
 				enemy->setFacing(true);
-				enemy->updateAttackCooldownTimer();
+				enemy->updateAttackCooldownTimer(dt);
 			}
 			enemy->setTranslation(enemy->getMove());
 			enemy->setMove(-2.5f * dt);
@@ -2172,7 +2172,7 @@ void gameClass::updateCollision(double dt)
 		enemy->setTranslation(enemy->getMove());
 	}
 
-	enemy->updateAttackCooldownTimer();
+	enemy->updateAttackCooldownTimer(dt);
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
