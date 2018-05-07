@@ -19,8 +19,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	shopOverlayCount = 0;
 	nrSpeedToBeUpgraded = 0;
 
-	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
-	shopOverlayMat = shopMat * XMMatrixScaling(0.07f, 1.0f, 1.0f);
+	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
+	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
 
 	countEnemy = 0;
 	SpeedCost = 1;
@@ -539,10 +539,11 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	upgradeGUI->getObj()->setWorldMatrix(shopMat);
+	upgradeGUI->getObj()->setWorldMatrix(XMMatrixIdentity());
 	upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
+	upgradeGUI->getObj()->setType(0);
 
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
@@ -561,10 +562,14 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
-	upgradeOverlay->getObj()->setMaterialName("Selected1.png");
+	upgradeOverlay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->setIsDestroy(true);
+	upgradeOverlay->getObj()->setType(0);
+
 
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
@@ -721,6 +726,7 @@ void gameClass::shutdown()
 		delete limboTextPlane;
 		limboTextPlane = 0;
 	}
+	
 	if (win)
 	{
 		win->shutdown();
@@ -916,7 +922,7 @@ bool gameClass::frameLimbo(double dt)
 
 	//constant MATRICES
 	updateConstantMatrices();
-	//graphics->getD3D()->getOrtoProjMat(ortoProj);
+	graphics->getD3D()->getOrtoProjMat(ortoProj);
 
 	//enviroment
 	updateLimboBackground();
@@ -935,7 +941,7 @@ bool gameClass::frameLimbo(double dt)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -945,7 +951,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, expFragment->getFrameCount(), expFragment->getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, expFragment->getFrameCount(), expFragment->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -954,7 +960,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0);
 			if (!result)
 
 			{
@@ -1781,13 +1787,13 @@ void gameClass::updateShopWorldMat()
 	//overlay update
 	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
 	{
-		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
+		upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
 		setShopOverlayCounter(getShopOverlayCounter() + 1);
 		arrowDownReleased = false;
 	}
 	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > 0)
 	{
-		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
+		upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 		setShopOverlayCounter(getShopOverlayCounter() - 1);
 		arrowUpReleased = false;
 	}
@@ -1801,18 +1807,9 @@ bool gameClass::updateGUI(double dt, GUItestClass* obj)
 
 void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 {
-	obj->updateDestroy2(dt);
-	obj2->updateDestroy2(dt);
-	if (!upgradeOverlay->getIsDestry() && !upgradeOverlay->getCheckIfObjHolder())
-	{
-		addObjectToObjHolderLimbo(upgradeOverlay->getObj());
-		upgradeOverlay->setCheckIfObjHolder(true);
-	}
-	if (upgradeOverlay->getIsDestry() && upgradeOverlay->getCheckIfObjHolder())
-	{
-		removeObjFromObjHolderLimbo(upgradeOverlay->getObj());
-		upgradeOverlay->setCheckIfObjHolder(false);
-	}
+	upgradeGUI->updateDestroy2(dt);
+	upgradeOverlay->updateDestroy2(dt);
+	
 	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
 	{
 		addObjectToObjHolderLimbo(upgradeGUI->getObj());
@@ -1822,6 +1819,16 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 	{
 		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
 		upgradeGUI->setCheckIfObjHolder(false);
+	}
+	if (!upgradeOverlay->getIsDestry() && !upgradeOverlay->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(upgradeOverlay->getObj());
+		upgradeOverlay->setCheckIfObjHolder(true);
+	}
+	if (upgradeOverlay->getIsDestry() && upgradeOverlay->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(upgradeOverlay->getObj());
+		upgradeOverlay->setCheckIfObjHolder(false);
 	}
 	
 

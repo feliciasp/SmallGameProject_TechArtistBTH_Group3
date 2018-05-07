@@ -141,7 +141,7 @@ bool d3dClass::initializeMatrices(int width, int height, float screenDepth, floa
 	float screenAspect = (float)width / (float)height;
 	
 	this->projMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
-	this->projMatrixOrto = XMMatrixOrthographicLH(width, height, 0.1f, 1000.0f);
+	this->projMatrixOrto = XMMatrixOrthographicLH(width/60, height/60, 0.1f, 1000.0f);
 
 	//world mat
 	this->worldMatrix = XMMatrixIdentity();
