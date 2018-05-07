@@ -249,7 +249,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = background->initlialize(graphics->getD3D()->GetDevice(), "backgroudnDummy.bin");
+	result = background->initlialize(graphics->getD3D()->GetDevice(), "1backgroundScene.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init background obj",
@@ -307,7 +307,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "1backgroundScene.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -359,7 +359,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = platform->initlialize(graphics->getD3D()->GetDevice(), "platformsDummy.bin");
+	result = platform->initlialize(graphics->getD3D()->GetDevice(), "1platformScene.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -560,6 +560,7 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->getObj()->setWorldMatrix(shopMat);
 	upgradeOverlay->getObj()->setMaterialName("upgradeOverlayTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->setIsDestroy(true);
 
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
@@ -920,7 +921,7 @@ bool gameClass::frameLimbo(double dt)
 	updatePlayer(limboWalkingPlane, dt);
 
 	//shop
-	updateShop(dt, upgradeGUI);
+	updateShop(dt, upgradeGUI, upgradeOverlay);
 
 	graphics->beginScene();
 	for (int i = 0; i < objHolderLimbo.size(); i++)
@@ -1694,14 +1695,21 @@ void gameClass::updatePlayerShadow()
 
 void gameClass::updateCamera()
 {
-	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) > -27)
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) > -147)
 	{
 		camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->setTempX(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->setTempY(XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 	}
-	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -27)
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) < -10)
+	{
+		camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->setTempX(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->setTempY(XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+	}
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -147 || XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) >= -10)
 	{
 		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
@@ -1797,9 +1805,10 @@ bool gameClass::updateGUI(double dt, GUItestClass* obj)
 	return obj->updateDestroyState(dt);
 }
 
-void gameClass::updateShop(double dt, GUItestClass* obj)
+void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 {
 	obj->updateDestroy2(dt);
+	obj2->updateDestroy2(dt);
 	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
 	{
 		addObjectToObjHolderLimbo(upgradeGUI->getObj());
