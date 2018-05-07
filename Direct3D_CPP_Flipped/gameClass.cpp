@@ -423,6 +423,8 @@ bool gameClass::initialize(int ShowWnd)
 	//////	 LIMBO		//////
 	//////////////////////////
 
+	limboPickupHolder = new pickupClass[2];
+
 	//LIMBO BACK PLANE
 	limboBackPlane = new backgroundClass;
 	if (!limboBackPlane)
@@ -440,11 +442,12 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
-
+	
+	
 	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
 	//LIMBO Smith PLANE
-	limboSmithPlane = new backgroundClass;
+	limboSmithPlane = new pickupClass;
 	if (!limboSmithPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
@@ -458,10 +461,15 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboSmithPlane->getObj()->setMaterialName("LimboSmith.png");
+	limboSmithPlane->getObj()->setMaterialName("SmithSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboSmithPlane->getObj());
+	limboPickupHolder[0].clone(*limboSmithPlane);
+	limboPickupHolder[0].setFrameCount(2);
+	limboPickupHolder[0].setAnimationCount(1);
+	limboPickupHolder[0].setPickupType(5);
+
+	addObjectToObjHolderLimbo(limboPickupHolder[0].getObj());
 
 	//collisionPlane
 	limboWalkingPlane = new platformClass;
@@ -501,11 +509,11 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
-	
+
 	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
 	//LIMBO Text PLANE
-	limboTextPlane = new backgroundClass;
+	limboTextPlane = new pickupClass;
 	if (!limboTextPlane)
 	{
 		MessageBox(NULL, L"Error create limbo obj",
@@ -522,7 +530,12 @@ bool gameClass::initialize(int ShowWnd)
 	limboTextPlane->getObj()->setMaterialName("SmithText.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
 
-	addObjectToObjHolderLimbo(limboTextPlane->getObj());
+	limboPickupHolder[1].clone(*limboTextPlane);
+	limboPickupHolder[1].setFrameCount(1);
+	limboPickupHolder[1].setAnimationCount(1);
+	limboPickupHolder[1].setPickupType(4);
+
+	addObjectToObjHolderLimbo(limboPickupHolder[1].getObj());
 
 	//LIMBO UPGRADE
 	upgradeGUI = new GUItestClass;
@@ -720,6 +733,16 @@ void gameClass::shutdown()
 		limboTextPlane->shutdown();
 		delete limboTextPlane;
 		limboTextPlane = 0;
+	}
+
+	if (limboPickupHolder)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			limboPickupHolder[i].shutdown();
+		}
+		delete[] limboPickupHolder;
+		limboPickupHolder = 0;
 	}
 	if (win)
 	{
@@ -927,10 +950,17 @@ bool gameClass::frameLimbo(double dt)
 	//player
 	updatePlayer(limboWalkingPlane, dt);
 
+	for (int i = 0; i < 2; i++)
+	{
+		limboPickupHolder[i].updateAnimation(dt);
+	}
+
 	//shop
 	updateShop(dt, upgradeGUI, upgradeOverlay);
 
 	graphics->beginScene();
+
+	int pickupCheck = 0;
 	for (int i = 0; i < objHolderLimbo.size(); i++)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
@@ -945,7 +975,8 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, expFragment->getFrameCount(), expFragment->getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
+			pickupCheck++;
 			if (!result)
 			{
 				return false;
@@ -1603,6 +1634,7 @@ void gameClass::initializeRings()
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(i);
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 		ringTemp.shutdown();
 
 	}
@@ -1768,11 +1800,14 @@ void gameClass::updateOverlay()
 void gameClass::updateLimboBackground()
 {
 	limboMat = XMMatrixIdentity();
+
+	for (int i = 0; i < 2; i++)
+	{
+		limboPickupHolder[i].getObj()->setWorldMatrix(limboMat);
+	}
 	limboBackPlane->getObj()->setWorldMatrix(limboMat);
 	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
-	limboSmithPlane->getObj()->setWorldMatrix(limboMat);
-	limboTextPlane->getObj()->setWorldMatrix(limboMat);
 }
 
 void gameClass::updateShopWorldMat()
@@ -1824,6 +1859,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		upgradeGUI->setCheckIfObjHolder(false);
 	}
 	
+
 
 	if (!upgradeGUI->getIsDestry())
 	{
@@ -1995,6 +2031,7 @@ void gameClass::updateCollision(double dt)
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
 			player->setIfInObjHolder(false);
 		}
@@ -2025,6 +2062,7 @@ void gameClass::updateCollision(double dt)
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
 			player->setIfInObjHolder(false);
 		}
