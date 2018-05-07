@@ -192,6 +192,7 @@ private:
 	int healthCost;
 	bool upgradeCooldown;
 	int upgradeTimer;
+	int activeShopState;
 
 	bool enterReleased;
 	bool arrowUpReleased;
@@ -200,8 +201,11 @@ private:
 	bool arrowRightReleased;
 
 	int shopOverlayCount;
+	int shopOverlayCountRow;
 	XMMATRIX shopOverlayMat;
 	int getShopOverlayCounter();
+	int getShopOverlayCounterRow();
+	void setShopOverlayCounterRow(int x);
 	void setShopOverlayCounter(int x);
 	int nrSpeedToBeUpgraded;
 	int SpeedCost;
