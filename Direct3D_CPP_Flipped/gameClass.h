@@ -93,6 +93,7 @@ private:
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
+	enemyClass* enemyHolder;
 
 	std::vector<objectClass*> objHolder;
 	std::vector<objectClass*> objHolderMeny;
