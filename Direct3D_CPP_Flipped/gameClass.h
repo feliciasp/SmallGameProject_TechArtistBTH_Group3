@@ -169,36 +169,37 @@ private:
 	void updateOverlay();
 	int menyTimer;
 	bool menyCheck;
-	bool menyOnCooldown();
-	void updateMenyCooldown();
 
 
 	/////////LIMBO STUFF
 	/////////LIMBO STUFF
 		backgroundClass* limboFrontPlane;
-		backgroundClass* limboSmithPlane;
+		pickupClass* limboSmithPlane;
 		backgroundClass* limboBackPlane;
-		backgroundClass* limboTextPlane;
+		pickupClass* limboTextPlane;
 		platformClass* limboWalkingPlane;
 		XMMATRIX limboMat;
 		void updateLimboBackground();
+
+		pickupClass* limboPickupHolder;
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;
 	GUItestClass* upgradeOverlay;
 	void updateShopWorldMat();
 	XMMATRIX shopMat;
-	void updateShop(double dt, GUItestClass* obj);
+	void updateShop(double dt, GUItestClass* obj, GUItestClass* obj2);
 	bool isUpgradeHPAactive;
 	int nrHPtoBeUpgraded;
 	int healthCost;
 	bool upgradeCooldown;
 	int upgradeTimer;
-	bool checkUpgradeCooldown();
-	int getCooldownTimerShop();
-	void updateShopCooldown();
 
 	bool enterReleased;
+	bool arrowUpReleased;
+	bool arrowDownReleased;
+	bool arrowLeftReleased;
+	bool arrowRightReleased;
 
 	int shopOverlayCount;
 	XMMATRIX shopOverlayMat;
