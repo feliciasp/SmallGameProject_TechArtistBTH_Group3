@@ -558,7 +558,7 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
-	upgradeGUI->getObj()->setType(0);
+	upgradeGUI->getObj()->setType(4);
 
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
@@ -589,7 +589,8 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->setIsDestroy(true);
-	upgradeOverlay->getObj()->setType(0);
+	upgradeOverlay->getObj()->setType(4);
+
 
 	
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
