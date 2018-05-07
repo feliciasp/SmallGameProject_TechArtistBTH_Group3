@@ -59,6 +59,10 @@ gameClass::gameClass(HINSTANCE hInstance)
 	upgradeTimer = 0;
 
 	enterReleased = true;
+	arrowUpReleased = true;
+	arrowUpReleased = true;
+	arrowRightReleased = true;
+	arrowLeftReleased = true;
 
 	ringsInitialized = false;
 }
@@ -901,11 +905,14 @@ bool gameClass::frameLimbo(double dt)
 {
 	bool result;
 
+
 	result = inputDirectOther->frame(dt);
 	if (!result)
 	{
 		return false;
 	}
+
+	checkReleasedKeys();
 
 	//constant MATRICES
 	updateConstantMatrices();
@@ -1229,6 +1236,7 @@ bool gameClass::frameMeny(double dt)
 		return false;
 	}
 
+	checkReleasedKeys();
 	//constant MATRICES
 	updateConstantMatrices();
 
@@ -1604,6 +1612,14 @@ void gameClass::checkReleasedKeys()
 {
 	if (!inputDirectOther->isEnterPressed())
 		enterReleased = true;
+	if (!inputDirectOther->isArrowDownPressed())
+		arrowDownReleased = true;
+	if (!inputDirectOther->isArrowUpPressed())
+		arrowUpReleased = true;
+	if (!inputDirectOther->isArrowLeftPressed())
+		arrowLeftReleased = true;
+	if (!inputDirectOther->isArrowRightPressed())
+		arrowRightReleased = true;
 }
 
 void gameClass::updateConstantMatrices()
@@ -1734,42 +1750,19 @@ int gameClass::getCounterOverlay()
 
 void gameClass::updateOverlay()
 {
-	updateMenyCooldown();
-	if (inputDirectOther->isArrowDownPressed() && menyOnCooldown() && getCounterOverlay() < 3)
+	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getCounterOverlay() < 3)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() + 1);
+		arrowDownReleased = false;
 	}
-	if (inputDirectOther->isArrowUpPressed() && menyOnCooldown() && getCounterOverlay() > 0)
+	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getCounterOverlay() > 0)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() - 1);
+		arrowUpReleased = false;
 	}
 	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
-}
-
-bool gameClass::menyOnCooldown()
-{
-	if (menyTimer <= 0 && menyCheck == true)
-	{
-		menyTimer = 150;
-		menyCheck = false;
-		return true;
-	}
-
-	return false;
-}
-
-void gameClass::updateMenyCooldown()
-{
-	if (menyTimer > 0)
-	{
-		menyTimer -= 1;
-	}
-	if (menyTimer <= 0 && menyCheck == false)
-	{
-		menyCheck = true;
-	}
 }
 
 void gameClass::updateLimboBackground()
@@ -1786,17 +1779,18 @@ void gameClass::updateShopWorldMat()
 {
 	upgradeGUI->getObj()->setWorldMatrix(shopMat);
 	//overlay update
-	if (inputDirectOther->isArrowDownPressed() && checkUpgradeCooldown() && getShopOverlayCounter() < 2)
+	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
 	{
 		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
 		setShopOverlayCounter(getShopOverlayCounter() + 1);
+		arrowDownReleased = false;
 	}
-	if (inputDirectOther->isArrowUpPressed() && checkUpgradeCooldown() && getShopOverlayCounter() > 0)
+	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > 0)
 	{
 		shopOverlayMat = shopOverlayMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
 		setShopOverlayCounter(getShopOverlayCounter() - 1);
+		arrowUpReleased = false;
 	}
-	updateShopCooldown();
 	upgradeOverlay->getObj()->setWorldMatrix(shopOverlayMat);
 }
 
@@ -1837,8 +1831,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		if (shopOverlayCount == 0)
 		{
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
+			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 			{
+				arrowRightReleased = false;
 				if (player->getNrPixelFramgent() >= healthCost)
 				{
 					player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);
@@ -1848,8 +1843,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			}
 
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && checkUpgradeCooldown())
+			if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 			{
+				arrowLeftReleased = false;
 				player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
 				nrHPtoBeUpgraded -= 1;
 				healthCost = healthCost / 2;
@@ -1859,8 +1855,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		if (shopOverlayCount == 1)
 		{
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
+			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 			{
+				arrowRightReleased = false;
 				if (player->getNrPixelFramgent() >= SpeedCost)
 				{
 					player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
@@ -1870,8 +1867,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			}
 
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && checkUpgradeCooldown())
+			if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 			{
+				arrowLeftReleased = false;
 				player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
 				nrSpeedToBeUpgraded -= 1;
 				SpeedCost = SpeedCost / 2;
@@ -1880,8 +1878,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		if (shopOverlayCount == 2)
 		{
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && checkUpgradeCooldown())
+			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 			{
+				arrowRightReleased = false;
 				if (nrHPtoBeUpgraded > 0)
 				{
 					for (int i = 0; i < nrHPtoBeUpgraded; i++)
@@ -1911,38 +1910,6 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				}
 			}
 		}
-	}
-	updateShopCooldown();
-}
-
-bool gameClass::checkUpgradeCooldown()
-{
-	if (this->upgradeCooldown == false && upgradeTimer == 0)
-	{
-		this->upgradeCooldown = true;
-		upgradeTimer = 300;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-int gameClass::getCooldownTimerShop()
-{
-	return this->upgradeTimer;
-}
-
-void gameClass::updateShopCooldown()
-{
-	if (this->upgradeTimer > 0)
-	{
-		upgradeTimer -= 1;
-	}
-	if (this->upgradeTimer == 0)
-	{
-		this->upgradeCooldown = false;
 	}
 }
 
@@ -2063,7 +2030,7 @@ void gameClass::updateCollision(double dt)
 		}
 	}
 
-	enemy->timeCountdown();
+	enemy->timeCountdown(dt);
 
 	if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
 	{
@@ -2110,7 +2077,7 @@ void gameClass::updateCollision(double dt)
 			{
 				enemy->setRoationCheck(false);
 				enemy->setFacing(false);
-				enemy->updateAttackCooldownTimer();
+				enemy->updateAttackCooldownTimer(dt);
 			}
 
 			enemy->setMove(2.5f * dt);
@@ -2170,7 +2137,7 @@ void gameClass::updateCollision(double dt)
 			{
 				enemy->setRoationCheck(false);
 				enemy->setFacing(true);
-				enemy->updateAttackCooldownTimer();
+				enemy->updateAttackCooldownTimer(dt);
 			}
 			enemy->setTranslation(enemy->getMove());
 			enemy->setMove(-2.5f * dt);
@@ -2182,7 +2149,7 @@ void gameClass::updateCollision(double dt)
 		enemy->setTranslation(enemy->getMove());
 	}
 
-	enemy->updateAttackCooldownTimer();
+	enemy->updateAttackCooldownTimer(dt);
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
