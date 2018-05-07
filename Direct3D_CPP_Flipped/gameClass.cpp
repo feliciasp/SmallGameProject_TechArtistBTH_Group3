@@ -20,7 +20,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	nrSpeedToBeUpgraded = 0;
 
 	shopMat = XMMatrixScaling(0.07f, 0.1f, 0.0f) * XMMatrixTranslation(0.5f, -0.3f, 0.0f);
-	shopOverlayMat = shopMat;
+	shopOverlayMat = shopMat * XMMatrixScaling(0.07f, 1.0f, 1.0f);
 
 	countEnemy = 0;
 	SpeedCost = 1;
