@@ -1964,6 +1964,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				setShopOverlayCounterRow(0);
 				upgradeGUI->setIsDestroy(true);
 				upgradeOverlay->setIsDestroy(true);
+				//gfhgfh
 			}
 		}
 		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
