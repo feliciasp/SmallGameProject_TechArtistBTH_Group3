@@ -17,7 +17,9 @@ gameClass::gameClass(HINSTANCE hInstance)
 	counterOverlay = 0;
 	menyCheck = true;
 	shopOverlayCount = 0;
+	shopOverlayCountRow = 0;
 	nrSpeedToBeUpgraded = 0;
+	activeShopState = 0;
 
 	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
@@ -578,12 +580,18 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->getObj()->setWorldMatrix(XMMatrixIdentity());
 	upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("LeftArrowSelected1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->setIsDestroy(true);
 	upgradeOverlay->getObj()->setType(0);
 
-
+	
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
 
@@ -1007,6 +1015,10 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = false;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+		upgradeOverlay->setIsDestroy(true);
+		setShopOverlayCounter(0);
+		setShopOverlayCounterRow(0);
+		activeShopState = 0;
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -1016,6 +1028,10 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = true;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+		upgradeOverlay->setIsDestroy(true);
+		setShopOverlayCounter(0);
+		setShopOverlayCounterRow(0);
+		activeShopState = 0;
 		return false;
 	}
 
@@ -1819,17 +1835,45 @@ void gameClass::updateShopWorldMat()
 {
 	upgradeGUI->getObj()->setWorldMatrix(shopMat);
 	//overlay update
-	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
+	if (activeShopState == 0)
 	{
-		upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
-		setShopOverlayCounter(getShopOverlayCounter() + 1);
-		arrowDownReleased = false;
+		if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
+		{
+			setShopOverlayCounter(getShopOverlayCounter() + 1);
+			arrowDownReleased = false;
+		}
+		if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > 0)
+		{
+			setShopOverlayCounter(getShopOverlayCounter() - 1);
+			arrowUpReleased = false;
+		}
+		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() > 0)
+		{
+			setShopOverlayCounterRow(getShopOverlayCounterRow() - 1);
+			arrowRightReleased = false;
+		}
+		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() < 1)
+		{
+			setShopOverlayCounterRow(getShopOverlayCounterRow() + 1);
+			arrowLeftReleased = false;
+		}
 	}
-	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > 0)
+
+	if (getShopOverlayCounter() == 0)
 	{
 		upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
-		setShopOverlayCounter(getShopOverlayCounter() - 1);
-		arrowUpReleased = false;
+	}
+	if (getShopOverlayCounter() == 1)
+	{
+		upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
+	}
+	if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
+	{
+		upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+	}
+	if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
+	{
+		upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
 	}
 	upgradeOverlay->getObj()->setWorldMatrix(shopOverlayMat);
 }
@@ -1917,12 +1961,12 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				SpeedCost = SpeedCost / 2;
 			}
 		}
-		if (shopOverlayCount == 2)
+		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
 		{
 			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
+			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
-				arrowRightReleased = false;
+				enterReleased = false;
 				if (nrHPtoBeUpgraded > 0)
 				{
 					for (int i = 0; i < nrHPtoBeUpgraded; i++)
@@ -1950,6 +1994,26 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					}
 					nrSpeedToBeUpgraded = 0;
 				}
+				activeShopState = 0;
+				setShopOverlayCounter(0);
+				setShopOverlayCounterRow(0);
+				upgradeGUI->setIsDestroy(true);
+				upgradeOverlay->setIsDestroy(true);
+				//gfhgfh
+			}
+		}
+		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
+		{
+			if (inputDirectOther->isEnterPressed() && enterReleased)
+			{
+				enterReleased = false;
+				nrHPtoBeUpgraded = 0;
+				nrSpeedToBeUpgraded = 0;
+				activeShopState = 0;
+				setShopOverlayCounter(0);
+				setShopOverlayCounterRow(0);
+				upgradeGUI->setIsDestroy(true);
+				upgradeOverlay->setIsDestroy(true);
 			}
 		}
 	}
@@ -1958,6 +2022,16 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 int gameClass::getShopOverlayCounter()
 {
 	return this->shopOverlayCount;
+}
+
+int gameClass::getShopOverlayCounterRow()
+{
+	return this->shopOverlayCountRow;
+}
+
+void gameClass::setShopOverlayCounterRow(int x)
+{
+	this->shopOverlayCountRow = x;
 }
 
 void gameClass::setShopOverlayCounter(int x)
