@@ -169,8 +169,6 @@ private:
 	void updateOverlay();
 	int menyTimer;
 	bool menyCheck;
-	bool menyOnCooldown();
-	void updateMenyCooldown();
 
 
 	/////////LIMBO STUFF
@@ -194,11 +192,12 @@ private:
 	int healthCost;
 	bool upgradeCooldown;
 	int upgradeTimer;
-	bool checkUpgradeCooldown();
-	int getCooldownTimerShop();
-	void updateShopCooldown();
 
 	bool enterReleased;
+	bool arrowUpReleased;
+	bool arrowDownReleased;
+	bool arrowLeftReleased;
+	bool arrowRightReleased;
 
 	int shopOverlayCount;
 	XMMATRIX shopOverlayMat;
