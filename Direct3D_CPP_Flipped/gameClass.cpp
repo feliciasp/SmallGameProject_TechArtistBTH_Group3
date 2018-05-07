@@ -16,10 +16,12 @@ gameClass::gameClass(HINSTANCE hInstance)
 	menyHighlightMat = XMMatrixScaling(0.38f, 0.07f, 0.0f) * XMMatrixTranslation(-0.027f, 0.16f, 0.0f);
 	counterOverlay = 0;
 	menyCheck = true;
-	shopOverlayCount = 0;
+	shopOverlayCount = -1;
 	shopOverlayCountRow = 0;
 	nrSpeedToBeUpgraded = 0;
 	activeShopState = 0;
+	ShopTabsCounter = 0;
+	upgradeOvlerlayCounterWeapons = -1;
 
 	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
@@ -555,11 +557,14 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	upgradeGUI->getObj()->setWorldMatrix(XMMatrixIdentity());
+	upgradeGUI->getObj()->setMaterialName("WeaponsBase.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
-	upgradeGUI->getObj()->setType(4);
+	upgradeGUI->getObj()->setType(3);
 
+	
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
 	//LIMBO UPGRADE OVERLAY
@@ -582,16 +587,26 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("TabArrows.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("LeftArrowSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("Selected1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("Selected2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("Selected3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	upgradeOverlay->getObj()->setMaterialName("Selected4.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->setIsDestroy(true);
-	upgradeOverlay->getObj()->setType(4);
+	upgradeOverlay->getObj()->setType(3);
 
-
+	
 	
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
@@ -989,12 +1004,21 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, proj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
 			pickupCheck++;
 			if (!result)
 			{
 				return false;
 			}
+		}
+
+		else if (objHolderLimbo[i]->getType() == 3) {
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 2);
+			if (!result)
+			{
+				return false;
+			}
+
 		}
 
 		else
@@ -1802,8 +1826,10 @@ int gameClass::getCounterOverlay()
 	return this->counterOverlay;
 }
 
+//MENY
 void gameClass::updateOverlay()
 {
+	//MENY
 	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getCounterOverlay() < 3)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
@@ -1835,15 +1861,28 @@ void gameClass::updateLimboBackground()
 void gameClass::updateShopWorldMat()
 {
 	upgradeGUI->getObj()->setWorldMatrix(shopMat);
-	//overlay update
+	//overlay updateTabArrows
+
+	if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && getShopOverlayCounter() == -1 && activeShopState > 0 && upgradeOvlerlayCounterWeapons == -1)
+	{
+		activeShopState -= 1;
+		arrowRightReleased = false;
+	}
+	if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased  && getShopOverlayCounter() == -1 && activeShopState < 1 && upgradeOvlerlayCounterWeapons == -1)
+	{
+		activeShopState += 1;
+		arrowLeftReleased = false;
+	}
+
 	if (activeShopState == 0)
 	{
+		upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 		if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
 		{
 			setShopOverlayCounter(getShopOverlayCounter() + 1);
 			arrowDownReleased = false;
 		}
-		if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > 0)
+		if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getShopOverlayCounter() > -1)
 		{
 			setShopOverlayCounter(getShopOverlayCounter() - 1);
 			arrowUpReleased = false;
@@ -1858,24 +1897,82 @@ void gameClass::updateShopWorldMat()
 			setShopOverlayCounterRow(getShopOverlayCounterRow() + 1);
 			arrowLeftReleased = false;
 		}
-	}
 
-	if (getShopOverlayCounter() == 0)
-	{
-		upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
+		if (getShopOverlayCounter() == -1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("TabArrows.png");
+		}
+		if (getShopOverlayCounter() == 0)
+		{
+			upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
+		}
+		if (getShopOverlayCounter() == 1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
+		}
+		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
+		{
+			upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+		}
+		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
+		}
 	}
-	if (getShopOverlayCounter() == 1)
+	if (activeShopState == 1)
 	{
-		upgradeOverlay->getObj()->setMaterialName("StatsSelected2.png");
+		upgradeGUI->getObj()->setMaterialName("WeaponsBase.png");
+		if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && upgradeOvlerlayCounterWeapons < 4)
+		{
+			upgradeOvlerlayCounterWeapons += 1;
+			arrowDownReleased = false;
+		}
+		if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && upgradeOvlerlayCounterWeapons > -1)
+		{
+			upgradeOvlerlayCounterWeapons -= 1;
+			arrowUpReleased = false;
+		}
+		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() > 0)
+		{
+			setShopOverlayCounterRow(getShopOverlayCounterRow() - 1);
+			arrowRightReleased = false;
+		}
+		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() < 1)
+		{
+			setShopOverlayCounterRow(getShopOverlayCounterRow() + 1);
+			arrowLeftReleased = false;
+		}
+
+		if (upgradeOvlerlayCounterWeapons == -1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("TabArrows.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 0)
+		{
+			upgradeOverlay->getObj()->setMaterialName("Selected1.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("Selected2.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 2)
+		{
+			upgradeOverlay->getObj()->setMaterialName("Selected3.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 3)
+		{
+			upgradeOverlay->getObj()->setMaterialName("Selected4.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
+		{
+			upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+		}
+		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
+		{
+			upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
+		}
 	}
-	if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
-	{
-		upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
-	}
-	if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
-	{
-		upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
-	}
+	
 	upgradeOverlay->getObj()->setWorldMatrix(shopOverlayMat);
 }
 
@@ -1910,111 +2007,129 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		upgradeOverlay->setCheckIfObjHolder(false);
 	}
 	
-
-
 	if (!upgradeGUI->getIsDestry())
 	{
-		//now you can upgrade your stuff
-		if (shopOverlayCount == 0)
+		if (activeShopState == 0)
 		{
-			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
+			//now you can upgrade your stuff
+			if (shopOverlayCount == 0)
 			{
-				arrowRightReleased = false;
-				if (player->getNrPixelFramgent() >= healthCost)
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
-					player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);
-					nrHPtoBeUpgraded += 1;
-					healthCost = healthCost * 2;
-				}
-			}
-
-			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
-			{
-				arrowLeftReleased = false;
-				player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
-				nrHPtoBeUpgraded -= 1;
-				healthCost = healthCost / 2;
-			}
-
-		}
-		if (shopOverlayCount == 1)
-		{
-			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
-			{
-				arrowRightReleased = false;
-				if (player->getNrPixelFramgent() >= SpeedCost)
-				{
-					player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
-					nrSpeedToBeUpgraded += 1;
-					SpeedCost = SpeedCost * 2;
-				}
-			}
-
-			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
-			{
-				arrowLeftReleased = false;
-				player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
-				nrSpeedToBeUpgraded -= 1;
-				SpeedCost = SpeedCost / 2;
-			}
-		}
-		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
-		{
-			inputDirectOther->readKeyboard(dt);
-			if (inputDirectOther->isEnterPressed() && enterReleased)
-			{
-				enterReleased = false;
-				if (nrHPtoBeUpgraded > 0)
-				{
-					for (int i = 0; i < nrHPtoBeUpgraded; i++)
+					arrowRightReleased = false;
+					if (player->getNrPixelFramgent() >= healthCost)
 					{
-						if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
+						player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);
+						nrHPtoBeUpgraded += 1;
+						healthCost = healthCost * 2;
+					}
+				}
+
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
+				{
+					arrowLeftReleased = false;
+					player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
+					nrHPtoBeUpgraded -= 1;
+					healthCost = healthCost / 2;
+				}
+
+			}
+			if (shopOverlayCount == 1)
+			{
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
+				{
+					arrowRightReleased = false;
+					if (player->getNrPixelFramgent() >= SpeedCost)
+					{
+						player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
+						nrSpeedToBeUpgraded += 1;
+						SpeedCost = SpeedCost * 2;
+					}
+				}
+
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
+				{
+					arrowLeftReleased = false;
+					player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
+					nrSpeedToBeUpgraded -= 1;
+					SpeedCost = SpeedCost / 2;
+				}
+			}
+			if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
+			{
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isEnterPressed() && enterReleased)
+				{
+					enterReleased = false;
+					if (nrHPtoBeUpgraded > 0)
+					{
+						for (int i = 0; i < nrHPtoBeUpgraded; i++)
 						{
-							addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
-							heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
-							heartHolder[player->getMaxHP() + i].setIsBought(true);
-							OutputDebugString(L"\nheart was created!\n");
+							if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
+							{
+								addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
+								heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
+								heartHolder[player->getMaxHP() + i].setIsBought(true);
+								OutputDebugString(L"\nheart was created!\n");
+							}
 						}
 					}
-				}
-				if (nrHPtoBeUpgraded > 0)
-				{
-					player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
-					nrHPtoBeUpgraded = 0;
-				}
-				if (nrSpeedToBeUpgraded > 0)
-				{
-					for (int i = 0; i < nrSpeedToBeUpgraded; i++)
+					if (nrHPtoBeUpgraded > 0)
 					{
-						player->setSpeedVal(player->getSpeedVal() + 1.0f);
-						OutputDebugString(L"\nSpeed was created!\n");
+						player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
+						nrHPtoBeUpgraded = 0;
 					}
-					nrSpeedToBeUpgraded = 0;
+					if (nrSpeedToBeUpgraded > 0)
+					{
+						for (int i = 0; i < nrSpeedToBeUpgraded; i++)
+						{
+							player->setSpeedVal(player->getSpeedVal() + 1.0f);
+							OutputDebugString(L"\nSpeed was created!\n");
+						}
+						nrSpeedToBeUpgraded = 0;
+					}
+					activeShopState = 0;
+					setShopOverlayCounter(0);
+					setShopOverlayCounterRow(0);
+					upgradeGUI->setIsDestroy(true);
+					upgradeOverlay->setIsDestroy(true);
+					//gfhgfh
 				}
-				activeShopState = 0;
-				setShopOverlayCounter(0);
-				setShopOverlayCounterRow(0);
-				upgradeGUI->setIsDestroy(true);
-				upgradeOverlay->setIsDestroy(true);
-				//gfhgfh
 			}
 		}
-		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1)
+		if (activeShopState == 1)
 		{
-			if (inputDirectOther->isEnterPressed() && enterReleased)
+			if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
 			{
-				enterReleased = false;
-				nrHPtoBeUpgraded = 0;
-				nrSpeedToBeUpgraded = 0;
-				activeShopState = 0;
-				setShopOverlayCounter(0);
-				setShopOverlayCounterRow(0);
-				upgradeGUI->setIsDestroy(true);
-				upgradeOverlay->setIsDestroy(true);
+				if (inputDirectOther->isEnterPressed() && enterReleased)
+				{
+					enterReleased = false;
+					nrHPtoBeUpgraded = 0;
+					nrSpeedToBeUpgraded = 0;
+					activeShopState = 0;
+					setShopOverlayCounter(0);
+					setShopOverlayCounterRow(0);
+					upgradeGUI->setIsDestroy(true);
+					upgradeOverlay->setIsDestroy(true);
+				}
+			}
+			if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
+			{
+				if (inputDirectOther->isEnterPressed() && enterReleased)
+				{
+					enterReleased = false;
+					nrHPtoBeUpgraded = 0;
+					nrSpeedToBeUpgraded = 0;
+					activeShopState = 0;
+					setShopOverlayCounter(0);
+					setShopOverlayCounterRow(0);
+					upgradeGUI->setIsDestroy(true);
+					upgradeOverlay->setIsDestroy(true);
+				}
 			}
 		}
 	}

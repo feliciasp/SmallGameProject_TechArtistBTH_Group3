@@ -195,6 +195,8 @@ private:
 	bool upgradeCooldown;
 	int upgradeTimer;
 	int activeShopState;
+	int ShopTabsCounter;
+	int upgradeOvlerlayCounterWeapons;
 
 	bool enterReleased;
 	bool arrowUpReleased;
