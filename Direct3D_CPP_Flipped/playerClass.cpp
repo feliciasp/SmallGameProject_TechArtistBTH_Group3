@@ -5,6 +5,7 @@ playerClass::playerClass()
 	obj = 0;
 	moveVal = 0;
 	input = 0;
+	sound = 0;
 	
 	hasRing = false;
 	ringType = 0;
@@ -133,6 +134,21 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 		return false;
 	}
 
+	sound = new SoundClass;
+	if (!sound)
+	{
+		MessageBox(NULL, L"Error create sound obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = sound->initialize(hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error sound obj init",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
 	setStartMat(0.0f, 5.0f);
 
 	return true;
@@ -157,6 +173,12 @@ void playerClass::shutdown()
 		weapon->shutdown();
 		delete weapon;
 		weapon = 0;
+	}
+	if (sound)
+	{
+		sound->shutdown();
+		delete sound;
+		sound = 0;
 	}
 }
 
@@ -408,6 +430,7 @@ void playerClass::handleMovement(double dt)
 	{
 		if (!isJumping)
 		{
+			sound->playSFX(1, 1);
 			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
@@ -426,6 +449,7 @@ void playerClass::handleMovement(double dt)
 		{
 			if (isJumping == true && !hasDoubleJumped && spaceReleased)
 			{
+				sound->playSFX(1, 1);
 				upSpeed = 23.5f;
 				if (attacking == false)
 				{
@@ -498,6 +522,7 @@ void playerClass::handleMovement(double dt)
 	{
 		if (attacking == false)
 		{
+			sound->playSFX(1, 0);
 			attacking = true;
 			currentTime = 0;
 			currentFrame = 1;
@@ -509,6 +534,7 @@ void playerClass::handleMovement(double dt)
 
 	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
 	{
+		sound->playSFX(1, 2);
 		fireballCast = true;
 	}
 

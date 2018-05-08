@@ -6,6 +6,7 @@
 #include "directInputClass.h"
 #include "weaponClass.h"
 #include "projectileClass.h"
+#include "SoundClass.h"
 
 class playerClass
 {
@@ -102,6 +103,7 @@ private:
 	objectClass* obj;
 	directInput* input;
 	weaponClass* weapon;
+	SoundClass* sound;
 
 	float moveVal;
 	XMMATRIX translation;
