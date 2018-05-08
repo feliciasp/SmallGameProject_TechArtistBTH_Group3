@@ -54,6 +54,16 @@ playerClass::playerClass()
 	timeBetweenFrames = 0.25f;
 	nrOfLoops = 0;
 
+	polygoner = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		weaponBought[i] = false;
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		weaponCost[i] = 1;
+	}
+
 	dodge = false;
 	isDodging = false;
 	dodgeFallback = 6.2f;
@@ -573,14 +583,12 @@ void playerClass::handleMovement(double dt)
 
 void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 {
-
 	if (top)
 	{
 		moveValY = oldMoveValY;
 		if (upSpeed > 0)
 			upSpeed = 0;
 	}
-
 	if (bot)
 	{
 		moveValY = oldMoveValY;
@@ -709,6 +717,31 @@ int playerClass::getNrPixelFramgent()
 void playerClass::setNrPixelFragments(int other)
 {
 	this->fargments = other;
+}
+
+int playerClass::getNrPolygons()
+{
+	return this->polygoner;
+}
+
+void playerClass::setNrPolysgons(int other)
+{
+	this->polygoner = other;
+}
+
+bool playerClass::getNrWeaponBought(int index)
+{
+	return this->weaponBought[index];
+}
+
+void playerClass::setNrWeaponBought(int index, bool other)
+{
+	this->weaponBought[index] = other;
+}
+
+int playerClass::getNrWeaponCost(int index)
+{
+	return this->weaponCost[index];
 }
 
 void playerClass::getMoveMat(XMMATRIX& mat)

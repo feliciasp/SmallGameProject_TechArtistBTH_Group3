@@ -22,6 +22,10 @@ gameClass::gameClass(HINSTANCE hInstance)
 	activeShopState = 0;
 	ShopTabsCounter = 0;
 	upgradeOvlerlayCounterWeapons = -1;
+	tempXP = 0;
+
+	costHPBeginning = 0;
+	costSpeedBeginnning = 0;
 
 	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
@@ -55,7 +59,23 @@ gameClass::gameClass(HINSTANCE hInstance)
 	done = false;
 
 	GUIheart1 = 0;
+	slot1 = 0;
+	slot2 = 0;
+	slot1Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.85f, 0.82f, 0.0f); 
+	slot2Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.78f, 0.82f, 0.0f);
+	ringDisplay = 0;
+	ringDisplayMat = XMMatrixScaling(0.04f, 0.07f, 0.0f) * XMMatrixTranslation(-0.85f, 0.57f, 0.0f);
+	xpDisplay = 0;
+	xpDisplayMat = XMMatrixScaling(0.16f, 0.04f, 0.0f) * XMMatrixTranslation(0.05f, 0.82f, 0.0f);
+	slot1xp = 0;
+	slot1xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.37f, 0.82f, 0.0f);
+	slot2xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.32f, 0.82f, 0.0f);
 
+	slot1xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.79f, 0.748f, 0.0f);
+	slot2xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.765f, 0.748f, 0.0f);
+	slot1MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.45f, 0.748f, 0.0f);
+	slot2MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.425f, 0.748f, 0.0f);
+	
 	isUpgradeHPAactive = true;
 	nrHPtoBeUpgraded = 0;
 	healthCost = 1;
@@ -69,6 +89,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	arrowLeftReleased = true;
 
 	ringsInitialized = false;
+
+	totalPendingCost = 0;
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -345,8 +367,6 @@ bool gameClass::initialize(int ShowWnd)
 	GUIheart1->getObj()->setMaterialName("cubeTexture1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart1->getObj()->getMaterialName());
 
-
-
 	addHearthToHeartHolder(*GUIheart1, 1);
 	addHearthToHeartHolder(*GUIheart1, 2);
 	addHearthToHeartHolder(*GUIheart1, 3);
@@ -379,6 +399,140 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
+
+
+	//GUI POLYGON COUNT
+	slot1 = new GUItestClass;
+	if (!slot1)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = slot1->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	slot1->getObj()->setWorldMatrix(slot1Mat);
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "0.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "4.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "5.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "6.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "7.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "8.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "9.png");
+	slot1->getObj()->setMaterialName("0.png");
+	addObjectToObjHolder(slot1->getObj());
+	
+	//GUI POLYGON COUNT
+	slot2 = new GUItestClass;
+	if (!slot2)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = slot2->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	slot2->getObj()->setWorldMatrix(slot2Mat);
+	slot2->getObj()->setMaterialName("0.png");
+	addObjectToObjHolder(slot2->getObj());
+	
+	//GUI RING HOLDER
+	ringDisplay = new GUItestClass;
+	if (!ringDisplay)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = ringDisplay->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	ringDisplay->getObj()->setWorldMatrix(ringDisplayMat);
+	ringDisplay->getObj()->setMaterialName("sampleRing.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing2.png");
+	ringDisplay->setIsDestroy(true);
+	ringDisplay->setCheckIfObjHolder(false);
+	//addObjectToObjHolder(ringDisplay->getObj());
+
+	//GUI RING HOLDER
+	xpDisplay = new GUItestClass;
+	if (!xpDisplay)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = xpDisplay->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	xpDisplay->getObj()->setWorldMatrix(xpDisplayMat);
+	xpDisplay->getObj()->setMaterialName("xp0.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp0.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp4.png");
+	addObjectToObjHolder(xpDisplay->getObj());
+
+	//GUI RING HOLDER
+	slot1xp = new GUItestClass;
+	if (!slot1xp)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = slot1xp->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	slot1xp->getObj()->setWorldMatrix(slot1xpMat);
+	slot1xp->getObj()->setMaterialName("0.png");
+	addObjectToObjHolder(slot1xp->getObj());
+
+	//GUI RING HOLDER
+	slot2xp = new GUItestClass;
+	if (!slot2xp)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = slot2xp->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	slot2xp->getObj()->setWorldMatrix(slot2xpMat);
+	slot2xp->getObj()->setMaterialName("0.png");
+	addObjectToObjHolder(slot2xp->getObj());
 
 	//////////////////////////
 	//		MENY			//
@@ -599,15 +753,17 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("Selected3.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Owned1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Owned2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Owned3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Owned4.png");
+
 	upgradeOverlay->getObj()->setMaterialName("Selected4.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->getObj()->setMaterialName("StatsSelected1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getMaterialName());
 	upgradeOverlay->setIsDestroy(true);
 	upgradeOverlay->getObj()->setType(3);
-
-	
-	
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
 
@@ -666,6 +822,12 @@ void gameClass::shutdown()
 		delete camera;
 		camera = 0;
 	}
+	if (xpDisplay)
+	{
+		xpDisplay->shutdown();
+		delete xpDisplay;
+		xpDisplay = 0;
+	}
 	if (movementInput)
 	{
 		movementInput->shutdown();
@@ -684,11 +846,29 @@ void gameClass::shutdown()
 		delete background;
 		background = 0;
 	}
+	if (ringDisplay)
+	{
+		ringDisplay->shutdown();
+		delete ringDisplay;
+		ringDisplay = 0;
+	}
 	if (expFragment)
 	{
 		expFragment->shutdown();
 		delete expFragment;
 		expFragment = 0;
+	}
+	if (slot2xp)
+	{
+		slot2xp->shutdown();
+		delete slot2xp;
+		slot2xp = 0;
+	}
+	if (slot1xp)
+	{
+		slot1xp->shutdown();
+		delete slot1xp;
+		slot1xp = 0;
 	}
 	if (ring)
 	{
@@ -704,7 +884,6 @@ void gameClass::shutdown()
 		}
 		delete[] pickupHolder;
 	}
-
 	if (player)
 	{
 		player->shutdown();
@@ -779,7 +958,18 @@ void gameClass::shutdown()
 		delete win;
 		win = 0;
 	}
-
+	if (slot1)
+	{
+		slot1->shutdown();
+		delete slot1;
+		slot1 = 0;
+	}
+	if (slot2)
+	{
+		slot2->shutdown();
+		delete slot2;
+		slot2 = 0;
+	}
 	if (upgradeOverlay)
 	{
 		upgradeOverlay->shutdown();
@@ -973,6 +1163,10 @@ bool gameClass::frameLimbo(double dt)
 	//enviroment
 	updateLimboBackground();
 
+	//GUI
+	updateSlotXp(slot1xpMatLimbo, slot2xpMatLimbo);
+	updateGUIPolygon(slot1MatLimbo, slot2MatLimbo);
+
 	//updateShopMats
 	updateShopWorldMat();
 
@@ -1130,7 +1324,6 @@ bool gameClass::frameGame(double dt)
 	//player stuff
 	updatePlayer(platform, dt);
 
-
 	//projectile stuff
 	if (!projectile->getIsDestroyed() && !projectile->getCheckIfObjHolder() && player->getFireballCast())
 	{
@@ -1153,6 +1346,11 @@ bool gameClass::frameGame(double dt)
 	//update player shadow
 	updatePlayerShadow();
 
+	//update plygonscout GUI
+	updateRingDisplay();
+	updateXpDisplayMat();
+	updateSlotXp(slot1xpMat, slot2xpMat);
+	updateGUIPolygon(slot1Mat, slot2Mat);
 
 	//set camera to follow player
 	updateCamera();
@@ -1263,6 +1461,10 @@ bool gameClass::frameGame(double dt)
 		{
 			heartHolder[i].resetGUI();
 		}
+		slot1->setIsDestroy(true);
+		slot2->setIsDestroy(true);
+		slot1xp->setIsDestroy(true);
+		slot2xp->setIsDestroy(true);
 
 		gameStateLevel = false;
 		gameStateMeny = false;
@@ -1283,7 +1485,10 @@ bool gameClass::frameGame(double dt)
 		}
 		initializeRings();
 		enemy->resetEnemy();
-
+		slot1->setIsDestroy(true);
+		slot2->setIsDestroy(true);
+		slot1xp->setIsDestroy(true);
+		slot2xp->setIsDestroy(true);
 		projectile->resetProjectile();
 
 		camera->reset();
@@ -1816,6 +2021,280 @@ void gameClass::staticBackground()
 	background->getObj()->setWorldMatrix(backgroundMat);
 }
 
+void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
+{
+	if (player->getNrPolygons() == 0 || player->getNrPolygons() >= 10)
+	{
+		if(player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("0.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 1 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("1.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 2 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("2.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 3 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("3.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 4 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("4.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 5 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("5.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 6 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("6.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 7 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("7.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 8 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("8.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() == 9 || player->getNrPolygons() >= 10)
+	{
+		if (player->getNrPolygons() <= 9)
+			slot1->getObj()->setMaterialName("9.png");
+		if (player->getNrPolygons() > 9)
+		{
+			int temp = player->getNrPolygons() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPolygons() > 9)
+	{
+		int temp = player->getNrPolygons() / 10;
+		std::string tempString = std::to_string(temp);
+		slot2->getObj()->setMaterialName(tempString + ".png");
+	}
+	slot1->getObj()->setWorldMatrix(mat1);
+	slot2->getObj()->setWorldMatrix(mat2);
+}
+
+void gameClass::updateRingDisplay()
+{
+	ringDisplay->getObj()->setWorldMatrix(ringDisplayMat);
+}
+
+void gameClass::updateXpDisplayMat()
+{
+	if (tempXP == 0)
+	{
+		xpDisplay->getObj()->setMaterialName("xp0.png");
+	}
+	if (tempXP == 1)
+	{
+		xpDisplay->getObj()->setMaterialName("xp1.png");
+	}
+	if (tempXP == 2)
+	{
+		xpDisplay->getObj()->setMaterialName("xp2.png");
+	}
+	if (tempXP == 3)
+	{
+		xpDisplay->getObj()->setMaterialName("xp3.png");
+	}
+	if (tempXP == 4)
+	{
+		xpDisplay->getObj()->setMaterialName("xp4.png");
+	}
+	
+	xpDisplay->getObj()->setWorldMatrix(xpDisplayMat);
+}
+
+void gameClass::updateSlotXp(XMMATRIX mat1, XMMATRIX mat2)
+{
+	if (player->getNrPixelFramgent() == 0 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("0.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 1 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("1.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 2 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("2.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 3 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("3.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 4 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("4.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 5 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("5.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 6 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("6.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 7 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("7.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 8 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("8.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (player->getNrPixelFramgent() == 9 || player->getNrPixelFramgent() >= 10)
+	{
+		if (player->getNrPixelFramgent() <= 9)
+			slot1xp->getObj()->setMaterialName("9.png");
+		if (player->getNrPixelFramgent() > 9)
+		{
+			int temp = player->getNrPixelFramgent() % 10;
+			std::string tempString = std::to_string(temp);
+			slot1xp->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+
+	int temp = player->getNrPixelFramgent() / 10;
+	std::string tempString = std::to_string(temp);
+	slot2xp->getObj()->setMaterialName(tempString + ".png");
+	
+	slot1xp->getObj()->setWorldMatrix(mat1);
+	slot2xp->getObj()->setWorldMatrix(mat2);
+}
+
 void gameClass::setCounterOverlay(int other)
 {
 	this->counterOverlay = other;
@@ -1949,19 +2428,47 @@ void gameClass::updateShopWorldMat()
 		}
 		if (upgradeOvlerlayCounterWeapons == 0)
 		{
-			upgradeOverlay->getObj()->setMaterialName("Selected1.png");
+			if (player->getNrWeaponBought(0))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Owned1.png");
+			}
+			if (!player->getNrWeaponBought(0))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Selected1.png");
+			}
 		}
 		if (upgradeOvlerlayCounterWeapons == 1)
 		{
-			upgradeOverlay->getObj()->setMaterialName("Selected2.png");
+			if (player->getNrWeaponBought(1))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Owned2.png");
+			}
+			if (!player->getNrWeaponBought(1))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Selected2.png");
+			}
 		}
 		if (upgradeOvlerlayCounterWeapons == 2)
 		{
-			upgradeOverlay->getObj()->setMaterialName("Selected3.png");
+			if (player->getNrWeaponBought(2))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Owned3.png");
+			}
+			if (!player->getNrWeaponBought(2))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Selected3.png");
+			}
 		}
 		if (upgradeOvlerlayCounterWeapons == 3)
 		{
-			upgradeOverlay->getObj()->setMaterialName("Selected4.png");
+			if (player->getNrWeaponBought(3))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Owned4.png");
+			}
+			if (!player->getNrWeaponBought(3))
+			{
+				upgradeOverlay->getObj()->setMaterialName("Selected4.png");
+			}
 		}
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
 		{
@@ -1983,13 +2490,20 @@ bool gameClass::updateGUI(double dt, GUItestClass* obj)
 
 void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 {
+
 	upgradeGUI->updateDestroy2(dt);
 	upgradeOverlay->updateDestroy2(dt);
-	
+	slot1->updateDestroy2(dt);
+	slot2->updateDestroy2(dt);
+	slot1xp->updateDestroy2(dt);
+	slot2xp->updateDestroy2(dt);
+
 	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
 	{
 		addObjectToObjHolderLimbo(upgradeGUI->getObj());
 		upgradeGUI->setCheckIfObjHolder(true);
+		costHPBeginning = healthCost;
+		costSpeedBeginnning = SpeedCost;
 	}
 	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
 	{
@@ -2007,6 +2521,49 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		upgradeOverlay->setCheckIfObjHolder(false);
 	}
 	
+	if (!slot1->getIsDestry() && !slot1->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(slot1->getObj());
+		slot1->setCheckIfObjHolder(true);
+	}
+	if (slot1->getIsDestry() && slot1->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(slot1->getObj());
+		slot1->setCheckIfObjHolder(false);
+	}
+	if (!slot2->getIsDestry() && !slot2->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(slot2->getObj());
+		slot2->setCheckIfObjHolder(true);
+	}
+	if (slot2->getIsDestry() && slot2->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(slot2->getObj());
+		slot2->setCheckIfObjHolder(false);
+	}
+
+	if (!slot1xp->getIsDestry() && !slot1xp->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(slot1xp->getObj());
+		slot1xp->setCheckIfObjHolder(true);
+	}
+	if (slot1xp->getIsDestry() && slot1xp->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(slot1xp->getObj());
+		slot1xp->setCheckIfObjHolder(false);
+	}
+	if (!slot2xp->getIsDestry() && !slot2xp->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(slot2xp->getObj());
+		slot2xp->setCheckIfObjHolder(true);
+	}
+	if (slot2xp->getIsDestry() && slot2xp->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(slot2xp->getObj());
+		slot2xp->setCheckIfObjHolder(false);
+	}
+
+	
 	if (!upgradeGUI->getIsDestry())
 	{
 		if (activeShopState == 0)
@@ -2018,9 +2575,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
-					if (player->getNrPixelFramgent() >= healthCost)
+					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost)
 					{
-						player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);
+						totalPendingCost += healthCost;
+						/*player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);*/
 						nrHPtoBeUpgraded += 1;
 						healthCost = healthCost * 2;
 					}
@@ -2030,9 +2588,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
+					totalPendingCost -= healthCost;
+					healthCost = healthCost / 2;
 					player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
 					nrHPtoBeUpgraded -= 1;
-					healthCost = healthCost / 2;
 				}
 
 			}
@@ -2042,9 +2601,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
-					if (player->getNrPixelFramgent() >= SpeedCost)
+					if ((player->getNrPixelFramgent() - totalPendingCost) >= SpeedCost)
 					{
-						player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
+						totalPendingCost += SpeedCost;
+						//player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
 						nrSpeedToBeUpgraded += 1;
 						SpeedCost = SpeedCost * 2;
 					}
@@ -2054,83 +2614,164 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
+					totalPendingCost -= SpeedCost;
+					SpeedCost = SpeedCost / 2;
 					player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
 					nrSpeedToBeUpgraded -= 1;
-					SpeedCost = SpeedCost / 2;
 				}
 			}
-			if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
-			{
-				inputDirectOther->readKeyboard(dt);
-				if (inputDirectOther->isEnterPressed() && enterReleased)
-				{
-					enterReleased = false;
-					if (nrHPtoBeUpgraded > 0)
-					{
-						for (int i = 0; i < nrHPtoBeUpgraded; i++)
-						{
-							if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
-							{
-								addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
-								heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
-								heartHolder[player->getMaxHP() + i].setIsBought(true);
-								OutputDebugString(L"\nheart was created!\n");
-							}
-						}
-					}
-					if (nrHPtoBeUpgraded > 0)
-					{
-						player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
-						nrHPtoBeUpgraded = 0;
-					}
-					if (nrSpeedToBeUpgraded > 0)
-					{
-						for (int i = 0; i < nrSpeedToBeUpgraded; i++)
-						{
-							player->setSpeedVal(player->getSpeedVal() + 1.0f);
-							OutputDebugString(L"\nSpeed was created!\n");
-						}
-						nrSpeedToBeUpgraded = 0;
-					}
-					activeShopState = 0;
-					setShopOverlayCounter(0);
-					setShopOverlayCounterRow(0);
-					upgradeGUI->setIsDestroy(true);
-					upgradeOverlay->setIsDestroy(true);
-					//gfhgfh
-				}
-			}
+			
 		}
 		if (activeShopState == 1)
 		{
-			if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
+			if (upgradeOvlerlayCounterWeapons == 0)
 			{
-				if (inputDirectOther->isEnterPressed() && enterReleased)
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(0))
 				{
 					enterReleased = false;
-					nrHPtoBeUpgraded = 0;
-					nrSpeedToBeUpgraded = 0;
-					activeShopState = 0;
-					setShopOverlayCounter(0);
-					setShopOverlayCounterRow(0);
-					upgradeGUI->setIsDestroy(true);
-					upgradeOverlay->setIsDestroy(true);
+					if (player->getNrPolygons() >= player->getNrWeaponCost(0))
+					{
+						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(0));
+						player->setNrWeaponBought(0, true);
+					}
 				}
 			}
-			if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
+			if (upgradeOvlerlayCounterWeapons == 1)
 			{
-				if (inputDirectOther->isEnterPressed() && enterReleased)
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(1))
 				{
 					enterReleased = false;
-					nrHPtoBeUpgraded = 0;
-					nrSpeedToBeUpgraded = 0;
-					activeShopState = 0;
-					setShopOverlayCounter(0);
-					setShopOverlayCounterRow(0);
-					upgradeGUI->setIsDestroy(true);
-					upgradeOverlay->setIsDestroy(true);
+					if (player->getNrPolygons() >= player->getNrWeaponCost(1))
+					{
+						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(1));
+						player->setNrWeaponBought(1, true);
+					}
 				}
 			}
+			if (upgradeOvlerlayCounterWeapons == 2)
+			{
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(2))
+				{
+					enterReleased = false;
+					if (player->getNrPolygons() >= player->getNrWeaponCost(2))
+					{
+						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(2));
+						player->setNrWeaponBought(2, true);
+					}
+				}
+			}
+			if (upgradeOvlerlayCounterWeapons == 3)
+			{
+				inputDirectOther->readKeyboard(dt);
+				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(3))
+				{
+					enterReleased = false;
+					if (player->getNrPolygons() >= player->getNrWeaponCost(3))
+					{
+						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(3));
+						player->setNrWeaponBought(3, true);
+					}
+				}
+			}
+		}
+
+		//IF CONFIRMED IS PRESSED
+		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0 || getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
+		{
+			inputDirectOther->readKeyboard(dt);
+			if (inputDirectOther->isEnterPressed() && enterReleased)
+			{
+				enterReleased = false;
+				if (nrHPtoBeUpgraded > 0)
+				{
+					for (int i = 0; i < nrHPtoBeUpgraded; i++)
+					{
+						if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
+						{
+							addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
+							heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
+							heartHolder[player->getMaxHP() + i].setIsBought(true);
+							OutputDebugString(L"\nheart was created!\n");
+						}
+					}
+				}
+				if (nrHPtoBeUpgraded > 0)
+				{
+					player->setMaxHP(player->getMaxHP() + nrHPtoBeUpgraded);
+					nrHPtoBeUpgraded = 0;
+				}
+				if (nrSpeedToBeUpgraded > 0)
+				{
+					for (int i = 0; i < nrSpeedToBeUpgraded; i++)
+					{
+						player->setSpeedVal(player->getSpeedVal() + 1.0f);
+						OutputDebugString(L"\nSpeed was created!\n");
+					}
+					nrSpeedToBeUpgraded = 0;
+				}
+				
+				player->setNrPixelFragments(player->getNrPixelFramgent() - totalPendingCost);
+
+				activeShopState = 0;
+				setShopOverlayCounter(-1);
+				setShopOverlayCounterRow(0);
+				upgradeOvlerlayCounterWeapons = -1;
+				upgradeGUI->setIsDestroy(true);
+				upgradeOverlay->setIsDestroy(true);
+				slot1->setIsDestroy(true);
+				slot2->setIsDestroy(true);
+				slot1xp->setIsDestroy(true);
+				slot2xp->setIsDestroy(true);	
+				totalPendingCost = 0;
+			}
+		}
+		//IF CANCEL IS PRESSED
+		if (getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 1 || upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
+		{
+			if (inputDirectOther->isEnterPressed() && enterReleased)
+			{
+				if (nrHPtoBeUpgraded > 0)
+				{
+					healthCost = costHPBeginning;
+				}
+				if (nrSpeedToBeUpgraded > 0)
+				{
+					SpeedCost = costSpeedBeginnning;
+				}
+				enterReleased = false;
+				nrHPtoBeUpgraded = 0;
+				nrSpeedToBeUpgraded = 0;
+				activeShopState = 0;
+				setShopOverlayCounter(-1);
+				setShopOverlayCounterRow(0);
+				upgradeOvlerlayCounterWeapons = -1;
+				upgradeGUI->setIsDestroy(true);
+				upgradeOverlay->setIsDestroy(true);
+				slot1->setIsDestroy(true);
+				slot2->setIsDestroy(true);
+				slot1xp->setIsDestroy(true);
+				slot2xp->setIsDestroy(true);
+				totalPendingCost = 0;
+			}
+		}
+	}
+	if (upgradeGUI->getIsDestry())
+	{
+		activeShopState = 0;
+		setShopOverlayCounter(-1);
+		setShopOverlayCounterRow(0);
+		upgradeOvlerlayCounterWeapons = -1;
+		totalPendingCost = 0;
+		if (nrHPtoBeUpgraded > 0)
+		{
+			healthCost = costHPBeginning;
+		}
+		if (nrSpeedToBeUpgraded > 0)
+		{
+			SpeedCost = costSpeedBeginnning;
 		}
 	}
 }
@@ -2212,7 +2853,7 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
-
+			player->setNrPolysgons(player->getNrPolygons() + 1);
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			for (int i = 0; i < 2; i++)
@@ -2243,7 +2884,7 @@ void gameClass::updateCollision(double dt)
 		}
 		if (enemy->getEnemyHP() <= 0)
 		{
-			player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
+			player->setNrPolysgons(player->getNrPolygons() + 1);
 			removeObjFromObjHolder(enemy->getObj());
 			enemy->setIsActive(false);
 			for (int i = 0; i < 2; i++)
@@ -2395,7 +3036,12 @@ void gameClass::updateCollision(double dt)
 
 			if (pickupHolder[i].getPickupType() == 1)
 			{
-				player->setNrPixelFragments(this->player->getNrPixelFramgent() + 1);
+				tempXP += 1;
+				if (tempXP == 4)
+				{
+					player->setNrPixelFragments(this->player->getNrPixelFramgent() + 5);
+					tempXP = 0;
+				}
 				pickupHolder[i].setIsDestroy(true);
 			}
 
@@ -2416,6 +3062,24 @@ void gameClass::updateCollision(double dt)
 				}
 				this->player->setHasRing(true);
 				this->player->setRingType(pickupHolder[i].getRingType());
+				if (ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
+				{
+					addObjectToObjHolder(ringDisplay->getObj());
+					ringDisplay->setIsDestroy(false);
+					ringDisplay->setCheckIfObjHolder(true);
+				}
+				if (!ringDisplay->getIsDestry() && ringDisplay->getCheckIfObjHolder())
+				{
+					if (pickupHolder[i].getRingType() == 0)
+					{
+						ringDisplay->getObj()->setMaterialName("sampleRing.png");
+					}
+					if (pickupHolder[i].getRingType() == 1)
+					{
+						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
+					}
+				}
+				
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
 			}
