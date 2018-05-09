@@ -8,6 +8,7 @@
 #include "directInputClass.h"
 #include "deltaTimeClass.h"
 #include <DirectXMath.h>
+#include "SoundClass.h"
 
 #include "cameraClass.h"
 #include "objectClass.h"
@@ -76,6 +77,8 @@ private:
 	LPCWSTR appName;
 	HINSTANCE hInstance;
 	HWND hwnd;
+
+	SoundClass* sound;
 
 	directInput* inputDirectOther;
 	graphicsClass* graphics;
@@ -195,6 +198,9 @@ private:
 	void updateOverlay();
 	int menyTimer;
 	bool menyCheck;
+
+	
+	bool firstFrame;
 
 
 	/////////LIMBO STUFF

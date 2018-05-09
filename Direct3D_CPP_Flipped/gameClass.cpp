@@ -30,6 +30,9 @@ gameClass::gameClass(HINSTANCE hInstance)
 	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
 
+	sound = 0;
+	firstFrame = true;
+
 	countEnemy = 0;
 	SpeedCost = 1;
 
@@ -190,6 +193,21 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
 
+	//create sound obj
+	sound = new SoundClass;
+	if (!sound)
+	{
+		MessageBox(NULL, L"Error create sound obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = sound->initialize(hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error sound obj init",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
 
 	///OBJ
 	//player test
@@ -828,6 +846,15 @@ void gameClass::shutdown()
 		delete xpDisplay;
 		xpDisplay = 0;
 	}
+
+
+	if (sound)
+	{
+		sound->shutdown();
+		delete sound;
+		sound = 0;
+	}
+
 	if (movementInput)
 	{
 		movementInput->shutdown();
@@ -1137,6 +1164,7 @@ bool gameClass::frameWin(double dt)
 		gameStateLimbo = false;
 		gameStateWin = false;
 		gameStateMeny = true;
+		sound->playAmbient(0);
 		return false;
 	}
 
@@ -1234,10 +1262,14 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = false;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+
 		upgradeOverlay->setIsDestroy(true);
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
+		sound->playAmbient(1);
+
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -1247,10 +1279,14 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = true;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+
 		upgradeOverlay->setIsDestroy(true);
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
+		sound->playAmbient(0);
+
 		return false;
 	}
 
@@ -1270,7 +1306,6 @@ bool gameClass::frameGame(double dt)
 	{
 		return false;
 	}
-
 
 	//constant MATRICES
 	updateConstantMatrices();
@@ -1470,6 +1505,7 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = false;
 		gameStateWin = false;
 		gameStateLimbo = true;
+		sound->playAmbient(2);
 		return false;
 	}
 
@@ -1502,6 +1538,7 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = true;
 		gameStateWin = false;
 		gameStateLimbo = false;
+		sound->playAmbient(0);
 		return false;
 	}
 
@@ -1511,6 +1548,12 @@ bool gameClass::frameGame(double dt)
 bool gameClass::frameMeny(double dt)
 {
 	bool result;
+
+	if (firstFrame)
+	{
+		sound->playAmbient(0);
+		firstFrame = false;
+	}
 
 	result = inputDirectOther->frame(dt);
 	if (!result)
@@ -1540,6 +1583,7 @@ bool gameClass::frameMeny(double dt)
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
 	{
 		gameStateLevel = true;
+		sound->playAmbient(1);
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2152,11 +2196,23 @@ void gameClass::updateXpDisplayMat()
 {
 	if (tempXP == 0)
 	{
+
 		xpDisplay->getObj()->setMaterialName("xp0.png");
+
+		sound->playSFX(0, 0);
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
+		setCounterOverlay(getCounterOverlay() + 1);
+
 	}
 	if (tempXP == 1)
 	{
+
 		xpDisplay->getObj()->setMaterialName("xp1.png");
+
+		sound->playSFX(0, 0);
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
+		setCounterOverlay(getCounterOverlay() - 1);
+
 	}
 	if (tempXP == 2)
 	{
