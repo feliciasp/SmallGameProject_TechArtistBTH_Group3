@@ -72,6 +72,9 @@
     <ClCompile Include="projectileClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SoundClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameClass.h">
@@ -132,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="projectileClass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundClass.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

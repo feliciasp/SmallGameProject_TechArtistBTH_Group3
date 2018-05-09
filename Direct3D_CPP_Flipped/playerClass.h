@@ -6,6 +6,7 @@
 #include "directInputClass.h"
 #include "weaponClass.h"
 #include "projectileClass.h"
+#include "SoundClass.h"
 
 class playerClass
 {
@@ -78,6 +79,13 @@ public:
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
 
+	int getNrPolygons();
+	void setNrPolysgons(int other);
+
+	bool getNrWeaponBought(int index);
+	void setNrWeaponBought(int index, bool other);
+
+	int getNrWeaponCost(int index);
 
 	float getMoveValY();
 
@@ -102,6 +110,7 @@ private:
 	objectClass* obj;
 	directInput* input;
 	weaponClass* weapon;
+	SoundClass* sound;
 
 	float moveVal;
 	XMMATRIX translation;
@@ -179,6 +188,8 @@ private:
 
 	float speedVal;
 
+	bool weaponBought[4];
+	int weaponCost[4];
 
 };
 
