@@ -90,7 +90,7 @@ void graphicsClass::shutdown()
 
 bool graphicsClass::frame(objectClass* object, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
-	bool result;
+ 	bool result;
 	//render graphics scene
 	result = render(object, view, proj, type, name, camPos, hurt, frameCount, currentFrame, currentAnimation, flipped);
 	if (!result)

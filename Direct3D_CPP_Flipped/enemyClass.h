@@ -43,10 +43,10 @@ class enemyClass
 		int getEnemyHP();
 
 		bool hurtState();
-		void timeCountdown();
+		void timeCountdown(float dt);
 
 		bool attackCooldown();
-		void updateAttackCooldownTimer();
+		void updateAttackCooldownTimer(float dt);
 		
 		void setFacing(bool other);
 		bool getFacing();
@@ -101,7 +101,9 @@ class enemyClass
 		int HP;
 		bool isHurt;
 		bool isAttack;
-		int fakeTimer;
+		float attackTimer;
+
+		float hurtTimer;
 
 		void setEnemyHurt(bool check);
 		bool getEnemyHurt();

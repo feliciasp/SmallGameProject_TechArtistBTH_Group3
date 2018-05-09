@@ -21,6 +21,7 @@
 #include "projectileClass.h"
 #include "GUItest.h"
 #include <cstdlib>
+#include <string>
 
 using namespace DirectX;
 
@@ -160,6 +161,31 @@ private:
 	XMMATRIX heart2;
 	XMMATRIX heart3;
 
+	GUItestClass* slot1;
+	GUItestClass* slot2;
+	XMMATRIX slot1Mat;
+	XMMATRIX slot2Mat;
+	XMMATRIX slot1MatLimbo;
+	XMMATRIX slot2MatLimbo;
+	void updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2);
+
+	GUItestClass* ringDisplay;
+	XMMATRIX ringDisplayMat;
+	void updateRingDisplay();
+
+	GUItestClass* xpDisplay;
+	XMMATRIX xpDisplayMat;
+	void updateXpDisplayMat();
+	int tempXP;
+
+	GUItestClass* slot1xp;
+	XMMATRIX slot1xpMat;
+	GUItestClass* slot2xp;
+	XMMATRIX slot2xpMat;
+	void updateSlotXp(XMMATRIX mat1, XMMATRIX mat2);
+	XMMATRIX slot1xpMatLimbo;
+	XMMATRIX slot2xpMatLimbo;
+
 	////////////////////////MENY 
 	GUItestClass* meny;
 	XMMATRIX menyMat;
@@ -172,44 +198,56 @@ private:
 	void updateOverlay();
 	int menyTimer;
 	bool menyCheck;
-	bool menyOnCooldown();
-	void updateMenyCooldown();
+
 	
 	bool firstFrame;
 
-	/////////LIMBO STUFF
+
 	/////////LIMBO STUFF
 		backgroundClass* limboFrontPlane;
-		backgroundClass* limboSmithPlane;
+		pickupClass* limboSmithPlane;
 		backgroundClass* limboBackPlane;
-		backgroundClass* limboTextPlane;
+		pickupClass* limboTextPlane;
 		platformClass* limboWalkingPlane;
 		XMMATRIX limboMat;
 		void updateLimboBackground();
+
+		pickupClass* limboPickupHolder;
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;
 	GUItestClass* upgradeOverlay;
 	void updateShopWorldMat();
 	XMMATRIX shopMat;
-	void updateShop(double dt, GUItestClass* obj);
+	void updateShop(double dt, GUItestClass* obj, GUItestClass* obj2);
 	bool isUpgradeHPAactive;
 	int nrHPtoBeUpgraded;
 	int healthCost;
 	bool upgradeCooldown;
 	int upgradeTimer;
-	bool checkUpgradeCooldown();
-	int getCooldownTimerShop();
-	void updateShopCooldown();
+	int activeShopState;
+	int ShopTabsCounter;
+	int upgradeOvlerlayCounterWeapons;
 
 	bool enterReleased;
+	bool arrowUpReleased;
+	bool arrowDownReleased;
+	bool arrowLeftReleased;
+	bool arrowRightReleased;
 
 	int shopOverlayCount;
+	int shopOverlayCountRow;
 	XMMATRIX shopOverlayMat;
 	int getShopOverlayCounter();
+	int getShopOverlayCounterRow();
+	void setShopOverlayCounterRow(int x);
 	void setShopOverlayCounter(int x);
 	int nrSpeedToBeUpgraded;
 	int SpeedCost;
+
+	int totalPendingCost;
+	int costHPBeginning;
+	int costSpeedBeginnning;
 
 	//////////////////////WIN STATE
 	GUItestClass* win;

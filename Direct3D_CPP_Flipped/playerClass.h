@@ -79,6 +79,13 @@ public:
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
 
+	int getNrPolygons();
+	void setNrPolysgons(int other);
+
+	bool getNrWeaponBought(int index);
+	void setNrWeaponBought(int index, bool other);
+
+	int getNrWeaponCost(int index);
 
 	float getMoveValY();
 
@@ -181,6 +188,8 @@ private:
 
 	float speedVal;
 
+	bool weaponBought[4];
+	int weaponCost[4];
 
 };
 

@@ -14,7 +14,8 @@ enemyClass::enemyClass()
 	HP = 3;
 	isAttack = false;
 	isHurt = false;
-	fakeTimer = 1000;
+	attackTimer = 1.0f;
+	hurtTimer = 0.3f;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -99,7 +100,8 @@ void enemyClass::resetEnemy()
 	HP = 3;
 	isHurt = false;
 	isAttack = false;
-	fakeTimer = 300;
+	attackTimer = 1.0f;
+	hurtTimer = 0.3f;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -138,10 +140,10 @@ int enemyClass::getEnemyHP()
 
 bool enemyClass::hurtState()
 {
-	if (this->isHurt == false && fakeTimer <= 0)
+	if (this->isHurt == false && hurtTimer <= 0)
 	{
 		this->isHurt = true;
-		fakeTimer = 300;
+		hurtTimer = 0.3f;
 		this->hurt = 1;
 		return true;
 	}
@@ -151,10 +153,10 @@ bool enemyClass::hurtState()
 	}
 }
 
-void enemyClass::timeCountdown()
+void enemyClass::timeCountdown(float dt)
 {
-	this->fakeTimer -= 1;
-	if (this->fakeTimer <= 0)
+	this->hurtTimer -= 1 * dt;
+	if (this->hurtTimer <= 0)
 	{
 		this->isHurt = false;
 		this->hurt = 0;
@@ -163,10 +165,10 @@ void enemyClass::timeCountdown()
 
 bool enemyClass::attackCooldown()
 {
-	if (this->isAttack == false && fakeTimer <= 0)
+	if (this->isAttack == false && attackTimer <= 0)
 	{
 		this->isAttack = true;
-		fakeTimer = 300;
+		attackTimer = 1.0f;
 		return true;
 	}
 	else
@@ -175,10 +177,10 @@ bool enemyClass::attackCooldown()
 	}
 }
 
-void enemyClass::updateAttackCooldownTimer()
+void enemyClass::updateAttackCooldownTimer(float dt)
 {
-	this->fakeTimer -= 1;
-	if (this->fakeTimer <= 0)
+	this->attackTimer -= 1 * dt;
+	if (this->attackTimer <= 0)
 	{
 		this->isAttack = false;
 	}
@@ -223,7 +225,7 @@ bool enemyClass::getIfAttack()
 
 int enemyClass::getAttackCooldown()
 {
-	return this->fakeTimer;
+	return this->attackTimer;
 }
 
 void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
