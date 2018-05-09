@@ -694,13 +694,13 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboTextPlane->getObj()->setMaterialName("SmithText.png");
+	limboTextPlane->getObj()->setMaterialName("SmithTextSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
 
 	limboPickupHolder[1].clone(*limboTextPlane);
-	limboPickupHolder[1].setFrameCount(1);
+	limboPickupHolder[1].setFrameCount(4);
 	limboPickupHolder[1].setAnimationCount(1);
-	limboPickupHolder[1].setPickupType(4);
+	limboPickupHolder[1].setPickupType(5);
 
 	addObjectToObjHolderLimbo(limboPickupHolder[1].getObj());
 
