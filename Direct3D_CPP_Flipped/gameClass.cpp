@@ -1285,7 +1285,7 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
 
-		sound->playAmbient(0);
+		/*sound->playAmbient(0);*/
 
 		return false;
 	}
@@ -1549,16 +1549,17 @@ bool gameClass::frameMeny(double dt)
 {
 	bool result;
 
-	if (firstFrame)
-	{
-		sound->playAmbient(0);
-		firstFrame = false;
-	}
 
 	result = inputDirectOther->frame(dt);
 	if (!result)
 	{
 		return false;
+	}
+
+	if (firstFrame)
+	{
+	sound->playAmbient(0);
+	firstFrame = false;
 	}
 
 	checkReleasedKeys();
@@ -1580,7 +1581,7 @@ bool gameClass::frameMeny(double dt)
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
+	if (inputDirectOther->isEnterPressed() &&  counterOverlay == 0)
 	{
 		gameStateLevel = true;
 		sound->playAmbient(1);
@@ -2200,8 +2201,6 @@ void gameClass::updateXpDisplayMat()
 		xpDisplay->getObj()->setMaterialName("xp0.png");
 
 		sound->playSFX(0, 0);
-		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
-		setCounterOverlay(getCounterOverlay() + 1);
 
 	}
 	if (tempXP == 1)
@@ -2210,8 +2209,6 @@ void gameClass::updateXpDisplayMat()
 		xpDisplay->getObj()->setMaterialName("xp1.png");
 
 		sound->playSFX(0, 0);
-		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
-		setCounterOverlay(getCounterOverlay() - 1);
 
 	}
 	if (tempXP == 2)
