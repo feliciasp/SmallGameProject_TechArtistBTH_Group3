@@ -585,6 +585,7 @@ bool shaderClass::setPlayerShaderParameters(ID3D11DeviceContext * devCon, bool f
 	dataPtr->flipped = flipped;
 	dataPtr->currentFrame = currentFrame;
 	dataPtr->currentAnimation = currentAnimation;
+	dataPtr->frameCount = frameCount;
 
 	devCon->Unmap(playerConstBuffer, 0);
 

@@ -25,6 +25,7 @@ class cameraClass
 		void setTempY(float y);
 		float getTempX();
 		float getTempY();
+		void updatePositionZ(float z);
 
 		void reset();
 

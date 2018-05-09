@@ -31,7 +31,12 @@ public:
 
 	void updateAnimation(double dt);
 	int getFrameCount();
+	void setFrameCount(int frameCount);
 	int getCurrentFrame();
+	void setCurrentAnimation(int currentAnimation);
+	int getCurrentAnimation();
+	void setAnimationCount(int animationCount);
+	int getAnimationCount();
 
 	void setPickupType(int other);
 	int getPickupType();
@@ -49,11 +54,13 @@ private:
 
 	int frameCount;
 	int currentFrame;
+	int currentAnimation;
+	int animationCount;
 	float currentTime;
 	float animationSpeed;
 	bool isAnimated;
 
-	int pickupType; // 0 = 3D PIXEL(health), 1 = PIXEL ESSENCE(exp), 2 = POLYGON(currency), 3 = RING.
+	int pickupType; // 0 = 3D PIXEL(health), 1 = PIXEL ESSENCE(exp), 2 = POLYGON(currency), 3 = RING, 4 = LIMBO PLANES, 5 = BLACKSMITH
 
 	bool isRing;
 	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.                                            profit.

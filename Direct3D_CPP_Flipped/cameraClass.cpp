@@ -17,6 +17,7 @@ cameraClass::~cameraClass()
 {
 }
 
+
 void cameraClass::setPosition(float x, float y, float z, float w)
 {
 	camPos = { x, y, z, w };
@@ -34,6 +35,12 @@ void cameraClass::updatePosition(float x, float y)
 {
 	camPos = { x, y + 3, XMVectorGetZ(camPos), XMVectorGetW(camPos) };
 }
+
+void cameraClass::updatePositionZ(float z)
+{
+	camPos = { XMVectorGetX(camPos), XMVectorGetY(camPos), XMVectorGetZ(camPos) + z, XMVectorGetW(camPos) };
+}
+
 
 
 XMVECTOR cameraClass::getPosition()
