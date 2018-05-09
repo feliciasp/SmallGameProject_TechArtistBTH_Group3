@@ -9,10 +9,15 @@ SoundClass::SoundClass()
 	m_MenuAmbientSoundBuffer = 0;
 	m_LimboAmbientSoundBuffer = 0;
 
-	m_PlayerAttackSoundBuffer = 0;
+	m_PlayerAttackSoundBuffer1 = 0;
+	m_PlayerAttackSoundBuffer2 = 0;
 	m_JumpSoundBuffer = 0;
 	m_FireballSoundBuffer = 0;
 	m_MenuButtonSoundBuffer = 0;
+
+	isAttackBuffer1Playing = false;
+	isAttackBuffer2Playing = false;
+	isJumpBufferPlaying = false;
 }
 
 SoundClass::SoundClass(const SoundClass &)
@@ -58,7 +63,14 @@ bool SoundClass::initialize(HWND hwnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer);
+	result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer1);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error loading audio",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer2);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error loading audio",
@@ -96,7 +108,8 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_MenuAmbientSoundBuffer);
 	shutdownWaveFile(&m_LimboAmbientSoundBuffer);
 
-	shutdownWaveFile(&m_PlayerAttackSoundBuffer);
+	shutdownWaveFile(&m_PlayerAttackSoundBuffer1);
+	shutdownWaveFile(&m_PlayerAttackSoundBuffer2);
 	shutdownWaveFile(&m_JumpSoundBuffer);
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 	shutdownWaveFile(&m_FireballSoundBuffer);
@@ -148,11 +161,21 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 	{
 		if (soundToPlay == 0) //Player attack!
 		{
-			playSoundEffect(m_PlayerAttackSoundBuffer);
+			if (!isAttackBuffer1Playing && isJumpBufferPlaying || !isAttackBuffer1Playing && !isJumpBufferPlaying)
+			{
+				playSoundEffect(m_PlayerAttackSoundBuffer1);
+				isAttackBuffer1Playing = true;
+			}
+			else if (!isAttackBuffer2Playing && isJumpBufferPlaying || !isAttackBuffer2Playing && !isJumpBufferPlaying)
+			{
+				playSoundEffect(m_PlayerAttackSoundBuffer2);
+				isAttackBuffer2Playing = true;
+			}
 		}
 		if (soundToPlay == 1) //Player jump
 		{
 			playSoundEffect(m_JumpSoundBuffer);
+			isJumpBufferPlaying = true;
 		}
 		if (soundToPlay == 2) //Fireball
 		{
@@ -515,6 +538,19 @@ bool SoundClass::playSoundEffect(IDirectSoundBuffer8* secondaryBuffer)
 		MessageBox(NULL, L"Error playing from secondary sound buffer",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
+	}
+
+	if (isAttackBuffer1Playing)
+	{
+		isAttackBuffer1Playing = false;
+	}
+	if (isAttackBuffer2Playing)
+	{
+		isAttackBuffer2Playing = false;
+	}
+	if (isJumpBufferPlaying)
+	{
+		isJumpBufferPlaying = false;
 	}
 
 	return true;

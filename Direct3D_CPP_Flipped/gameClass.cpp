@@ -355,7 +355,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "1backgroundScene.bin");
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -1284,8 +1284,8 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
-
-		/*sound->playAmbient(0);*/
+		
+		sound->playAmbient(0);
 
 		return false;
 	}
@@ -2200,15 +2200,12 @@ void gameClass::updateXpDisplayMat()
 
 		xpDisplay->getObj()->setMaterialName("xp0.png");
 
-		sound->playSFX(0, 0);
-
 	}
 	if (tempXP == 1)
 	{
 
 		xpDisplay->getObj()->setMaterialName("xp1.png");
 
-		sound->playSFX(0, 0);
 
 	}
 	if (tempXP == 2)
@@ -2367,12 +2364,14 @@ void gameClass::updateOverlay()
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() + 1);
 		arrowDownReleased = false;
+		sound->playSFX(0, 0);
 	}
 	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getCounterOverlay() > 0)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() - 1);
 		arrowUpReleased = false;
+		sound->playSFX(0, 0);
 	}
 	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
 }
