@@ -7,9 +7,9 @@ gameClass::gameClass(HINSTANCE hInstance)
 	graphics = 0;
 	dt = 0;
 	inputDirectOther = 0;
-	heart3 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.85f, 0.82f, 0.0f);
-	heart2 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.65f, 0.82f, 0.0f);
-	heart1 = XMMatrixScaling(0.07f, 0.07f, 0.0f) * XMMatrixTranslation(-0.45f, 0.82f, 0.0f);
+	heart3 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.88f, 0.82f, 0.0f);
+	heart2 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.76f, 0.82f, 0.0f);
+	heart1 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.64f, 0.82f, 0.0f);
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
@@ -27,11 +27,12 @@ gameClass::gameClass(HINSTANCE hInstance)
 	costHPBeginning = 0;
 	costSpeedBeginnning = 0;
 
-	shopMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
+	shopMat = XMMatrixScaling(0.85f, 0.85f, 0.85f) * XMMatrixTranslation(9.5f, 0.55f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
 
 	countEnemy = 0;
 	SpeedCost = 1;
+
 
 	player = 0;
 	camera = 0;
@@ -71,10 +72,18 @@ gameClass::gameClass(HINSTANCE hInstance)
 	slot1xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.37f, 0.82f, 0.0f);
 	slot2xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.32f, 0.82f, 0.0f);
 
-	slot1xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.79f, 0.748f, 0.0f);
-	slot2xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.765f, 0.748f, 0.0f);
-	slot1MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.45f, 0.748f, 0.0f);
-	slot2MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.425f, 0.748f, 0.0f);
+	slot1xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.80f, 0.748f, 0.0f);
+	slot2xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.78f, 0.748f, 0.0f);
+	slot1MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.44f, 0.748f, 0.0f);
+	slot2MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.419f, 0.748f, 0.0f);
+
+	healthUpgradeCountMat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.60f, 0.509f, 0.0f);
+	speedUpgradeCountMat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.60f, 0.333f, 0.0f);
+
+	totalCostPendingSlot2 = 0;
+	totalCostPendingSlot1 = 0;
+	totalCostPendingSlot2Mat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.61f, -0.324f, 0.0f);
+	totalCostPendingSlot1Mat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.63f, -0.324f, 0.0f);
 	
 	isUpgradeHPAactive = true;
 	nrHPtoBeUpgraded = 0;
@@ -191,7 +200,7 @@ bool gameClass::initialize(int ShowWnd)
 	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
 
 
-	///OBJ
+	//OBJ
 	//player test
 	player = new playerClass;
 	if (!player)
@@ -364,7 +373,7 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	GUIheart1->getObj()->setWorldMatrix(heart1);
-	GUIheart1->getObj()->setMaterialName("cubeTexture1.png");
+	GUIheart1->getObj()->setMaterialName("HP2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart1->getObj()->getMaterialName());
 
 	addHearthToHeartHolder(*GUIheart1, 1);
@@ -767,6 +776,84 @@ bool gameClass::initialize(int ShowWnd)
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
 
+	//
+	//HEalth count
+	healthUpgradeCount = new GUItestClass;
+	if (!healthUpgradeCount)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = healthUpgradeCount->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	healthUpgradeCount->getObj()->setWorldMatrix(healthUpgradeCountMat);
+	healthUpgradeCount->getObj()->setMaterialName("0.png");
+	healthUpgradeCount->setIsDestroy(true);
+
+	//speed count
+	speedUpgradeCount = new GUItestClass;
+	if (!speedUpgradeCount)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = speedUpgradeCount->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	speedUpgradeCount->getObj()->setWorldMatrix(speedUpgradeCountMat);
+	speedUpgradeCount->getObj()->setMaterialName("0.png");
+	speedUpgradeCount->setIsDestroy(true);
+
+
+	//TOTAL COST PENDING
+	totalCostPendingSlot1 = new GUItestClass;
+	if (!totalCostPendingSlot1)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = totalCostPendingSlot1->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	totalCostPendingSlot1->getObj()->setWorldMatrix(totalCostPendingSlot1Mat);
+	totalCostPendingSlot1->getObj()->setMaterialName("0.png");
+	totalCostPendingSlot1->setIsDestroy(true);
+
+	//speed count
+	totalCostPendingSlot2 = new GUItestClass;
+	if (!totalCostPendingSlot2)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = totalCostPendingSlot2->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	totalCostPendingSlot2->getObj()->setWorldMatrix(totalCostPendingSlot2Mat);
+	totalCostPendingSlot2->getObj()->setMaterialName("0.png");
+	totalCostPendingSlot2->setIsDestroy(true);
+
 	////////////////////////
 	//WIN				////
 	////////////////////////
@@ -870,6 +957,18 @@ void gameClass::shutdown()
 		delete slot1xp;
 		slot1xp = 0;
 	}
+	if (speedUpgradeCount)
+	{
+		speedUpgradeCount->shutdown();
+		delete speedUpgradeCount;
+		speedUpgradeCount = 0;
+	}
+	if (healthUpgradeCount)
+	{
+		healthUpgradeCount->shutdown();
+		delete healthUpgradeCount;
+		healthUpgradeCount = 0;
+	}
 	if (ring)
 	{
 		ring->shutdown();
@@ -911,7 +1010,18 @@ void gameClass::shutdown()
 
 		delete[] heartHolder;
 	}
-
+	if (totalCostPendingSlot2)
+	{
+		totalCostPendingSlot2->shutdown();
+		delete totalCostPendingSlot2;
+		totalCostPendingSlot2 = 0;
+	}
+	if (totalCostPendingSlot1)
+	{
+		totalCostPendingSlot1->shutdown();
+		delete totalCostPendingSlot1;
+		totalCostPendingSlot1 = 0;
+	}
 	if (meny)
 	{
 		meny->shutdown();
@@ -1166,6 +1276,8 @@ bool gameClass::frameLimbo(double dt)
 	//GUI
 	updateSlotXp(slot1xpMatLimbo, slot2xpMatLimbo);
 	updateGUIPolygon(slot1MatLimbo, slot2MatLimbo);
+	updateCountersShop();
+	pendingCostUpdate();
 
 	//updateShopMats
 	updateShopWorldMat();
@@ -2337,24 +2449,254 @@ void gameClass::updateLimboBackground()
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
 }
 
+void gameClass::updateCountersShop()
+{
+	if (activeShopState != 0)
+	{
+		healthUpgradeCount->setIsDestroy(true);
+		speedUpgradeCount->setIsDestroy(true);
+	}
+	
+	if (!healthUpgradeCount->getIsDestry())
+	{
+		if (nrHPtoBeUpgraded == 0)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("0.png");
+		}
+		if (nrHPtoBeUpgraded == 1)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("1.png");
+		}
+		if (nrHPtoBeUpgraded == 2)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("2.png");
+		}
+		if (nrHPtoBeUpgraded == 3)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("3.png");
+		}
+		if (nrHPtoBeUpgraded == 4)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("4.png");
+		}
+		if (nrHPtoBeUpgraded == 5)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("5.png");
+		}
+		if (nrHPtoBeUpgraded == 6)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("6.png");
+		}
+		if (nrHPtoBeUpgraded == 7)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("7.png");
+		}
+		if (nrHPtoBeUpgraded == 8)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("8.png");
+		}
+		if (nrHPtoBeUpgraded == 9)
+		{
+			healthUpgradeCount->getObj()->setMaterialName("9.png");
+		}
+
+		healthUpgradeCount->getObj()->setWorldMatrix(healthUpgradeCountMat);
+	}
+
+	if (!speedUpgradeCount->getIsDestry())
+	{
+		if (nrSpeedToBeUpgraded == 0)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("0.png");
+		}
+		if (nrSpeedToBeUpgraded == 1)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("1.png");
+		}
+		if (nrSpeedToBeUpgraded == 2)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("2.png");
+		}
+		if (nrSpeedToBeUpgraded == 3)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("3.png");
+		}
+		if (nrSpeedToBeUpgraded == 4)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("4.png");
+		}
+		if (nrSpeedToBeUpgraded == 5)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("5.png");
+		}
+		if (nrSpeedToBeUpgraded == 6)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("6.png");
+		}
+		if (nrSpeedToBeUpgraded == 7)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("7.png");
+		}
+		if (nrSpeedToBeUpgraded == 8)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("8.png");
+		}
+		if (nrSpeedToBeUpgraded == 9)
+		{
+			speedUpgradeCount->getObj()->setMaterialName("9.png");
+		}
+		speedUpgradeCount->getObj()->setWorldMatrix(speedUpgradeCountMat);
+	}
+}
+
+void gameClass::pendingCostUpdate()
+{
+	if (totalPendingCost == 0 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("0.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 1 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("1.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 2 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("2.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 3 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("3.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 4 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("4.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 5 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("5.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 6 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("6.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 7 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("7.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 8 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("8.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost == 9 || totalPendingCost >= 10)
+	{
+		if (totalPendingCost <= 9)
+			totalCostPendingSlot1->getObj()->setMaterialName("9.png");
+		if (totalPendingCost > 9)
+		{
+			int temp = totalPendingCost % 10;
+			std::string tempString = std::to_string(temp);
+			totalCostPendingSlot1->getObj()->setMaterialName(tempString + ".png");
+		}
+	}
+	if (totalPendingCost > 9)
+	{
+		int temp = totalPendingCost / 10;
+		std::string tempString = std::to_string(temp);
+		totalCostPendingSlot2->getObj()->setMaterialName(tempString + ".png");
+	}
+	if (totalPendingCost <= 9)
+	{
+		totalCostPendingSlot2->getObj()->setMaterialName("0.png");
+	}
+	totalCostPendingSlot1->getObj()->setWorldMatrix(totalCostPendingSlot1Mat);
+	totalCostPendingSlot2->getObj()->setWorldMatrix(totalCostPendingSlot2Mat);
+}
+
 void gameClass::updateShopWorldMat()
 {
 	upgradeGUI->getObj()->setWorldMatrix(shopMat);
 	//overlay updateTabArrows
 
-	if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && getShopOverlayCounter() == -1 && activeShopState > 0 && upgradeOvlerlayCounterWeapons == -1)
+	if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && getShopOverlayCounter() == -1 && activeShopState > 0 && upgradeOvlerlayCounterWeapons == -1)
 	{
 		activeShopState -= 1;
-		arrowRightReleased = false;
+		arrowLeftReleased = false;
 	}
-	if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased  && getShopOverlayCounter() == -1 && activeShopState < 1 && upgradeOvlerlayCounterWeapons == -1)
+	if (inputDirectOther->isArrowRightPressed() && arrowRightReleased  && getShopOverlayCounter() == -1 && activeShopState < 1 && upgradeOvlerlayCounterWeapons == -1)
 	{
 		activeShopState += 1;
-		arrowLeftReleased = false;
+		arrowRightReleased = false;
 	}
 
 	if (activeShopState == 0)
 	{
+		speedUpgradeCount->setIsDestroy(false);
+		healthUpgradeCount->setIsDestroy(false);
+		totalCostPendingSlot1->setIsDestroy(false);
+		totalCostPendingSlot2->setIsDestroy(false);
 		upgradeGUI->getObj()->setMaterialName("StatsBase.png");
 		if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getShopOverlayCounter() < 2)
 		{
@@ -2366,15 +2708,15 @@ void gameClass::updateShopWorldMat()
 			setShopOverlayCounter(getShopOverlayCounter() - 1);
 			arrowUpReleased = false;
 		}
-		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() > 0)
+		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() > 0)
 		{
 			setShopOverlayCounterRow(getShopOverlayCounterRow() - 1);
-			arrowRightReleased = false;
+			arrowLeftReleased = false;
 		}
-		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() < 1)
+		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && getShopOverlayCounter() == 2 && getShopOverlayCounterRow() < 1)
 		{
 			setShopOverlayCounterRow(getShopOverlayCounterRow() + 1);
-			arrowLeftReleased = false;
+			arrowRightReleased = false;
 		}
 
 		if (getShopOverlayCounter() == -1)
@@ -2400,6 +2742,10 @@ void gameClass::updateShopWorldMat()
 	}
 	if (activeShopState == 1)
 	{
+		speedUpgradeCount->setIsDestroy(true);
+		healthUpgradeCount->setIsDestroy(true);
+		totalCostPendingSlot1->setIsDestroy(true);
+		totalCostPendingSlot2->setIsDestroy(true);
 		upgradeGUI->getObj()->setMaterialName("WeaponsBase.png");
 		if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && upgradeOvlerlayCounterWeapons < 4)
 		{
@@ -2411,15 +2757,15 @@ void gameClass::updateShopWorldMat()
 			upgradeOvlerlayCounterWeapons -= 1;
 			arrowUpReleased = false;
 		}
-		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() > 0)
+		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() > 0)
 		{
 			setShopOverlayCounterRow(getShopOverlayCounterRow() - 1);
-			arrowRightReleased = false;
+			arrowLeftReleased = false;
 		}
-		if (inputDirectOther->isArrowLeftPressed() && arrowLeftReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() < 1)
+		if (inputDirectOther->isArrowRightPressed() && arrowRightReleased && upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() < 1)
 		{
 			setShopOverlayCounterRow(getShopOverlayCounterRow() + 1);
-			arrowLeftReleased = false;
+			arrowRightReleased = false;
 		}
 
 		if (upgradeOvlerlayCounterWeapons == -1)
@@ -2497,6 +2843,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 	slot2->updateDestroy2(dt);
 	slot1xp->updateDestroy2(dt);
 	slot2xp->updateDestroy2(dt);
+	speedUpgradeCount->updateDestroy2(dt);
+	healthUpgradeCount->updateDestroy2(dt);
+	totalCostPendingSlot1->updateDestroy2(dt);
+	totalCostPendingSlot2->updateDestroy2(dt);
 
 	if (!upgradeGUI->getIsDestry() && !upgradeGUI->getCheckIfObjHolder())
 	{
@@ -2504,6 +2854,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		upgradeGUI->setCheckIfObjHolder(true);
 		costHPBeginning = healthCost;
 		costSpeedBeginnning = SpeedCost;
+		activeShopState = 0;
 	}
 	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
 	{
@@ -2563,6 +2914,47 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		slot2xp->setCheckIfObjHolder(false);
 	}
 
+	if (!healthUpgradeCount->getIsDestry() && !healthUpgradeCount->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(healthUpgradeCount->getObj());
+		healthUpgradeCount->setCheckIfObjHolder(true);
+	}
+	if (healthUpgradeCount->getIsDestry() && healthUpgradeCount->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(healthUpgradeCount->getObj());
+		healthUpgradeCount->setCheckIfObjHolder(false);
+	}
+	if (!speedUpgradeCount->getIsDestry() && !speedUpgradeCount->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(speedUpgradeCount->getObj());
+		speedUpgradeCount->setCheckIfObjHolder(true);
+	}
+	if (speedUpgradeCount->getIsDestry() && speedUpgradeCount->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(speedUpgradeCount->getObj());
+		speedUpgradeCount->setCheckIfObjHolder(false);
+	}
+
+	if (!totalCostPendingSlot1->getIsDestry() && !totalCostPendingSlot1->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(totalCostPendingSlot1->getObj());
+		totalCostPendingSlot1->setCheckIfObjHolder(true);
+	}
+	if (totalCostPendingSlot1->getIsDestry() && totalCostPendingSlot1->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(totalCostPendingSlot1->getObj());
+		totalCostPendingSlot1->setCheckIfObjHolder(false);
+	}
+	if (!totalCostPendingSlot2->getIsDestry() && !totalCostPendingSlot2->getCheckIfObjHolder())
+	{
+		addObjectToObjHolderLimbo(totalCostPendingSlot2->getObj());
+		totalCostPendingSlot2->setCheckIfObjHolder(true);
+	}
+	if (totalCostPendingSlot2->getIsDestry() && totalCostPendingSlot2->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolderLimbo(totalCostPendingSlot2->getObj());
+		totalCostPendingSlot2->setCheckIfObjHolder(false);
+	}
 	
 	if (!upgradeGUI->getIsDestry())
 	{
@@ -2575,7 +2967,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
-					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost)
+					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost && nrHPtoBeUpgraded < 2 && player->getMaxHP() < 2)
 					{
 						totalPendingCost += healthCost;
 						/*player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);*/
@@ -2588,9 +2980,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
-					totalPendingCost -= healthCost;
 					healthCost = healthCost / 2;
-					player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
+					totalPendingCost -= healthCost;
+					//player->setNrPixelFragments(player->getNrPixelFramgent() + healthCost);
 					nrHPtoBeUpgraded -= 1;
 				}
 
@@ -2614,9 +3006,9 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
-					totalPendingCost -= SpeedCost;
 					SpeedCost = SpeedCost / 2;
-					player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
+					totalPendingCost -= SpeedCost;
+					//player->setNrPixelFragments(player->getNrPixelFramgent() + SpeedCost);
 					nrSpeedToBeUpgraded -= 1;
 				}
 			}
@@ -2678,6 +3070,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			}
 		}
 
+
 		//IF CONFIRMED IS PRESSED
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0 || getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
 		{
@@ -2687,16 +3080,17 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				enterReleased = false;
 				if (nrHPtoBeUpgraded > 0)
 				{
-					for (int i = 0; i < nrHPtoBeUpgraded; i++)
-					{
-						if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
+						for (int i = 0; i < nrHPtoBeUpgraded; i++)
 						{
-							addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
-							heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
-							heartHolder[player->getMaxHP() + i].setIsBought(true);
-							OutputDebugString(L"\nheart was created!\n");
+							if (!heartHolder[player->getMaxHP() + i].getIsDestry() && !heartHolder[player->getMaxHP() + i].getCheckIfObjHolder())
+							{
+								addObjectToObjHolder(heartHolder[player->getMaxHP() + i].getObj());
+								heartHolder[player->getMaxHP() + i].setCheckIfObjHolder(true);
+								heartHolder[player->getMaxHP() + i].setIsBought(true);
+								OutputDebugString(L"\nheart was created!\n");
+							}
 						}
-					}
+					
 				}
 				if (nrHPtoBeUpgraded > 0)
 				{
@@ -2724,7 +3118,12 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				slot1->setIsDestroy(true);
 				slot2->setIsDestroy(true);
 				slot1xp->setIsDestroy(true);
-				slot2xp->setIsDestroy(true);	
+				slot2xp->setIsDestroy(true);
+				speedUpgradeCount->setIsDestroy(true);
+				healthUpgradeCount->setIsDestroy(true);
+				totalCostPendingSlot1->setIsDestroy(true);
+				totalCostPendingSlot2->setIsDestroy(true);
+				activeShopState = -1;
 				totalPendingCost = 0;
 			}
 		}
@@ -2736,14 +3135,14 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (nrHPtoBeUpgraded > 0)
 				{
 					healthCost = costHPBeginning;
+					nrHPtoBeUpgraded = 0;
 				}
 				if (nrSpeedToBeUpgraded > 0)
 				{
 					SpeedCost = costSpeedBeginnning;
+					nrSpeedToBeUpgraded = 0;
 				}
 				enterReleased = false;
-				nrHPtoBeUpgraded = 0;
-				nrSpeedToBeUpgraded = 0;
 				activeShopState = 0;
 				setShopOverlayCounter(-1);
 				setShopOverlayCounterRow(0);
@@ -2754,25 +3153,38 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				slot2->setIsDestroy(true);
 				slot1xp->setIsDestroy(true);
 				slot2xp->setIsDestroy(true);
+				speedUpgradeCount->setIsDestroy(true);
+				healthUpgradeCount->setIsDestroy(true);
+				totalCostPendingSlot1->setIsDestroy(true);
+				totalCostPendingSlot2->setIsDestroy(true);
+				activeShopState = -1;
 				totalPendingCost = 0;
 			}
 		}
 	}
 	if (upgradeGUI->getIsDestry())
 	{
+
 		activeShopState = 0;
 		setShopOverlayCounter(-1);
 		setShopOverlayCounterRow(0);
 		upgradeOvlerlayCounterWeapons = -1;
 		totalPendingCost = 0;
+		activeShopState = -1;
 		if (nrHPtoBeUpgraded > 0)
 		{
 			healthCost = costHPBeginning;
+			nrHPtoBeUpgraded = 0;
 		}
 		if (nrSpeedToBeUpgraded > 0)
 		{
 			SpeedCost = costSpeedBeginnning;
+			nrSpeedToBeUpgraded = 0;
 		}
+		speedUpgradeCount->setIsDestroy(true);
+		healthUpgradeCount->setIsDestroy(true);
+		totalCostPendingSlot1->setIsDestroy(true);
+		totalCostPendingSlot2->setIsDestroy(true);
 	}
 }
 

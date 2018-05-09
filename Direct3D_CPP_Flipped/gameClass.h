@@ -208,6 +208,18 @@ private:
 
 		pickupClass* limboPickupHolder;
 
+		GUItestClass* healthUpgradeCount;
+		XMMATRIX healthUpgradeCountMat;
+		GUItestClass* speedUpgradeCount;
+		void updateCountersShop();
+		XMMATRIX speedUpgradeCountMat;
+
+		GUItestClass* totalCostPendingSlot2;
+		XMMATRIX totalCostPendingSlot2Mat;
+		GUItestClass* totalCostPendingSlot1;
+		void pendingCostUpdate();
+		XMMATRIX totalCostPendingSlot1Mat;
+
 	//has to do with shop
 	GUItestClass* upgradeGUI;
 	GUItestClass* upgradeOverlay;

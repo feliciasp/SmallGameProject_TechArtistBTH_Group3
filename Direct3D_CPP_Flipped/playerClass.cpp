@@ -82,7 +82,7 @@ playerClass::playerClass()
 	fireballCast = false;
 
 	polygoner = 0;
-	fargments = 0;
+	fargments = 20;
 	maxHP = HP;
 	speedVal = 10.0f;
 
