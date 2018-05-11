@@ -7,6 +7,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	graphics = 0;
 	dt = 0;
 	inputDirectOther = 0;
+	heart5 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.40f, 0.82f, 0.0f);
+	heart4 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.52f, 0.82f, 0.0f);
 	heart3 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.88f, 0.82f, 0.0f);
 	heart2 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.76f, 0.82f, 0.0f);
 	heart1 = XMMatrixScaling(0.032f, 0.06f, 0.0f) * XMMatrixTranslation(-0.64f, 0.82f, 0.0f);
@@ -379,12 +381,16 @@ bool gameClass::initialize(int ShowWnd)
 	addHearthToHeartHolder(*GUIheart1, 1);
 	addHearthToHeartHolder(*GUIheart1, 2);
 	addHearthToHeartHolder(*GUIheart1, 3);
+	addHearthToHeartHolder(*GUIheart1, 4);
+	addHearthToHeartHolder(*GUIheart1, 5);
 
 
 	heartHolder[0].setIsBought(true);
 	heartHolder[0].getObj()->setWorldMatrix(heart3);
 	heartHolder[1].getObj()->setWorldMatrix(heart2);
 	heartHolder[2].getObj()->setWorldMatrix(heart1);
+	heartHolder[3].getObj()->setWorldMatrix(heart4);
+	heartHolder[4].getObj()->setWorldMatrix(heart5);
 
 
 
@@ -1003,7 +1009,7 @@ void gameClass::shutdown()
 	}
 	if (heartHolder)
 	{
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			heartHolder[i].shutdown();
 		}
@@ -1569,7 +1575,7 @@ bool gameClass::frameGame(double dt)
 		initializeRings();
 		enemy->resetEnemy();
 		projectile->resetProjectile();
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			heartHolder[i].resetGUI();
 		}
@@ -1605,7 +1611,7 @@ bool gameClass::frameGame(double dt)
 
 		camera->reset();
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			heartHolder[i].resetGUI();
 		}
@@ -2967,7 +2973,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
-					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost && nrHPtoBeUpgraded < 2 && player->getMaxHP() < 2)
+					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost && nrHPtoBeUpgraded < 4 && player->getMaxHP() < 4)
 					{
 						totalPendingCost += healthCost;
 						/*player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);*/

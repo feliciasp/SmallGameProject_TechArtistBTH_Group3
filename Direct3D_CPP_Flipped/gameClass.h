@@ -157,6 +157,8 @@ private:
 	XMMATRIX heart1;
 	XMMATRIX heart2;
 	XMMATRIX heart3;
+	XMMATRIX heart4;
+	XMMATRIX heart5;
 
 	GUItestClass* slot1;
 	GUItestClass* slot2;
