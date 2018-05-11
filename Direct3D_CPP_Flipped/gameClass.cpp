@@ -283,11 +283,6 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->setBboxMinWeaponLeft(tempBboxMin);
 
 
-	//enemyHolder[0].clone(*enemy);
-
-	//addObjectToObjHolder(enemyHolder[0].getObj());
-
-
 	//background test
 	background = new backgroundClass;
 	if (!background)
@@ -2109,70 +2104,7 @@ void gameClass::initializeEnemys()
 		enemyType.clone(*enemy);
 		nrEnemys++;
 		addEnemyToEnemyHolder(enemyType, nrEnemys);
-		XMVECTOR temp = { 10.5f, 0.0f, 0.0f };
-		enemyHolder[nrEnemys - 1].setTriggerVector(temp);
-		temp = { 4.0f, 0.0f, 0.0f };
-		enemyHolder[nrEnemys - 1].setRangeVector(temp);
-		//enemyHolder[nrEnemys - 1].setMove(0);
-		enemyHolder[nrEnemys - 1].setCheckIfObjHolder(false);
-		enemyHolder[nrEnemys - 1].setIsActive(true);
-		enemyHolder[nrEnemys - 1].setEnemyHP(3);
-
-
-
-		/*
-		temptest = 3;
-		obj = 0;
-		moveVal = 0;
-		translation = XMMatrixIdentity();
-		transStart = XMMatrixIdentity();
-		triggerCheck = { 10.5f, 0.0f, 0.0f};
-		rangeCheck = { 4.0f, 0.0f, 0.0f };
-		isActive = true;
-		checkIfObjHolder = false;
-		HP = 3;
-		isAttack = false;
-		isHurt = false;
-		attackTimer = 1.0f;
-		hurtTimer = 0.3f;
-
-		isFacingRight = true;
-		useRotation = false;
-
-		isHit = false;
-
-		XMMATRIX translation;
-		XMMATRIX transStart;
-		XMMATRIX translationInY;
-
-		XMVECTOR triggerVector;
-		XMVECTOR triggerCheck;
-
-		XMVECTOR rangeVector;
-		XMVECTOR rangeCheck;
-
-		XMVECTOR startPos;
-
-		int HP;
-		bool isHurt;
-		bool isAttack;
-		float attackTimer;
-
-		float hurtTimer;
-
-		void setEnemyHurt(bool check);
-		bool getEnemyHurt();
-
-		bool isFacingRight;
-		bool useRotation;
-
-		float oldMoveValY;
-
-		bool isHit;
-		bool isAttacking;
-		*/
 		enemyType.shutdown();
-
 	}
 }
 
@@ -2218,7 +2150,7 @@ void gameClass::updateConstantMatrices()
 
 void gameClass::updateEnemy(double dt)
 {
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < nrEnemys; i++)
 	{
 		enemyHolder[i].updateFalling(dt);
 		enemyHolder[i].getObj()->setWorldMatrix(enemyMatPos);
@@ -2253,7 +2185,7 @@ void gameClass::updateEnemy(double dt)
 		}
 		enemyHolder[i].getObj()->setWorldMatrix(masterMovementEnemyMat);
 	}
-	enemyHolder[1].getObj()->setWorldMatrix(enemyMatPos);
+	//enemyHolder[1].getObj()->setWorldMatrix(enemyMatPos);
 }
 
 void gameClass::updatePlayer(platformClass* platform, double dt)
@@ -3457,6 +3389,7 @@ void gameClass::updateCollision(double dt)
 
 		lengthBetween1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 		lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
+		
 		lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix));
 		lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
 
@@ -3464,7 +3397,6 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[j].hurtState())
 			{
-				
 				enemyHolder[j].setEnemyHP(enemyHolder[j].getEnemyHP() - 1);
 				OutputDebugString(L"\nenemy lost hP!\n");
 			}
@@ -3538,9 +3470,7 @@ void gameClass::updateCollision(double dt)
 						player->setPlayerHurt(true);
 						player->setPlayerHurtFromLeft(true);
 						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
-
 						{
-
 							heartHolder[player->getPlayerHP()].setIsDestroy(true);
 
 							removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
@@ -3593,9 +3523,7 @@ void gameClass::updateCollision(double dt)
 				{
 					if (enemyHolder[j].attackCooldown())
 					{
-
 						player->setPlayerHP(player->getPlayerHP() - 1);
-
 						player->setPlayerHurt(true);
 						player->setPlayerHurtFromRight(true);
 						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
