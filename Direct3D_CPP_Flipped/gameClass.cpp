@@ -1638,6 +1638,7 @@ bool gameClass::frameGame(double dt)
 
 		gameStateLevel = false;
 		gameStateMeny = false;
+
 		gameStateWin = false;
 		gameStateLimbo = true;
 		return false;
