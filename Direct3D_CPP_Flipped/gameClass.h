@@ -59,7 +59,11 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
+	void addEnemyToEnemyHolder(enemyClass &pickup, int nrEnemys);
+	void removeEnemyFromEnemyHolder(enemyClass &pickup, int nrEnemys);
+
 	void initializeRings();
+	void initializeEnemys();
 
 	void checkReleasedKeys();
 
@@ -94,6 +98,7 @@ private:
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
+	enemyClass* enemyHolder;
 
 	std::vector<objectClass*> objHolder;
 	std::vector<objectClass*> objHolderMeny;
@@ -139,6 +144,7 @@ private:
 	bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 	int nrOfVisiblePickups;
+	int nrEnemys;
 
 	bool gameStateLevel;
 	bool gameStateMeny;

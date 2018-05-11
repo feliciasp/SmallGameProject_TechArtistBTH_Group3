@@ -382,3 +382,10 @@ int enemyClass::getHurt()
 {
 	return this->hurt;
 }
+
+void enemyClass::clone(const enemyClass& other)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
+	obj->setType(3);
+}

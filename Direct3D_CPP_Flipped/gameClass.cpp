@@ -32,7 +32,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	countEnemy = 0;
 	SpeedCost = 1;
-
+	nrEnemys = 0;
 
 	player = 0;
 	camera = 0;
@@ -47,6 +47,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	enemyTranslationMatrix = XMMatrixIdentity();
 	heartHolder = 0;
 	pickupHolder = 0;
+	enemyHolder = 0;
 
 	nrOfVisiblePickups = 0;
 
@@ -65,7 +66,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	slot1Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.85f, 0.82f, 0.0f); 
 	slot2Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.78f, 0.82f, 0.0f);
 	ringDisplay = 0;
-	ringDisplayMat = XMMatrixScaling(0.04f, 0.07f, 0.0f) * XMMatrixTranslation(-0.85f, 0.57f, 0.0f);
+	ringDisplayMat = XMMatrixScaling(0.03f, 0.06f, 0.0f) * XMMatrixTranslation(-0.85f, 0.57f, 0.0f);
 	xpDisplay = 0;
 	xpDisplayMat = XMMatrixScaling(0.16f, 0.04f, 0.0f) * XMMatrixTranslation(0.05f, 0.82f, 0.0f);
 	slot1xp = 0;
@@ -96,6 +97,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	arrowUpReleased = true;
 	arrowRightReleased = true;
 	arrowLeftReleased = true;
+
+	enemyMatPos = XMMatrixIdentity();
 
 	ringsInitialized = false;
 
@@ -278,6 +281,11 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMin = { XMVectorGetX(enemy->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(enemy->getObj()->getBoundingBoxMin()) };
 	enemy->setBboxMaxWeaponLeft(tempBboxMax);
 	enemy->setBboxMinWeaponLeft(tempBboxMin);
+
+
+	//enemyHolder[0].clone(*enemy);
+
+	//addObjectToObjHolder(enemyHolder[0].getObj());
 
 
 	//background test
@@ -475,8 +483,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	ringDisplay->getObj()->setWorldMatrix(ringDisplayMat);
 	ringDisplay->getObj()->setMaterialName("sampleRing.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingBlue3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingRed3.png");
 	ringDisplay->setIsDestroy(true);
 	ringDisplay->setCheckIfObjHolder(false);
 	//addObjectToObjHolder(ringDisplay->getObj());
@@ -777,7 +785,7 @@ bool gameClass::initialize(int ShowWnd)
 
 
 	//
-	//HEalth count
+	//Health count
 	healthUpgradeCount = new GUItestClass;
 	if (!healthUpgradeCount)
 	{
@@ -877,6 +885,7 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolderWin(win->getObj());
 	initializeRings();
+	initializeEnemys();
 
 	return true;
 }
@@ -982,6 +991,14 @@ void gameClass::shutdown()
 			pickupHolder[i].shutdown();
 		}
 		delete[] pickupHolder;
+	}
+	if (enemyHolder)
+	{
+		for (int i = 0; i < nrEnemys; i++)
+		{
+			enemyHolder[i].shutdown();
+		}
+		delete[] enemyHolder;
 	}
 	if (player)
 	{
@@ -1387,16 +1404,74 @@ bool gameClass::frameGame(double dt)
 	//constant MATRICES
 	updateConstantMatrices();
 
-	//enemy stuff
-	if (enemy->getIsActive() && !enemy->getCheckIfObjHolder())
+	////enemy stuff
+	//if (enemy->getIsActive() && !enemy->getCheckIfObjHolder())
+	//{
+	//	addObjectToObjHolder(enemy->getObj());
+	//	enemy->setCheckIfObjHolder(true);
+	//	player->setIfInObjHolder(false);
+	//}
+	//if (enemy->getIsActive())
+	//{
+	//	updateEnemy(dt);
+	//}
+
+	//ENEMY
+	for (int i = 0; i < nrEnemys; i++)
 	{
-		addObjectToObjHolder(enemy->getObj());
-		enemy->setCheckIfObjHolder(true);
-		player->setIfInObjHolder(false);
+		if (enemyHolder[i].getIsActive() && !enemyHolder[i].getCheckIfObjHolder())
+		{
+			addObjectToObjHolder(enemyHolder[i].getObj());
+			enemyHolder[i].setCheckIfObjHolder(true);
+			player->setIfInObjHolder(false);
+		}
 	}
-	if (enemy->getIsActive())
+
+	if (enemyHolder)
 	{
+		//pickup stuff
 		updateEnemy(dt);
+	}
+
+	for (int i = 0; i < nrEnemys; i++)
+	{
+		if (!enemyHolder[i].getIsActive() && enemyHolder[i].getCheckIfObjHolder())
+		{
+			removeObjFromObjHolder(enemyHolder[i].getObj());
+			enemyHolder[i].setCheckIfObjHolder(false);
+			nrEnemys--;
+			removeEnemyFromEnemyHolder(enemyHolder[i], nrEnemys);
+			i = 0;
+		}
+	}
+
+	//PICKUP
+	for (int i = 0; i < nrOfVisiblePickups; i++)
+	{
+		if (!pickupHolder[i].getIsDestry() && !pickupHolder[i].getCheckIfObjHolder())
+		{
+			addObjectToObjHolder(pickupHolder[i].getObj());
+			pickupHolder[i].setCheckIfObjHolder(true);
+			player->setIfInObjHolder(false);
+		}
+	}
+
+	if (pickupHolder)
+	{
+		//pickup stuff
+		updatePickup(dt);
+	}
+
+	for (int i = 0; i < nrOfVisiblePickups; i++)
+	{
+		if (pickupHolder[i].getIsDestry() && pickupHolder[i].getCheckIfObjHolder())
+		{
+			removeObjFromObjHolder(pickupHolder[i].getObj());
+			pickupHolder[i].setCheckIfObjHolder(false);
+			nrOfVisiblePickups--;
+			removePickupFromPickupHolder(pickupHolder[i], nrOfVisiblePickups);
+			i = 0;
+		}
 	}
 
 	////background stff
@@ -1516,7 +1591,7 @@ bool gameClass::frameGame(double dt)
 		}
 
 		else if (objHolder[i]->getType() == 3) {
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), enemy->getHurt());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), enemyHolder[i].getHurt());
 			if (!result)
 			{
 				return false;
@@ -1536,25 +1611,6 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
-
-	/*if (enemy->getEnemyHP() == 0)
-	{
-	player->resetPlayer();
-	pickupHolder[0].resetPickup();
-	enemy->resetEnemy();
-	projectile->resetProjectile();
-	for (int i = 0; i < 3; i++)
-	{
-	heartHolder[i].resetGUI();
-	}
-
-	gameStateLevel = false;
-	gameStateMeny = false;
-	gameStateLimbo = false;
-	gameStateWin = true;
-	return false;
-	}*/
-
 	if (player->getPlayerHP() == 0)
 	{
 		player->resetPlayer();
@@ -1567,7 +1623,13 @@ bool gameClass::frameGame(double dt)
 			}
 		}
 		initializeRings();
-		enemy->resetEnemy();
+		if (enemyHolder)
+		{
+			for (int i = 0; i < nrEnemys; i++)
+			{
+				enemyHolder[i].resetEnemy();
+			}
+		}
 		projectile->resetProjectile();
 		for (int i = 0; i < 3; i++)
 		{
@@ -1577,6 +1639,7 @@ bool gameClass::frameGame(double dt)
 		slot2->setIsDestroy(true);
 		slot1xp->setIsDestroy(true);
 		slot2xp->setIsDestroy(true);
+		ringDisplay->setIsDestroy(true);
 
 		gameStateLevel = false;
 		gameStateMeny = false;
@@ -1596,11 +1659,18 @@ bool gameClass::frameGame(double dt)
 			}
 		}
 		initializeRings();
-		enemy->resetEnemy();
+		if (enemyHolder)
+		{
+			for (int i = 0; i < nrEnemys; i++)
+			{
+				enemyHolder[i].resetEnemy();
+			}
+		}
 		slot1->setIsDestroy(true);
 		slot2->setIsDestroy(true);
 		slot1xp->setIsDestroy(true);
 		slot2xp->setIsDestroy(true);
+		ringDisplay->setIsDestroy(true);
 		projectile->resetProjectile();
 
 		camera->reset();
@@ -1813,7 +1883,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
-
 void gameClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMatTest;
@@ -1946,7 +2015,7 @@ void gameClass::addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePick
 	{
 		tempArray[i] = pickupHolder[i];
 	}
-	OutputDebugString(L"\npickup created!\n");
+	//OutputDebugString(L"\npickup created!\n");
 
 	delete[] pickupHolder;
 
@@ -1974,7 +2043,7 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 		{
 			if (i != index)
 			{
-				OutputDebugString(L"\nTransferring\n");
+				//OutputDebugString(L"\nTransferring\n");
 				tempArray[j] = pickupHolder[i];
 				j++;
 			}
@@ -1982,6 +2051,128 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 
 		delete[] pickupHolder;
 		pickupHolder = tempArray;
+	}
+}
+
+void gameClass::addEnemyToEnemyHolder(enemyClass &enemy, int nrEnemys)
+{
+	enemyClass* tempArray = new enemyClass[nrEnemys];
+
+	for (int i = 0; i < nrEnemys - 1; i++)
+	{
+		tempArray[i] = enemyHolder[i];
+	}
+	OutputDebugString(L"\nenemy created!\n");
+
+	delete[] enemyHolder;
+
+	enemyHolder = tempArray;
+	enemyHolder[nrEnemys - 1].clone(enemy);
+}
+
+void gameClass::removeEnemyFromEnemyHolder(enemyClass &enemy, int nrEnemys)
+{
+	int index = -1;
+	for (int i = 0; i < nrEnemys + 1; i++)
+	{
+		if (enemyHolder[i].getObj() == enemy.getObj())
+		{
+			index = i;
+		}
+	}
+
+	if (index != -1)
+	{
+		enemyClass* tempArray = new enemyClass[nrEnemys];
+		enemyHolder[index].shutdown();
+		int j = 0;
+		for (int i = 0; i < nrEnemys + 1; i++)
+		{
+			if (i != index)
+			{
+				OutputDebugString(L"\nTransferring\n");
+				tempArray[j] = enemyHolder[i];
+				j++;
+			}
+		}
+
+		delete[] enemyHolder;
+		enemyHolder = tempArray;
+	}
+}
+
+void gameClass::initializeEnemys()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		enemyClass enemyType;
+		enemyType.clone(*enemy);
+		nrEnemys++;
+		addEnemyToEnemyHolder(enemyType, nrEnemys);
+		XMVECTOR temp = { 10.5f, 0.0f, 0.0f };
+		enemyHolder[nrEnemys - 1].setTriggerVector(temp);
+		temp = { 4.0f, 0.0f, 0.0f };
+		enemyHolder[nrEnemys - 1].setRangeVector(temp);
+		//enemyHolder[nrEnemys - 1].setMove(0);
+		enemyHolder[nrEnemys - 1].setCheckIfObjHolder(false);
+		enemyHolder[nrEnemys - 1].setIsActive(true);
+		enemyHolder[nrEnemys - 1].setEnemyHP(3);
+
+
+
+		/*
+		temptest = 3;
+		obj = 0;
+		moveVal = 0;
+		translation = XMMatrixIdentity();
+		transStart = XMMatrixIdentity();
+		triggerCheck = { 10.5f, 0.0f, 0.0f};
+		rangeCheck = { 4.0f, 0.0f, 0.0f };
+		isActive = true;
+		checkIfObjHolder = false;
+		HP = 3;
+		isAttack = false;
+		isHurt = false;
+		attackTimer = 1.0f;
+		hurtTimer = 0.3f;
+
+		isFacingRight = true;
+		useRotation = false;
+
+		isHit = false;
+
+		XMMATRIX translation;
+		XMMATRIX transStart;
+		XMMATRIX translationInY;
+
+		XMVECTOR triggerVector;
+		XMVECTOR triggerCheck;
+
+		XMVECTOR rangeVector;
+		XMVECTOR rangeCheck;
+
+		XMVECTOR startPos;
+
+		int HP;
+		bool isHurt;
+		bool isAttack;
+		float attackTimer;
+
+		float hurtTimer;
+
+		void setEnemyHurt(bool check);
+		bool getEnemyHurt();
+
+		bool isFacingRight;
+		bool useRotation;
+
+		float oldMoveValY;
+
+		bool isHit;
+		bool isAttacking;
+		*/
+		enemyType.shutdown();
+
 	}
 }
 
@@ -2027,38 +2218,42 @@ void gameClass::updateConstantMatrices()
 
 void gameClass::updateEnemy(double dt)
 {
-	enemy->updateFalling(dt);
-	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
-	if (!enemy->getRoationCheck())
+	for (int i = 0; i < 1; i++)
 	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		enemyHolder[i].updateFalling(dt);
+		enemyHolder[i].getObj()->setWorldMatrix(enemyMatPos);
+		enemyHolder[i].getTranslationMat(matMul);
+		enemyHolder[i].getFallingMat(enemyFallingMat);
+		if (!enemyHolder[i].getRoationCheck())
+		{
+			masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
+			enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		}
+		else
+		{
+			masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
+			enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		}
+		enemyHolder[i].getObj()->setWorldMatrix(masterMovementEnemyMat);
+		///////////////
+		enemyHolder[i].checkCollisions(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), enemyTranslationMatrix));
+		///////////////
+		enemyHolder[i].getObj()->setWorldMatrix(enemyMatPos);
+		enemyHolder[i].getTranslationMat(matMul);
+		enemyHolder[i].getFallingMat(enemyFallingMat);
+		if (!enemyHolder[i].getRoationCheck())
+		{
+			masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
+			enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		}
+		else
+		{
+			masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
+			enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		}
+		enemyHolder[i].getObj()->setWorldMatrix(masterMovementEnemyMat);
 	}
-	else
-	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
-	}
-	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
-	///////////////
-	enemy->checkCollisions(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
-	///////////////
-	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
-	if (!enemy->getRoationCheck())
-	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
-	}
-	else
-	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
-	}
-	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
+	enemyHolder[1].getObj()->setWorldMatrix(enemyMatPos);
 }
 
 void gameClass::updatePlayer(platformClass* platform, double dt)
@@ -3225,7 +3420,16 @@ void gameClass::updatePickup(double dt)
 		pickupHolder[i].getObj()->setWorldMatrix(yOffset);
 		pickupHolder[i].updateAnimation(dt);
 	}
-
+	if (!ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
+	{
+		addObjectToObjHolder(ringDisplay->getObj());
+		ringDisplay->setCheckIfObjHolder(true);
+	}
+	if (ringDisplay->getIsDestry() && ringDisplay->getCheckIfObjHolder())
+	{
+		removeObjFromObjHolder(ringDisplay->getObj());
+		ringDisplay->setCheckIfObjHolder(false);
+	}
 }
 
 void gameClass::updateProjectile(double dt)
@@ -3247,196 +3451,197 @@ void gameClass::updateProjectile(double dt)
 
 void gameClass::updateCollision(double dt)
 {
-	float enemyMove = enemy->getMove();
-
-	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
-	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
-	lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix));
-	lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
-
-	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+	for (int j = 0; j < nrEnemys; j++)
 	{
-		if (enemy->hurtState())
+		float enemyMove = enemyHolder[j].getMove();
+
+		lengthBetween1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
+		lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
+		lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix));
+		lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
+
+		if (enemyHolder[j].getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
-			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
-			OutputDebugString(L"\nenemy lost hP!\n");
-		}
-		if (enemy->getEnemyHP() <= 0)
-		{
-			player->setNrPolysgons(player->getNrPolygons() + 1);
-			removeObjFromObjHolder(enemy->getObj());
-			enemy->setIsActive(false);
-			for (int i = 0; i < 2; i++)
+			if (enemyHolder[j].hurtState())
 			{
-				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
-				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
-				pickupClass pickup2;
-				pickup2.clone(*expFragment);
-				nrOfVisiblePickups++;
-				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
-				pickup2.shutdown();
-				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
-				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
-				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+				
+				enemyHolder[j].setEnemyHP(enemyHolder[j].getEnemyHP() - 1);
+				OutputDebugString(L"\nenemy lost hP!\n");
 			}
-			player->setIfInObjHolder(false);
-		}
-	}
-	else if (enemy->getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
-	{
-		if (enemy->hurtState())
-		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
-			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
-			OutputDebugString(L"\nenemy lost hP!\n");
-		}
-		if (enemy->getEnemyHP() <= 0)
-		{
-			player->setNrPolysgons(player->getNrPolygons() + 1);
-			removeObjFromObjHolder(enemy->getObj());
-			enemy->setIsActive(false);
-			for (int i = 0; i < 2; i++)
+			if (enemyHolder[j].getEnemyHP() <= 0)
 			{
-				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
-				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
-				pickupClass pickup2;
-				pickup2.clone(*expFragment);
-				nrOfVisiblePickups++;
-				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
-				pickup2.shutdown();
-				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
-				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
-				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
-			}
-			player->setIfInObjHolder(false);
-		}
-	}
-
-	enemy->timeCountdown(dt);
-
-	if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
-	{
-		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
-		{
-			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
-			{
-				if (enemy->attackCooldown())
+				player->setNrPolysgons(player->getNrPolygons() + 1);
+				removeObjFromObjHolder(enemyHolder[j].getObj());
+				enemyHolder[j].setIsActive(false);
+				for (int i = 0; i < 2; i++)
 				{
-					OutputDebugString(L"Attacking");
+					XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
+					XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
+					pickupClass pickup2;
+					pickup2.clone(*expFragment);
+					nrOfVisiblePickups++;
+					addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
+					pickup2.shutdown();
+					pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+					pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+				}
+				player->setIfInObjHolder(false);
+			}
+		}
+		else if (enemyHolder[j].getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+		{
+			if (enemyHolder[j].hurtState())
+			{
+				
+				enemyHolder[j].setEnemyHP(enemyHolder[j].getEnemyHP() - 1);
+				OutputDebugString(L"\nenemy lost hP!\n");
+			}
+			if (enemyHolder[j].getEnemyHP() <= 0)
+			{
+				player->setNrPolysgons(player->getNrPolygons() + 1);
+				removeObjFromObjHolder(enemyHolder[j].getObj());
+				enemyHolder[j].setIsActive(false);
+				for (int i = 0; i < 2; i++)
+				{
+					XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
+					XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
+					pickupClass pickup2;
+					pickup2.clone(*expFragment);
+					nrOfVisiblePickups++;
+					addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
+					pickup2.shutdown();
+					pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+					pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+				}
+				player->setIfInObjHolder(false);
+			}
+		}
 
-					player->setPlayerHP(player->getPlayerHP() - 1);
-					player->setPlayerHurt(true);
-					player->setPlayerHurtFromLeft(true);
-					if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
+		enemyHolder[j].timeCountdown(dt);
 
+		if (enemyHolder[j].getIsActive() && lengthBetween1 <= XMVectorGetX(enemyHolder[j].getTriggerCheck()) && lengthBetween1 >= 1.5f)
+		{
+			if (lengthBetween1 <= XMVectorGetX(enemyHolder[j].getRangeVector()))
+			{
+				enemyHolder[j].setMove(0.0f);
+				if (enemyHolder[j].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[j].getBboxMinWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[j].getBboxMaxWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+				{
+					if (enemyHolder[j].attackCooldown())
 					{
+						OutputDebugString(L"Attacking");
 
-						heartHolder[player->getPlayerHP()].setIsDestroy(true);
+						player->setPlayerHP(player->getPlayerHP() - 1);
+						player->setPlayerHurt(true);
+						player->setPlayerHurtFromLeft(true);
+						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
 
-						removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
+						{
 
-						heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
+							heartHolder[player->getPlayerHP()].setIsDestroy(true);
 
+							removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
+
+							heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
+
+						}
 					}
 				}
 			}
-		}
-		else
-		{
-			//går åt vänster
-			if (enemy->getFacing() && countEnemy <= 0)
-			{
-				enemy->setRoationCheck(true);
-				countEnemy = 100;
-				enemy->setMove(0.0f);
-			}
-			else if (enemy->getFacing() && countEnemy >= 0)
-			{
-				countEnemy -= 1;
-			}
 			else
 			{
-				enemy->setRoationCheck(false);
-				enemy->setFacing(false);
-				enemy->updateAttackCooldownTimer(dt);
-			}
-
-			enemy->setMove(2.5f * dt);
-			enemy->setTranslation(enemy->getMove());
-		}
-	}
-	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) < XMVectorGetX(enemy->getStartPos()))
-	{
-		enemy->setMove(-1.5f * dt);
-		enemy->setTranslation(enemy->getMove());
-		//OutputDebugString(L"MOVING TO SPAWN");
-	}
-
-
-	if (enemy->getIsActive() && lengthBetween2 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 <= 1.5f)
-	{
-		//år höger
-		if (lengthBetween2 <= XMVectorGetX(enemy->getRangeVector()) - 3)
-		{
-			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
-			{
-				if (enemy->attackCooldown())
+				//går åt vänster
+				if (enemyHolder[j].getFacing() && countEnemy <= 0)
 				{
+					enemyHolder[j].setRoationCheck(true);
+					countEnemy = 100;
+					enemyHolder[j].setMove(0.0f);
+				}
+				else if (enemyHolder[j].getFacing() && countEnemy >= 0)
+				{
+					countEnemy -= 1;
+				}
+				else
+				{
+					enemyHolder[j].setRoationCheck(false);
+					enemyHolder[j].setFacing(false);
+					enemyHolder[j].updateAttackCooldownTimer(dt);
+				}
 
-					player->setPlayerHP(player->getPlayerHP() - 1);
+				enemyHolder[j].setMove(2.5f * dt);
+				enemyHolder[j].setTranslation(enemyHolder[j].getMove());
+			}
+		}
+		else if (enemyHolder[j].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) < XMVectorGetX(enemyHolder[j].getStartPos()))
+		{
+			enemyHolder[j].setMove(-1.5f * dt);
+			enemyHolder[j].setTranslation(enemyHolder[j].getMove());
+			//OutputDebugString(L"MOVING TO SPAWN");
+		}
 
-					player->setPlayerHurt(true);
-					player->setPlayerHurtFromRight(true);
-					if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
 
+		if (enemyHolder[j].getIsActive() && lengthBetween2 <= XMVectorGetX(enemyHolder[j].getTriggerCheck()) && lengthBetween1 <= 1.5f)
+		{
+			//år höger
+			if (lengthBetween2 <= XMVectorGetX(enemyHolder[j].getRangeVector()) - 3)
+			{
+				enemyHolder[j].setMove(0.0f);
+				if (enemyHolder[j].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[j].getBboxMinWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[j].getBboxMaxWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+				{
+					if (enemyHolder[j].attackCooldown())
 					{
 
-						heartHolder[player->getPlayerHP()].setIsDestroy(true);
+						player->setPlayerHP(player->getPlayerHP() - 1);
 
-						removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
+						player->setPlayerHurt(true);
+						player->setPlayerHurtFromRight(true);
+						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
 
-						heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
+						{
 
+							heartHolder[player->getPlayerHP()].setIsDestroy(true);
+
+							removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
+
+							heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
+
+						}
 					}
 				}
 			}
-		}
-		else
-		{
-			if (!enemy->getFacing() && countEnemy <= 0)
-			{
-				enemy->setRoationCheck(true);
-				countEnemy = 100;
-				enemy->setMove(0.0f);
-			}
-			else if (!enemy->getFacing() && countEnemy >= 0)
-			{
-				countEnemy -= 1;
-			}
 			else
 			{
-				enemy->setRoationCheck(false);
-				enemy->setFacing(true);
-				enemy->updateAttackCooldownTimer(dt);
+				if (!enemyHolder[j].getFacing() && countEnemy <= 0)
+				{
+					enemyHolder[j].setRoationCheck(true);
+					countEnemy = 100;
+					enemyHolder[j].setMove(0.0f);
+				}
+				else if (!enemyHolder[j].getFacing() && countEnemy >= 0)
+				{
+					countEnemy -= 1;
+				}
+				else
+				{
+					enemyHolder[j].setRoationCheck(false);
+					enemyHolder[j].setFacing(true);
+					enemyHolder[j].updateAttackCooldownTimer(dt);
+				}
+				enemyHolder[j].setTranslation(enemyHolder[j].getMove());
+				enemyHolder[j].setMove(-2.5f * dt);
 			}
-			enemy->setTranslation(enemy->getMove());
-			enemy->setMove(-2.5f * dt);
 		}
-	}
-	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) > XMVectorGetX(enemy->getStartPos()))
-	{
-		enemy->setMove(1.5f * dt);
-		enemy->setTranslation(enemy->getMove());
-	}
+		else if (enemyHolder[j].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) > XMVectorGetX(enemyHolder[j].getStartPos()))
+		{
+			enemyHolder[j].setMove(1.5f * dt);
+			enemyHolder[j].setTranslation(enemyHolder[j].getMove());
+		}
 
-	enemy->updateAttackCooldownTimer(dt);
+		enemyHolder[j].updateAttackCooldownTimer(dt);
+	}
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
@@ -3474,21 +3679,17 @@ void gameClass::updateCollision(double dt)
 				}
 				this->player->setHasRing(true);
 				this->player->setRingType(pickupHolder[i].getRingType());
-				if (ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
-				{
-					addObjectToObjHolder(ringDisplay->getObj());
-					ringDisplay->setIsDestroy(false);
-					ringDisplay->setCheckIfObjHolder(true);
-				}
-				if (!ringDisplay->getIsDestry() && ringDisplay->getCheckIfObjHolder())
+				ringDisplay->setIsDestroy(false);
+
+				if (!ringDisplay->getIsDestry())
 				{
 					if (pickupHolder[i].getRingType() == 0)
 					{
-						ringDisplay->getObj()->setMaterialName("sampleRing.png");
+						ringDisplay->getObj()->setMaterialName("RingBlue3.png");
 					}
 					if (pickupHolder[i].getRingType() == 1)
 					{
-						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
+						ringDisplay->getObj()->setMaterialName("RingRed3.png");
 					}
 				}
 				

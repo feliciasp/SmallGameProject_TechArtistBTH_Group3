@@ -15,6 +15,7 @@ class enemyClass
 		void shutdown();
 		void setTranslation(float x);
 
+		void clone(const enemyClass& other);
 		objectClass* getObj();
 		void getTranslationMat(XMMATRIX& other);
 		void getTranslationMatStart(XMMATRIX& other);
@@ -115,6 +116,7 @@ class enemyClass
 
 		bool isHit;
 		bool isAttacking;
+
 		void checkIfAttacking();
 
 		//VAPEN
