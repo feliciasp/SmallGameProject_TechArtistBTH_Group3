@@ -1583,7 +1583,7 @@ bool gameClass::frameGame(double dt)
 		slot2->setIsDestroy(true);
 		slot1xp->setIsDestroy(true);
 		slot2xp->setIsDestroy(true);
-
+		ringDisplay->setIsDestroy(true);
 		gameStateLevel = false;
 		gameStateMeny = false;
 		gameStateWin = false;
@@ -1601,6 +1601,7 @@ bool gameClass::frameGame(double dt)
 				pickupHolder[i].resetPickup();
 			}
 		}
+		ringDisplay->setIsDestroy(true);
 		initializeRings();
 		enemy->resetEnemy();
 		slot1->setIsDestroy(true);
@@ -3231,7 +3232,25 @@ void gameClass::updatePickup(double dt)
 		pickupHolder[i].getObj()->setWorldMatrix(yOffset);
 		pickupHolder[i].updateAnimation(dt);
 	}
+	if (!ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
 
+	{
+
+		addObjectToObjHolder(ringDisplay->getObj());
+
+		ringDisplay->setCheckIfObjHolder(true);
+
+	}
+
+	if (ringDisplay->getIsDestry() && ringDisplay->getCheckIfObjHolder())
+
+	{
+
+		removeObjFromObjHolder(ringDisplay->getObj());
+
+		ringDisplay->setCheckIfObjHolder(false);
+
+	}
 }
 
 void gameClass::updateProjectile(double dt)
@@ -3480,6 +3499,7 @@ void gameClass::updateCollision(double dt)
 				}
 				this->player->setHasRing(true);
 				this->player->setRingType(pickupHolder[i].getRingType());
+				ringDisplay->setIsDestroy(false);
 				if (ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
 				{
 					addObjectToObjHolder(ringDisplay->getObj());
@@ -3497,7 +3517,6 @@ void gameClass::updateCollision(double dt)
 						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
 					}
 				}
-				
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
 			}
