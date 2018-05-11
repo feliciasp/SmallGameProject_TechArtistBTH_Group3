@@ -3390,13 +3390,12 @@ void gameClass::updateCollision(double dt)
 		lengthBetween1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 		lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
 		
-		lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix));
-		lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemyHolder[j].getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[j].getObj()->getPosition(), enemyTranslationMatrix));
-
 		if (enemyHolder[j].getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[j].getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 		{
 			if (enemyHolder[j].hurtState())
 			{
+				//enemyHolder[j].->resetMove();
+				//enemyHolder[j].->getTranslationMatStart(masterMovementEnemyMat);
 				enemyHolder[j].setEnemyHP(enemyHolder[j].getEnemyHP() - 1);
 				OutputDebugString(L"\nenemy lost hP!\n");
 			}
@@ -3426,7 +3425,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[j].hurtState())
 			{
-				
+				//enemyHolder[j].->resetMove();
+				//enemyHolder[j].->getTranslationMatStart(masterMovementEnemyMat);
 				enemyHolder[j].setEnemyHP(enemyHolder[j].getEnemyHP() - 1);
 				OutputDebugString(L"\nenemy lost hP!\n");
 			}
@@ -3470,7 +3470,9 @@ void gameClass::updateCollision(double dt)
 						player->setPlayerHurt(true);
 						player->setPlayerHurtFromLeft(true);
 						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
+
 						{
+
 							heartHolder[player->getPlayerHP()].setIsDestroy(true);
 
 							removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
@@ -3523,7 +3525,9 @@ void gameClass::updateCollision(double dt)
 				{
 					if (enemyHolder[j].attackCooldown())
 					{
+
 						player->setPlayerHP(player->getPlayerHP() - 1);
+
 						player->setPlayerHurt(true);
 						player->setPlayerHurtFromRight(true);
 						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
