@@ -4,7 +4,7 @@
 struct MyFormat {
 	int meshCount;
 	int materialCount;
-	//int fps;
+	int poseCount;
 };
 
 struct Material {
@@ -19,28 +19,44 @@ struct Mesh {
 	int vertexCount;
 	char materialName[100];
 	float minX, maxX, minY, maxY, minZ, maxZ;
-	//int animationCount;
+	int jointCount;
+	int animationCount;
 };
 
-struct BlendShapesHeader
+struct Weight
 {
-	int nrOfBlendShapes;
-	int nrOfKeyFrames;
+	float value = 0.0f;
+	int jointIndex = -1;
 };
-struct BlendShape
-{
-	int keyFrame;
-	//vertexArray
+
+struct AnimationHeader {
+	int animationLength = 0;
 };
 
 struct Vertex {
 	float x, y, z;
 	float nx, ny, nz;
+
 	float r, g, b;
 	float u, v;
-	//float tu, tv;
+
+	Weight weights[4];
 };
 
+struct Joint {
+	char name[100];
+	int index;
+	int parentIndex;
+	float globalBindposeInverse[4][4];
+};
+
+struct animatedJoint {
+	char name[100];
+	int keyFrame;
+	int index;
+	int parentIndex;
+	float keyFrameTransform[4][4];
+};
 
 
 

@@ -8,19 +8,23 @@
 #include <vector>
 #include <iostream>
 
-struct BlendShapeFrame
+struct AnimationKeyFrame
 {
-	BlendShape blendShapeHeader;
-	Vertex* blendShapesVertices;
+	animatedJoint* animatedSkeleton;
+};
+
+struct Animation
+{
+	AnimationHeader animationInfo;
+	AnimationKeyFrame* keyFrames;
 };
 
 struct LoadedMesh
 {
 	Mesh meshHeader;
 	Vertex* vertices;
-	////For animations
-	//BlendShapesHeader blendShapesHeader;
-	//BlendShapeFrame* blendShapeTimeline;
+	Joint* skeleton;
+	Animation* animation;
 };
 
 class Importer {
@@ -43,6 +47,7 @@ public:
 	bool loadMaterial(const char* filename);
 
 	int getVertexCount() const;
+
 	int getVertexCount(const char* meshName) const;
 	int getVertexCount(int meshID) const;
 	char* getMaterialID(const char * meshName) const;
@@ -50,6 +55,7 @@ public:
 
 	void getMinBBox(float &minX, float &minY, float &minZ);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ);
+
 
 	void getMinBBox(float &minX, float &minY, float &minZ, int meshID);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ, int meshID);
@@ -60,6 +66,13 @@ public:
 	Vertex* getVertices() const;
 	Vertex* getVertices(const char* meshName) const;
 	Vertex* getVertices(int meshID) const;
+
+	Joint* getJoints() const;
+	animatedJoint* getAnimatedJointsAtKey(int keyFrame);
+	int getJointCount() const;
+	int getAnimationLength();
+	int getStartFrame();
+	int getEndFrame();
 
 	void destroyMesh();
 };

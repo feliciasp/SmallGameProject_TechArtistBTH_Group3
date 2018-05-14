@@ -82,6 +82,8 @@ class enemyClass
 		XMVECTOR getStartPos();
 		int getHurt();
 
+		//ANIMATIONS
+
 	private:
 		objectClass* obj;
 		bool isActive;

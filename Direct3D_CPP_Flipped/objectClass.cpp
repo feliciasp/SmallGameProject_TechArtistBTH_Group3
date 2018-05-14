@@ -143,9 +143,10 @@ bool objectClass::initializeBuffer(ID3D11Device * device, int count, int meshID)
 	vertexData.pSysMem = this->mesh.getVertices(meshID);
 	//create our buffers
 	memset(&vertexBufferDesc, 0, sizeof(vertexBufferDesc));
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	vertexBufferDesc.ByteWidth = sizeof(Vertex) * count;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	//create vtx buffer
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer[meshID]);
@@ -235,3 +236,21 @@ void objectClass::setMaterialName(std::string name)
 {
 	return this->matName;
 }
+
+ void objectClass::playAnimation(ID3D11DeviceContext * deviceCon)
+ {
+	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(3);
+	 
+
+	 int jointCount = mesh.getJointCount();
+	 int animationCount = mesh.getAnimationLength();
+
+	 if(animatedJoint[1].parentIndex == 0)
+		OutputDebugString(L"\nJoints: 6!\n");
+
+	 
+	 
+	 
+	/* D3D11_MAPPED_SUBRESOURCE resource;
+	 deviceCon->Map(vertexBuffer[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);*/
+ }

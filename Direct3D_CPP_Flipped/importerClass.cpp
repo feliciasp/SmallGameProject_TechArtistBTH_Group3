@@ -128,18 +128,27 @@ bool Importer::loadMesh(const char * filename)
 			infile.read((char*)&loadedMeshes[i].meshHeader, sizeof(Mesh));
 			this->loadedMeshes[i].vertices = new Vertex[loadedMeshes[i].meshHeader.vertexCount];
 			infile.read((char*)loadedMeshes[i].vertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
-
-			////For animations
-			//infile.read((char*)&loadedMeshes[i].blendShapesHeader, sizeof(BlendShapesHeader));
-
-			//for (int j = 0; j < loadedMeshes[i].blendShapesHeader.nrOfBlendShapes; j++)
-			//{
-			//	infile.read((char*)&loadedMeshes[i].blendShapeTimeline[j].blendShapeHeader, sizeof(BlendShape));
-			//	infile.read((char*)loadedMeshes[i].blendShapeTimeline[j].blendShapesVertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
-			//}
+			if (loadedMeshes[i].meshHeader.jointCount > 0)
+			{
+				this->loadedMeshes[i].skeleton = new Joint[loadedMeshes[i].meshHeader.jointCount];
+				infile.read((char*)loadedMeshes[i].skeleton, sizeof(Joint) * loadedMeshes[i].meshHeader.jointCount);
+			}
+			if (loadedMeshes[i].meshHeader.animationCount > 0)
+			{
+				this->loadedMeshes[i].animation = new Animation[loadedMeshes[i].meshHeader.animationCount];
+				for (int k = 0; k < loadedMeshes[i].meshHeader.animationCount; k++)
+				{
+					infile.read((char*)&loadedMeshes[i].animation[k].animationInfo, sizeof(AnimationHeader));
+					this->loadedMeshes[i].animation[k].keyFrames = new AnimationKeyFrame[loadedMeshes[i].animation[k].animationInfo.animationLength];
+					for (int j = 0; j < loadedMeshes[i].animation[k].animationInfo.animationLength; j++)
+					{
+						this->loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton = new animatedJoint[loadedMeshes[i].meshHeader.jointCount];
+						infile.read((char*)loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton, sizeof(animatedJoint) * loadedMeshes[i].meshHeader.jointCount);
+					}
+				}
+			}
 
 		}
-
 		return true;
 	}
 
@@ -147,6 +156,8 @@ bool Importer::loadMesh(const char * filename)
 
 	return false;
 }
+
+
 
 bool Importer::loadMaterial(const char * filename)
 {
@@ -159,7 +170,9 @@ int Importer::getVertexCount() const
 {
 	if (this->header.meshCount > 0)
 		return this->loadedMeshes->meshHeader.vertexCount;
+	return 0;
 }
+
 
 int Importer::getVertexCount(const char* meshName) const
 {
@@ -246,6 +259,36 @@ Vertex * Importer::getVertices(const char* meshName) const
 Vertex * Importer::getVertices(int meshID) const
 {
 	return this->loadedMeshes[meshID].vertices;
+}
+
+Joint * Importer::getJoints() const
+{
+	return this->loadedMeshes->skeleton;
+}
+
+animatedJoint * Importer::getAnimatedJointsAtKey(int keyFrame)
+{
+	return this->loadedMeshes->animation[0].keyFrames[keyFrame].animatedSkeleton;
+}
+
+int Importer::getJointCount() const
+{
+	return this->loadedMeshes->meshHeader.jointCount;
+}
+
+int Importer::getAnimationLength()
+{
+	return this->loadedMeshes->animation[0].animationInfo.animationLength;
+}
+
+int Importer::getStartFrame()
+{
+	return 0;
+}
+
+int Importer::getEndFrame()
+{
+	return 0;
 }
 
 

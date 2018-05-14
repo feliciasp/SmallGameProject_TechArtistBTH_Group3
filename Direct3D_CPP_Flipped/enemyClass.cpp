@@ -318,7 +318,6 @@ void enemyClass::setMove(float x)
 
 void enemyClass::resetMove()
 {
-
 	moveVal = 0;
 }
 
@@ -344,7 +343,6 @@ void enemyClass::getFallingMat(XMMATRIX & other)
 {
 	other = this->translationInY;
 }
-
 
 //VAPEN
 

@@ -54,6 +54,8 @@ class objectClass
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
+		void playAnimation(ID3D11DeviceContext* deviceCon);
+
 	private:
 
 		Importer mesh;
