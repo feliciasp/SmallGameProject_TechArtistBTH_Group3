@@ -32,6 +32,10 @@ gameClass::gameClass(HINSTANCE hInstance)
 	shopMat = XMMatrixScaling(0.85f, 0.85f, 0.85f) * XMMatrixTranslation(9.5f, 0.55f, 0.0f);
 	shopOverlayMat = XMMatrixTranslation(0.0f, 0.0f, -0.01f) * shopMat;
 
+	sound = 0;
+	firstFrame = true;
+	soundAvailable = true;
+
 	countEnemy = 0;
 	SpeedCost = 1;
 
@@ -201,6 +205,19 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
 
+	//create sound obj
+	sound = new SoundClass;
+	if (!sound)
+	{
+		MessageBox(NULL, L"Error create sound obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = sound->initialize(hwnd);
+	if (!result)
+	{
+		soundAvailable = false;
+	}
 
 	//OBJ
 	//player test
@@ -348,7 +365,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "1backgroundScene.bin");
+	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -921,6 +938,15 @@ void gameClass::shutdown()
 		delete xpDisplay;
 		xpDisplay = 0;
 	}
+
+
+	if (sound)
+	{
+		sound->shutdown();
+		delete sound;
+		sound = 0;
+	}
+
 	if (movementInput)
 	{
 		movementInput->shutdown();
@@ -1253,6 +1279,9 @@ bool gameClass::frameWin(double dt)
 		gameStateLimbo = false;
 		gameStateWin = false;
 		gameStateMeny = true;
+
+		if (soundAvailable)
+			sound->playAmbient(0);
 		return false;
 	}
 
@@ -1352,10 +1381,15 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = false;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+
 		upgradeOverlay->setIsDestroy(true);
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
+		if (soundAvailable)
+			sound->playAmbient(1);
+
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -1365,10 +1399,15 @@ bool gameClass::frameLimbo(double dt)
 		gameStateMeny = true;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
+
 		upgradeOverlay->setIsDestroy(true);
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
+		if (soundAvailable)
+			sound->playAmbient(0);
+
 		return false;
 	}
 
@@ -1388,7 +1427,6 @@ bool gameClass::frameGame(double dt)
 	{
 		return false;
 	}
-
 
 	//constant MATRICES
 	updateConstantMatrices();
@@ -1588,6 +1626,10 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = false;
 		gameStateWin = false;
 		gameStateLimbo = true;
+
+		if (soundAvailable)
+			sound->playAmbient(2);
+		
 		return false;
 	}
 
@@ -1621,6 +1663,10 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = true;
 		gameStateWin = false;
 		gameStateLimbo = false;
+
+		if (soundAvailable)
+			sound->playAmbient(0);
+
 		return false;
 	}
 
@@ -1631,10 +1677,17 @@ bool gameClass::frameMeny(double dt)
 {
 	bool result;
 
+
 	result = inputDirectOther->frame(dt);
 	if (!result)
 	{
 		return false;
+	}
+
+	if (firstFrame && soundAvailable)
+	{
+	sound->playAmbient(0);
+	firstFrame = false;
 	}
 
 	checkReleasedKeys();
@@ -1656,9 +1709,11 @@ bool gameClass::frameMeny(double dt)
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
+	if (inputDirectOther->isEnterPressed() &&  counterOverlay == 0)
 	{
 		gameStateLevel = true;
+		if (soundAvailable)
+			sound->playAmbient(1);
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2050,8 +2105,8 @@ void gameClass::updateEnemy(double dt)
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 	///////////////
-	enemy->checkCollisions(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
-	///////////////
+	enemy->checkCollisionsY(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
+	enemy->checkCollisionsX(checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix));
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
 	enemy->getFallingMat(enemyFallingMat);
@@ -2271,11 +2326,16 @@ void gameClass::updateXpDisplayMat()
 {
 	if (tempXP == 0)
 	{
+
 		xpDisplay->getObj()->setMaterialName("xp0.png");
+
 	}
 	if (tempXP == 1)
 	{
+
 		xpDisplay->getObj()->setMaterialName("xp1.png");
+
+
 	}
 	if (tempXP == 2)
 	{
@@ -2433,12 +2493,16 @@ void gameClass::updateOverlay()
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() + 1);
 		arrowDownReleased = false;
+		if (soundAvailable)
+			sound->playSFX(0, 0);
 	}
 	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getCounterOverlay() > 0)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() - 1);
 		arrowUpReleased = false;
+		if (soundAvailable)
+			sound->playSFX(0, 0);
 	}
 	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
 }

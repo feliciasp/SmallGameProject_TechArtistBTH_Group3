@@ -113,6 +113,7 @@
     <ClCompile Include="playerClass.cpp" />
     <ClCompile Include="projectileClass.cpp" />
     <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="SoundClass.cpp" />
     <ClCompile Include="weaponClass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +135,7 @@
     <ClInclude Include="playerClass.h" />
     <ClInclude Include="projectileClass.h" />
     <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="SoundClass.h" />
     <ClInclude Include="stb_image2.h" />
     <ClInclude Include="weaponClass.h" />
   </ItemGroup>

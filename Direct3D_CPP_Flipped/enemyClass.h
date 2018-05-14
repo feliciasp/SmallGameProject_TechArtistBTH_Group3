@@ -24,6 +24,8 @@ class enemyClass
 		void setMove(float x);
 		void resetMove();
 
+		/*bool getCollidingX();*/
+
 		XMVECTOR getTriggerCheck();
 		void updateFalling(double dt);
 		void getFallingMat(XMMATRIX& other);
@@ -54,7 +56,8 @@ class enemyClass
 		void setRoationCheck(bool other);
 		bool getRoationCheck();
 
-		void checkCollisions(bool top, bool left, bool right, bool bot);
+		void checkCollisionsY(bool top, bool bot);
+		void checkCollisionsX(bool left, bool right);
 
 		void setRangeVector(XMVECTOR x);
 		XMVECTOR getRangeVector();
@@ -117,6 +120,8 @@ class enemyClass
 		bool isAttacking;
 		void checkIfAttacking();
 
+		bool collidingRight;
+		bool collidingLeft;
 		//VAPEN
 
 		XMVECTOR bboxMaxLeft;
