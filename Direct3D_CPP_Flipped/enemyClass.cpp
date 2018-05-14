@@ -22,6 +22,8 @@ enemyClass::enemyClass()
 
 	isHit = false;
 
+	/*collidingX = false;*/
+
 	//VAPEN
 	bboxMinRight = { 0.0f, 0.0f };
 	bboxMaxRight = { 0.0f,0.0f };
@@ -228,7 +230,7 @@ int enemyClass::getAttackCooldown()
 	return this->attackTimer;
 }
 
-void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
+void enemyClass::checkCollisionsY(bool top, bool bot)
 {
 	if (top)
 	{
@@ -240,18 +242,28 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		temptest = oldMoveValY;
 	}
 
-	/*if (left)
-	{
-		moveValX = oldMoveValX;
-	}
-	if (right)
-	{
-		moveValX = oldMoveValX;
-	}*/
-
 	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
 }
+void enemyClass::checkCollisionsX(bool left, bool right)
+{
+	collidingRight = false;
+	collidingLeft = false;
 
+	if (left && isFacingRight)
+	{
+		collidingLeft = true;
+	}
+	if (right && !isFacingRight)
+	{
+		collidingRight = true;
+	}
+		
+}
+
+//bool enemyClass::getCollidingX()
+//{
+//	return this->collidingX;
+//}
 
 
 void enemyClass::setEnemyHurt(bool check)
@@ -298,7 +310,10 @@ float enemyClass::getMove()
 
 void enemyClass::setMove(float x)
 {
-	moveVal -= x;
+	if(!collidingRight && x < 0)
+		moveVal -= x;
+	if (!collidingLeft && x > 0)
+		moveVal -= x;
 }
 
 void enemyClass::resetMove()

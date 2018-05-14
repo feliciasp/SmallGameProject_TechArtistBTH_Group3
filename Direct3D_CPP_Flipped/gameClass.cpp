@@ -1986,8 +1986,8 @@ void gameClass::updateEnemy(double dt)
 	}
 	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
 	///////////////
-	enemy->checkCollisions(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
-	///////////////
+	enemy->checkCollisionsY(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
+	enemy->checkCollisionsX(checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix));
 	enemy->getObj()->setWorldMatrix(enemyMatPos);
 	enemy->getTranslationMat(matMul);
 	enemy->getFallingMat(enemyFallingMat);
