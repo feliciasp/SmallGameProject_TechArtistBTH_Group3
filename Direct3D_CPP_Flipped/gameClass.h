@@ -79,6 +79,7 @@ private:
 	HWND hwnd;
 
 	SoundClass* sound;
+	bool soundAvailable;
 
 	directInput* inputDirectOther;
 	graphicsClass* graphics;

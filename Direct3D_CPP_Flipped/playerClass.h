@@ -111,6 +111,7 @@ private:
 	directInput* input;
 	weaponClass* weapon;
 	SoundClass* sound;
+	bool soundAvailable;
 
 	float moveVal;
 	XMMATRIX translation;

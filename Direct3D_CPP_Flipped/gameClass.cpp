@@ -32,6 +32,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	sound = 0;
 	firstFrame = true;
+	soundAvailable = true;
 
 	countEnemy = 0;
 	SpeedCost = 1;
@@ -204,9 +205,7 @@ bool gameClass::initialize(int ShowWnd)
 	result = sound->initialize(hwnd);
 	if (!result)
 	{
-		MessageBox(NULL, L"Error sound obj init",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
+		soundAvailable = false;
 	}
 
 	///OBJ
@@ -1164,7 +1163,9 @@ bool gameClass::frameWin(double dt)
 		gameStateLimbo = false;
 		gameStateWin = false;
 		gameStateMeny = true;
-		sound->playAmbient(0);
+
+		if (soundAvailable)
+			sound->playAmbient(0);
 		return false;
 	}
 
@@ -1268,7 +1269,8 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
 
-		sound->playAmbient(1);
+		if (soundAvailable)
+			sound->playAmbient(1);
 
 		return false;
 	}
@@ -1284,8 +1286,9 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
-		
-		sound->playAmbient(0);
+
+		if (soundAvailable)
+			sound->playAmbient(0);
 
 		return false;
 	}
@@ -1505,7 +1508,10 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = false;
 		gameStateWin = false;
 		gameStateLimbo = true;
-		sound->playAmbient(2);
+
+		if (soundAvailable)
+			sound->playAmbient(2);
+		
 		return false;
 	}
 
@@ -1538,7 +1544,10 @@ bool gameClass::frameGame(double dt)
 		gameStateMeny = true;
 		gameStateWin = false;
 		gameStateLimbo = false;
-		sound->playAmbient(0);
+
+		if (soundAvailable)
+			sound->playAmbient(0);
+
 		return false;
 	}
 
@@ -1556,7 +1565,7 @@ bool gameClass::frameMeny(double dt)
 		return false;
 	}
 
-	if (firstFrame)
+	if (firstFrame && soundAvailable)
 	{
 	sound->playAmbient(0);
 	firstFrame = false;
@@ -1584,7 +1593,8 @@ bool gameClass::frameMeny(double dt)
 	if (inputDirectOther->isEnterPressed() &&  counterOverlay == 0)
 	{
 		gameStateLevel = true;
-		sound->playAmbient(1);
+		if (soundAvailable)
+			sound->playAmbient(1);
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2364,14 +2374,16 @@ void gameClass::updateOverlay()
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() + 1);
 		arrowDownReleased = false;
-		sound->playSFX(0, 0);
+		if (soundAvailable)
+			sound->playSFX(0, 0);
 	}
 	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getCounterOverlay() > 0)
 	{
 		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
 		setCounterOverlay(getCounterOverlay() - 1);
 		arrowUpReleased = false;
-		sound->playSFX(0, 0);
+		if (soundAvailable)
+			sound->playSFX(0, 0);
 	}
 	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
 }

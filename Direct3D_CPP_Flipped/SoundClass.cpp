@@ -31,75 +31,79 @@ SoundClass::~SoundClass()
 bool SoundClass::initialize(HWND hwnd)
 {
 	bool result;
+	bool soundAvailable = true;
 
 	//Initalize DirectSound and primary sound buffer
 	result = initializeDirectSound(hwnd);
 	if (!result)
 	{
-		MessageBox(NULL, L"Error init DirectSound",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
+		//MessageBox(NULL, L"Error init DirectSound",
+		//	L"Error", MB_OK | MB_ICONERROR);
+		//return false;
+		soundAvailable = false;
+	}
+	if (soundAvailable)
+	{
+		//Initialize .wav files in secondary sound buffers
+		result = loadWaveFile("game_ambiance_loop.wav", &m_GameAmbientSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("meny_ambiance_loop.wav", &m_MenuAmbientSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_ambiance_loop.wav", &m_LimboAmbientSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer1);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer2);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("player_jump.wav", &m_JumpSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("fireball.wav", &m_FireballSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 	}
 
-	//Initialize .wav files in secondary sound buffers
-	result = loadWaveFile("game_ambiance_loop.wav", &m_GameAmbientSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("meny_ambiance_loop.wav", &m_MenuAmbientSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("limbo_ambiance_loop.wav", &m_LimboAmbientSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer1);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer2);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("player_jump.wav", &m_JumpSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("fireball.wav", &m_FireballSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
-	if (!result)
-	{
-		MessageBox(NULL, L"Error loading audio",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-
-	return true;
+	return soundAvailable;
 }
 
 void SoundClass::shutdown()
@@ -194,8 +198,8 @@ bool SoundClass::initializeDirectSound(HWND hwnd)
 	result = DirectSoundCreate8(NULL, &m_DirectSound, NULL);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error getting DirectSound pointer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error getting DirectSound pointer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -203,8 +207,8 @@ bool SoundClass::initializeDirectSound(HWND hwnd)
 	result = m_DirectSound->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting priority",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting priority",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -220,8 +224,8 @@ bool SoundClass::initializeDirectSound(HWND hwnd)
 	result = m_DirectSound->CreateSoundBuffer(&bufferDesc, &m_PrimaryBuffer, NULL);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error getting primary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error getting primary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -238,8 +242,8 @@ bool SoundClass::initializeDirectSound(HWND hwnd)
 	result = m_PrimaryBuffer->SetFormat(&waveFormat);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting wave format",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting wave format",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -279,8 +283,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	error = fopen_s(&filePtr, filename, "rb");
 	if (error != 0)
 	{
-		MessageBox(NULL, L"Error opening wave file",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error opening wave file",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -288,8 +292,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	count = fread(&waveFileHeader, sizeof(waveFileHeader), 1, filePtr);
 	if (count != 1)
 	{
-		MessageBox(NULL, L"Error reading wave file header",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error reading wave file header",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -301,8 +305,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 		(waveFileHeader.chunkID[2] != 'F') ||
 		(waveFileHeader.chunkID[3] != 'F'))
 	{
-		MessageBox(NULL, L"Error chunkID is not RIFF format",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error chunkID is not RIFF format",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -312,8 +316,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 		(waveFileHeader.format[2] != 'V') ||
 		(waveFileHeader.format[3] != 'E'))
 	{
-		MessageBox(NULL, L"Error format is not WAVE format",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error format is not WAVE format",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -323,24 +327,24 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 		(waveFileHeader.subChunkID[2] != 't') || 
 		(waveFileHeader.subChunkID[3] != ' '))
 	{
-		MessageBox(NULL, L"Error subChunkID is not fmt format",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error subChunkID is not fmt format",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
 	//Check if audioFormat is WAVE_FORMAT_PCM
 	if (waveFileHeader.audioFormat != WAVE_FORMAT_PCM)
 	{
-		MessageBox(NULL, L"Error audioFormat is not WAVE_FORMAT_PCM",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error audioFormat is not WAVE_FORMAT_PCM",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
 	//Check if file was recorded in stereo
 	if (waveFileHeader.numChannels != 2)
 	{
-		MessageBox(NULL, L"Error file not stereo",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error file not stereo",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -355,8 +359,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	//Check if file was recorded in 16 bit format
 	if (waveFileHeader.bitsPerSample != 16)
 	{
-		MessageBox(NULL, L"Error file not 16 bit format",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error file not 16 bit format",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 	
@@ -366,8 +370,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 		(waveFileHeader.dataChunkID[2] != 't') ||
 		(waveFileHeader.dataChunkID[3] != 'a'))
 	{
-		MessageBox(NULL, L"Error data chunk header not found",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error data chunk header not found",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -392,8 +396,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	result = m_DirectSound->CreateSoundBuffer(&bufferDesc, &tempBuffer, NULL);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error creating temp sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error creating temp sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -401,8 +405,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	result = tempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (void**)&*secondaryBuffer);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error testing temp sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error testing temp sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -416,8 +420,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	waveData = new unsigned char[waveFileHeader.dataSize];
 	if (!waveData)
 	{
-		MessageBox(NULL, L"Error creating temp wave data buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error creating temp wave data buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -425,16 +429,16 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	count = fread(waveData, 1, waveFileHeader.dataSize, filePtr);
 	if (count != waveFileHeader.dataSize)
 	{
-		MessageBox(NULL, L"Error reading to wave data buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error reading to wave data buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
 	error = fclose(filePtr);
 	if (error != 0)
 	{
-		MessageBox(NULL, L"Error closing wave file",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error closing wave file",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -442,8 +446,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	result = (*secondaryBuffer)->Lock(0, waveFileHeader.dataSize, (void**)&bufferPtr, (DWORD*)&bufferSize, NULL, 0, 0);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error locking secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error locking secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -454,8 +458,8 @@ bool SoundClass::loadWaveFile(char * filename, IDirectSoundBuffer8 ** secondaryB
 	result = (*secondaryBuffer)->Unlock((void*)bufferPtr, bufferSize, NULL, 0);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error unlocking secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error unlocking secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -483,8 +487,8 @@ bool SoundClass::playBackgroundSounds(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->SetCurrentPosition(0);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting start pos of secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting start pos of secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -492,8 +496,8 @@ bool SoundClass::playBackgroundSounds(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->SetVolume(DSBVOLUME_MAX);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting volume of secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting volume of secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -501,8 +505,8 @@ bool SoundClass::playBackgroundSounds(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error playing from secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error playing from secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -517,8 +521,8 @@ bool SoundClass::playSoundEffect(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->SetCurrentPosition(0);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting start pos of secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting start pos of secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -526,8 +530,8 @@ bool SoundClass::playSoundEffect(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->SetVolume(DSBVOLUME_MAX);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error setting volume of secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error setting volume of secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
@@ -535,8 +539,8 @@ bool SoundClass::playSoundEffect(IDirectSoundBuffer8* secondaryBuffer)
 	result = secondaryBuffer->Play(0, 0, 0);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error playing from secondary sound buffer",
-			L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(NULL, L"Error playing from secondary sound buffer",
+		//	L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 
