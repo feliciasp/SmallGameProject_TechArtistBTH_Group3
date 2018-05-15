@@ -5,6 +5,9 @@ objectClass::objectClass()
 	vertexBuffer = 0;
 	collision = 0;
 	type = 0;
+
+	frameCount = 4;
+	timer = 0.0f;
 }
 
 objectClass::objectClass(const objectClass & other)
@@ -237,20 +240,93 @@ void objectClass::setMaterialName(std::string name)
 	return this->matName;
 }
 
- void objectClass::playAnimation(ID3D11DeviceContext * deviceCon)
+ void objectClass::playAnimation(ID3D11DeviceContext * deviceCon, float dt)
  {
-	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(3);
+	 if (timer > 0.2f)
+	 {
+		 frameCount++;
+		 timer = 0.0f;
+
+		 if (frameCount > 4)
+		 {
+			 frameCount = 1;
+		 }
+	 }
 	 
+
+	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(frameCount);
+	 Joint* joints = mesh.getJoints();
+
+	 Vertex* tVertices = new Vertex[mesh.getVertexCount()];
+
+	 memcpy(tVertices, mesh.getVertices(0), sizeof(Vertex) * mesh.getVertexCount());
+
+	 /*XMVECTOR vPoint = XMVectorSet(tVertices[5].x, tVertices[5].y, tVertices[5].z, 0.0f);
+	 XMVECTOR normal = XMVectorSet(tVertices[5].nx, tVertices[5].ny, tVertices[5].nz, 0.0f);
+
+	 XMVECTOR newVertex = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	 XMVECTOR newNormal = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+	 XMMATRIX transformMatrix = XMMatrixIdentity();*/
+
+	 float test = 10.0f;
+
+	 for (int i = 0; i < mesh.getVertexCount(); i++)
+	 {
+		 XMVECTOR vPoint = XMVectorSet(tVertices[i].x, tVertices[i].y, tVertices[i].z, 1.0f);
+		 XMVECTOR normal = XMVectorSet(tVertices[i].nx, tVertices[i].ny, tVertices[i].nz, 1.0f);
+
+		 XMVECTOR newVertex = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		 XMVECTOR newNormal = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+		 XMMATRIX transformMatrix = XMMatrixIdentity();
+
+		 for (int j = 0; j < 4; j++)
+		 {
+			 
+			 int jointIndex = tVertices[i].weights[j].jointIndex;
+			 XMVECTOR vec1 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[0][0], animatedJoint[jointIndex].keyFrameTransform[0][1], animatedJoint[jointIndex].keyFrameTransform[0][2], animatedJoint[jointIndex].keyFrameTransform[0][3]);
+			 XMVECTOR vec2 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[1][0], animatedJoint[jointIndex].keyFrameTransform[1][1], animatedJoint[jointIndex].keyFrameTransform[1][2], animatedJoint[jointIndex].keyFrameTransform[1][3]);
+			 XMVECTOR vec3 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[2][0], animatedJoint[jointIndex].keyFrameTransform[2][1], animatedJoint[jointIndex].keyFrameTransform[2][2], animatedJoint[jointIndex].keyFrameTransform[2][3]);
+			 XMVECTOR vec4 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[3][0], animatedJoint[jointIndex].keyFrameTransform[3][1], animatedJoint[jointIndex].keyFrameTransform[3][2], animatedJoint[jointIndex].keyFrameTransform[3][3]);
+
+			 XMMATRIX tTransform = XMMATRIX(vec1, vec2, vec3, vec4);
+			 
+			 vec1 = XMVectorSet(joints[jointIndex].globalBindposeInverse[0][0], joints[jointIndex].globalBindposeInverse[0][1], joints[jointIndex].globalBindposeInverse[0][2], joints[jointIndex].globalBindposeInverse[0][3]);
+			 vec2 = XMVectorSet(joints[jointIndex].globalBindposeInverse[1][0], joints[jointIndex].globalBindposeInverse[1][1], joints[jointIndex].globalBindposeInverse[1][2], joints[jointIndex].globalBindposeInverse[1][3]);
+			 vec3 = XMVectorSet(joints[jointIndex].globalBindposeInverse[2][0], joints[jointIndex].globalBindposeInverse[2][1], joints[jointIndex].globalBindposeInverse[2][2], joints[jointIndex].globalBindposeInverse[2][3]);
+			 vec4 = XMVectorSet(joints[jointIndex].globalBindposeInverse[3][0], joints[jointIndex].globalBindposeInverse[3][1], joints[jointIndex].globalBindposeInverse[3][2], joints[jointIndex].globalBindposeInverse[3][3]);
+
+			 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
+
+			 transformMatrix += tVertices[i].weights[j].value * tTransform;
+		 }
+
+		 test += 5.0f;
+
+		 newVertex = XMVector4Transform(vPoint, transformMatrix);
+		 newNormal = XMVector4Transform(normal, transformMatrix);
+
+
+		 tVertices[i].x = XMVectorGetX(newVertex);
+		 tVertices[i].y = XMVectorGetY(newVertex);
+		 tVertices[i].z = XMVectorGetZ(newVertex);
+
+		 tVertices[i].nx = XMVectorGetX(newNormal);
+		 tVertices[i].ny = XMVectorGetY(newNormal);
+		 tVertices[i].nz = XMVectorGetZ(newNormal);
+	 }
+
 
 	 int jointCount = mesh.getJointCount();
 	 int animationCount = mesh.getAnimationLength();
 
-	 if(animatedJoint[1].parentIndex == 0)
-		OutputDebugString(L"\nJoints: 6!\n");
+		
 
-	 
-	 
-	 
-	/* D3D11_MAPPED_SUBRESOURCE resource;
-	 deviceCon->Map(vertexBuffer[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);*/
+	 D3D11_MAPPED_SUBRESOURCE resource;
+	 deviceCon->Map(*vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	 memcpy(resource.pData, tVertices, sizeof(Vertex) * mesh.getVertexCount());
+	 deviceCon->Unmap(*vertexBuffer, 0);
+
+	 timer += 1 * dt;
  }

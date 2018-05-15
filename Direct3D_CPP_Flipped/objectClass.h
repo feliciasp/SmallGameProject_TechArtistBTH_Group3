@@ -54,7 +54,7 @@ class objectClass
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
-		void playAnimation(ID3D11DeviceContext* deviceCon);
+		void playAnimation(ID3D11DeviceContext* deviceCon, float dt);
 
 	private:
 
@@ -70,6 +70,9 @@ class objectClass
 
 		XMMATRIX objWorld;
 		std::string matName;
+
+		int frameCount;
+		float timer;
 };
 
 #endif

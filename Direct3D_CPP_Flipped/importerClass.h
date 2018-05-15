@@ -73,6 +73,7 @@ public:
 	int getAnimationLength();
 	int getStartFrame();
 	int getEndFrame();
+	int getNrOfAnimations();
 
 	void destroyMesh();
 };

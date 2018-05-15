@@ -291,6 +291,11 @@ int Importer::getEndFrame()
 	return 0;
 }
 
+int Importer::getNrOfAnimations()
+{
+	return this->loadedMeshes->meshHeader.animationCount;
+}
+
 
 void Importer::destroyMesh()
 {

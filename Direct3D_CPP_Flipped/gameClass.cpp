@@ -1422,7 +1422,7 @@ bool gameClass::frameGame(double dt)
 
 	checkReleasedKeys();
 
-	enemy->getObj()->playAnimation(graphics->getD3D()->GetDeviceContect());
+	enemy->getObj()->playAnimation(graphics->getD3D()->GetDeviceContect(), dt);
 
 	result = inputDirectOther->frame(dt);
 	if (!result)
