@@ -18,7 +18,7 @@ class directInput
 		directInput(const directInput& other);
 		~directInput();
 
-		bool initialize(HINSTANCE hInstance, HWND hwnd);
+		bool initialize(HINSTANCE hInstance, HWND hwnd, int w, int h);
 		void shutdown();
 		bool frame(double dt);
 
@@ -39,11 +39,21 @@ class directInput
 		bool isEPressed();
 
 		bool readKeyboard(double dt);
+		bool readMouse();
+		void processInput();
 
 	private:
 		IDirectInput8 * directInputOther;
 		IDirectInputDevice8* keyboard;
+		IDirectInputDevice8* mouse;
 		unsigned char keyboardState[256];
+		DIMOUSESTATE mouseState;
+
+		int width;
+		int height;
+		int mouseX;
+		int mouseY;
+
 
 };
 

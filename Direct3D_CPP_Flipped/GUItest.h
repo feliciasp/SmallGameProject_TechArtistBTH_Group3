@@ -13,7 +13,7 @@ public:
 
 
 
-	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
+	bool initlialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd, int width, int height);
 	void shutdown();
 
 	bool getIsDestry();
