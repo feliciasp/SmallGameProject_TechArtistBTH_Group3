@@ -1,5 +1,7 @@
 #include "gameClass.h"
 
+//OutputDebugString(L"\nenemy lost hP!\n");
+
 //init pointer to null.
 gameClass::gameClass(HINSTANCE hInstance)
 {
@@ -1391,6 +1393,15 @@ bool gameClass::frameLimbo(double dt)
 		if (soundAvailable)
 			sound->playAmbient(1);
 
+		std::ofstream myfile;
+		myfile.open("readThis.txt");
+		myfile << std::to_string(player->getMaxHP()) + "\n";
+		myfile << std::to_string(player->getSpeedVal()) + "\n";
+		myfile << std::to_string(SpeedCost) + "\n";
+		myfile << std::to_string(healthCost) + "\n";
+		myfile.close();
+
+
 		return false;
 	}
 	if (inputDirectOther->isEscapePressed() == true)
@@ -1715,6 +1726,33 @@ bool gameClass::frameMeny(double dt)
 		gameStateLevel = true;
 		if (soundAvailable)
 			sound->playAmbient(1);
+		player->setPlayerHP(1);
+		player->setMaxHP(1);
+		player->setSpeedVal(10);
+	}
+
+	if (inputDirectOther->isEnterPressed() && counterOverlay == 1)
+	{
+		gameStateLevel = true;
+		std::string line;
+		int arr[4] = { 0,0 };
+		int i = 0;
+		std::ifstream myfile("readThis.txt");
+		if (myfile.is_open())
+		{
+			OutputDebugString(L"\nMyFile!\n");
+			while (std::getline(myfile, line))
+			{
+				arr[i] = std::stoi(line);
+				i++;
+			}
+			myfile.close();
+		}
+		player->setPlayerHP(arr[0]);
+		player->setMaxHP(player->getPlayerHP());
+		player->setSpeedVal(arr[1]);
+		SpeedCost = arr[2];
+		healthCost = arr[3];
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2156,25 +2194,24 @@ void gameClass::updatePlayerShadow()
 
 void gameClass::updateCamera()
 {
-	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) > -147)
+	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) > -147 && XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= 10)
 	{
 		camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->setTempX(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->setTempY(XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 	}
-	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) < -10)
-	{
-		camera->updatePosition(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-		camera->updateTarget(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-		camera->setTempX(XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-		camera->setTempY(XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-	}
-	if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -147 || XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) >= -10)
+	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -147)
 	{
 		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 	}
+	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= 10)
+	{
+		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+	}
+
 }
 
 void gameClass::staticBackground()

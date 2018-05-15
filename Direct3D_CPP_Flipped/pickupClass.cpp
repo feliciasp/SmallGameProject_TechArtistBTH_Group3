@@ -103,6 +103,9 @@ void pickupClass::getTranslationMatStart(XMMATRIX & other)
 void pickupClass::resetPickup()
 {
 	isDestroy = true;
+	srand(time(NULL));
+	ringType = rand() % 2;
+
 }
 
 

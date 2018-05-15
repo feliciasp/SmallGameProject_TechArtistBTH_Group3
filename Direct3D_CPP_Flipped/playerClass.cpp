@@ -16,8 +16,6 @@ playerClass::playerClass()
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
 	isInObjHolder = false;
-
-	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -85,8 +83,10 @@ playerClass::playerClass()
 
 	polygoner = 0;
 	fargments = 20;
-	maxHP = HP;
-	speedVal = 10.0f;
+
+	//HP = 1;
+	/*maxHP = HP;
+	speedVal = 10.0f;*/
 
 	showShadow = true;
 
