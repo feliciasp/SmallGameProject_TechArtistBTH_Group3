@@ -2049,19 +2049,27 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 
 void gameClass::initializeRings()
 {
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
+		srand(time(NULL));
 		pickupClass ringTemp;
 		ringTemp.clone(*ring);
 		nrOfVisiblePickups++;
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
 		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(-30.0f + (i * 10), 1.6f, 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
-		pickupHolder[nrOfVisiblePickups - 1].setRingType(i);
+		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
+		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
+		{
+			OutputDebugString(L"\n1\n");
+		}
+		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
+		{
+			OutputDebugString(L"\n0\n");
+		}
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 		ringTemp.shutdown();
-
 	}
 }
 
