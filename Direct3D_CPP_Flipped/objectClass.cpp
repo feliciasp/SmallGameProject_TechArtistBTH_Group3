@@ -261,16 +261,6 @@ void objectClass::setMaterialName(std::string name)
 
 	 memcpy(tVertices, mesh.getVertices(0), sizeof(Vertex) * mesh.getVertexCount());
 
-	 /*XMVECTOR vPoint = XMVectorSet(tVertices[5].x, tVertices[5].y, tVertices[5].z, 0.0f);
-	 XMVECTOR normal = XMVectorSet(tVertices[5].nx, tVertices[5].ny, tVertices[5].nz, 0.0f);
-
-	 XMVECTOR newVertex = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	 XMVECTOR newNormal = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-
-	 XMMATRIX transformMatrix = XMMatrixIdentity();*/
-
-	 float test = 10.0f;
-
 	 for (int i = 0; i < mesh.getVertexCount(); i++)
 	 {
 		 XMVECTOR vPoint = XMVectorSet(tVertices[i].x, tVertices[i].y, tVertices[i].z, 1.0f);
@@ -291,6 +281,7 @@ void objectClass::setMaterialName(std::string name)
 			 XMVECTOR vec4 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[3][0], animatedJoint[jointIndex].keyFrameTransform[3][1], animatedJoint[jointIndex].keyFrameTransform[3][2], animatedJoint[jointIndex].keyFrameTransform[3][3]);
 
 			 XMMATRIX tTransform = XMMATRIX(vec1, vec2, vec3, vec4);
+
 			 
 			 vec1 = XMVectorSet(joints[jointIndex].globalBindposeInverse[0][0], joints[jointIndex].globalBindposeInverse[0][1], joints[jointIndex].globalBindposeInverse[0][2], joints[jointIndex].globalBindposeInverse[0][3]);
 			 vec2 = XMVectorSet(joints[jointIndex].globalBindposeInverse[1][0], joints[jointIndex].globalBindposeInverse[1][1], joints[jointIndex].globalBindposeInverse[1][2], joints[jointIndex].globalBindposeInverse[1][3]);
@@ -302,7 +293,6 @@ void objectClass::setMaterialName(std::string name)
 			 transformMatrix += tVertices[i].weights[j].value * tTransform;
 		 }
 
-		 test += 5.0f;
 
 		 newVertex = XMVector4Transform(vPoint, transformMatrix);
 		 newNormal = XMVector4Transform(normal, transformMatrix);
