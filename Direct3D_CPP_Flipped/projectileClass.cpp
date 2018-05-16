@@ -10,6 +10,10 @@ projectileClass::projectileClass()
 	goesRight = true;
 	moveValX = 0.0f;
 	lifeTime = 0.0f;
+	bboxMinRight = { 0.0f, 0.0f };
+	bboxMaxRight = { 0.0f,0.0f };
+	bboxMinLeft = { 0.0f, 0.0f };
+	bboxMaxLeft = { 0.0f,0.0f };
 }
 
 projectileClass::projectileClass(const projectileClass & other)
@@ -87,20 +91,59 @@ void projectileClass::getTransX(XMMATRIX & other)
 	other = this->transX;
 }
 
+void projectileClass::setBoundingBoxMaxLeft(XMVECTOR other)
+{
+	this->bboxMaxLeft = other;
+}
+
+void projectileClass::setBoundingBoxMinLeft(XMVECTOR other)
+{
+	this->bboxMinLeft = other;
+}
+
+void projectileClass::setBoundingBoxMaxRight(XMVECTOR other)
+{
+	this->bboxMaxRight = other;
+}
+
+void projectileClass::setBoundingBoxMinRight(XMVECTOR other)
+{
+	this->bboxMinRight = other;
+}
+
+XMVECTOR projectileClass::getBoundingBoxMaxLeft()
+{
+	return this->bboxMaxLeft;
+}
+
+XMVECTOR projectileClass::getBoundingBoxMinLeft()
+{
+	return this->bboxMinLeft;
+}
+
+XMVECTOR projectileClass::getBoundingBoxMaxRight()
+{
+	return this->bboxMaxRight;
+}
+
+XMVECTOR projectileClass::getBoundingBoxMinRight()
+{
+	return this->bboxMinRight;
+}
+
 void projectileClass::moveProjectile(double dt)
 {
 	if (goesRight)
 	{
-		moveValX += 10.0f * dt;
+		moveValX += 15.0f * dt;
 	}
 	else 
 	{
-		moveValX += -10.0f * dt;
+		moveValX += -15.0f * dt;
 	}
 
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
 }
-
 
 void projectileClass::resetProjectile()
 {

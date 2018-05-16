@@ -72,7 +72,6 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
-
 	void setFireballCast(bool check);
 	bool getFireballCast();
 
@@ -176,6 +175,8 @@ private:
 	bool attackReleased;
 
 	bool fireballCast; //has player cast fireball?
+	bool fireballWasCast;
+	float fireballCooldown;
 
 	bool hasRing;
 	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.

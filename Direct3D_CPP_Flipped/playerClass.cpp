@@ -80,6 +80,8 @@ playerClass::playerClass()
 
 
 	fireballCast = false;
+	fireballWasCast = false;
+	fireballCooldown = 0.0f;
 
 	polygoner = 0;
 	fargments = 20;
@@ -550,14 +552,24 @@ void playerClass::handleMovement(double dt)
 	}
 
 
-	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
+	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast && fireballCooldown == 0.0f)
 	{
 		if (soundAvailable)
 			sound->playSFX(1, 2);
 
 		fireballCast = true;
+		fireballWasCast = true;
 	}
 
+	if (fireballWasCast)
+	{
+		fireballCooldown += dt;
+		if (fireballCooldown > 3.0f)
+		{
+			fireballCooldown = 0.0f;
+			fireballWasCast = false;
+		}
+	}
 
 	if (!this->input->isOPressed())
 	{
