@@ -212,6 +212,7 @@ private:
 		backgroundClass* limboBackPlane;
 		pickupClass* limboTextPlane;
 		platformClass* limboWalkingPlane;
+		pickupClass* limboTextPlanePressE;
 		XMMATRIX limboMat;
 		void updateLimboBackground();
 
@@ -270,6 +271,10 @@ private:
 
 	backgroundClass* playerShadowPlane;
 	XMMATRIX shadowMat;
+
+	////RANDOM
+	bool isTextInPickupHolder;
+	bool isTextDestroy;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

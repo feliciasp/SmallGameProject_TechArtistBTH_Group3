@@ -62,6 +62,7 @@ class shaderClass
 		std::vector<ID3D11Texture2D*> textureInfo;
 		std::vector<ID3D11ShaderResourceView*> textureRescourceView;
 		ID3D11SamplerState* textureSample;
+		ID3D11SamplerState* textureSampleSmoothed;
 
 		//no trsansformation shaders
 		ID3D11VertexShader* vertexShaderNoTransformation;

@@ -217,7 +217,7 @@ bool shaderClass::createSamplerDesc(ID3D11Device * device)
 	//Describe sampler desc
 	D3D11_SAMPLER_DESC texSampDesc;
 	ZeroMemory(&texSampDesc, sizeof(texSampDesc));
-	texSampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	texSampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	texSampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	texSampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	texSampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -226,6 +226,25 @@ bool shaderClass::createSamplerDesc(ID3D11Device * device)
 	texSampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	result = device->CreateSamplerState(&texSampDesc, &textureSample);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creating shader resource view",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	//Describe sampler desc
+	D3D11_SAMPLER_DESC texSampDesc2;
+	ZeroMemory(&texSampDesc2, sizeof(texSampDesc2));
+	texSampDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	texSampDesc2.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	texSampDesc2.MinLOD = 0;
+	texSampDesc2.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = device->CreateSamplerState(&texSampDesc2, &textureSampleSmoothed);
 	if (FAILED(result))
 	{
 		MessageBox(NULL, L"Error creating shader resource view",
@@ -620,7 +639,7 @@ void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -641,8 +660,7 @@ void shaderClass::renderShaderScreenSpace(ID3D11DeviceContext * devCon, int inde
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -666,7 +684,7 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 			devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -687,7 +705,7 @@ void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std:
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -706,6 +724,7 @@ void shaderClass::renderPickup(ID3D11DeviceContext * devCon, int indexCount, std
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	devCon->Draw(indexCount, 0);
 }
@@ -763,7 +782,6 @@ void shaderClass::shutdown()
 		textureViewNorm = 0;
 	}
 }
-
 
 void shaderClass::createNormalMapInfo(ID3D11Device * device)
 {

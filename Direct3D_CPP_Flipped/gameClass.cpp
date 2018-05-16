@@ -75,23 +75,23 @@ gameClass::gameClass(HINSTANCE hInstance)
 	ringDisplay = 0;
 	ringDisplayMat = XMMatrixScaling(0.04f, 0.07f, 0.0f) * XMMatrixTranslation(-0.85f, 0.57f, 0.0f);
 	xpDisplay = 0;
-	xpDisplayMat = XMMatrixScaling(0.16f, 0.04f, 0.0f) * XMMatrixTranslation(0.05f, 0.82f, 0.0f);
+	xpDisplayMat = XMMatrixScaling(0.21f, 0.04f, 0.0f) * XMMatrixTranslation(0.005f, 0.82f, 0.0f);
 	slot1xp = 0;
-	slot1xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.37f, 0.82f, 0.0f);
-	slot2xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.32f, 0.82f, 0.0f);
+	slot1xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.29f, 0.82f, 0.0f);
+	slot2xpMat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.25f, 0.82f, 0.0f);
 
-	slot1xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.80f, 0.748f, 0.0f);
-	slot2xpMatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.78f, 0.748f, 0.0f);
-	slot1MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.44f, 0.748f, 0.0f);
-	slot2MatLimbo = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.419f, 0.748f, 0.0f);
+	slot1xpMatLimbo = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.80f, 0.748f, 0.0f);
+	slot2xpMatLimbo = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.777f, 0.748f, 0.0f);
+	slot1MatLimbo = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.44f, 0.748f, 0.0f);
+	slot2MatLimbo = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.418f, 0.748f, 0.0f);
 
-	healthUpgradeCountMat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.60f, 0.509f, 0.0f);
-	speedUpgradeCountMat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.60f, 0.333f, 0.0f);
+	healthUpgradeCountMat = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.62f, 0.505f, 0.0f);
+	speedUpgradeCountMat = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.62f, 0.329f, 0.0f);
 
 	totalCostPendingSlot2 = 0;
 	totalCostPendingSlot1 = 0;
-	totalCostPendingSlot2Mat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.61f, -0.324f, 0.0f);
-	totalCostPendingSlot1Mat = XMMatrixScaling(0.006f, 0.015f, 0.0f) * XMMatrixTranslation(0.63f, -0.324f, 0.0f);
+	totalCostPendingSlot2Mat = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.636f, -0.41f, 0.0f);
+	totalCostPendingSlot1Mat = XMMatrixScaling(0.009f, 0.017f, 0.0f) * XMMatrixTranslation(0.66f, -0.41f, 0.0f);
 	
 	isUpgradeHPAactive = true;
 	nrHPtoBeUpgraded = 0;
@@ -108,6 +108,9 @@ gameClass::gameClass(HINSTANCE hInstance)
 	ringsInitialized = false;
 
 	totalPendingCost = 0;
+
+	isTextInPickupHolder = false;
+	isTextDestroy = true;
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -531,13 +534,13 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	xpDisplay->getObj()->setWorldMatrix(xpDisplayMat);
-	xpDisplay->getObj()->setMaterialName("xp0.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp0.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp1.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp2.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp3.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "xp4.png");
-	addObjectToObjHolder(xpDisplay->getObj());
+	xpDisplay->getObj()->setMaterialName("EXP0.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP0.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP1.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP3.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP4.png");
+
 
 	//GUI RING HOLDER
 	slot1xp = new GUItestClass;
@@ -577,6 +580,7 @@ bool gameClass::initialize(int ShowWnd)
 	slot2xp->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot2xp->getObj());
 
+	addObjectToObjHolder(xpDisplay->getObj());
 	//////////////////////////
 	//		MENY			//
 	//////////////////////////
@@ -624,7 +628,7 @@ bool gameClass::initialize(int ShowWnd)
 	//////	 LIMBO		//////
 	//////////////////////////
 
-	limboPickupHolder = new pickupClass[2];
+	limboPickupHolder = new pickupClass[3];
 
 	//LIMBO BACK PLANE
 	limboBackPlane = new backgroundClass;
@@ -728,16 +732,46 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboTextPlane->getObj()->setMaterialName("SmithText.png");
+	limboTextPlane->getObj()->setMaterialName("SmithTextSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
 
 	limboPickupHolder[1].clone(*limboTextPlane);
-	limboPickupHolder[1].setFrameCount(1);
+	limboPickupHolder[1].setFrameCount(4);
 	limboPickupHolder[1].setAnimationCount(1);
-	limboPickupHolder[1].setPickupType(4);
+	limboPickupHolder[1].setPickupType(5);
 
 	addObjectToObjHolderLimbo(limboPickupHolder[1].getObj());
 
+	//LIMBO Text PLANE
+	limboTextPlanePressE = new pickupClass;
+	if (!limboTextPlanePressE)
+	{
+		MessageBox(NULL, L"Error create limbo obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = limboTextPlanePressE->initlialize(graphics->getD3D()->GetDevice(), "LimboEnterPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	limboTextPlanePressE->getObj()->setMaterialName("SmithTextEnterSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlanePressE->getObj()->getMaterialName());
+
+	limboPickupHolder[2].clone(*limboTextPlanePressE);
+	limboPickupHolder[2].setFrameCount(4);
+	limboPickupHolder[2].setAnimationCount(1);
+	limboPickupHolder[2].setPickupType(5);
+
+	//pickupHolder[2].clone(*limboTextPlanePressE);
+	//pickupHolder[2].setFrameCount(4);
+	//pickupHolder[2].setAnimationCount(1);
+	//pickupHolder[2].setPickupType(5);
+	//pickupHolder[2].setIsDestroy(true);
+
+	addObjectToObjHolderLimbo(limboPickupHolder[2].getObj());
 	//LIMBO UPGRADE
 	upgradeGUI = new GUItestClass;
 	if (!upgradeGUI)
@@ -1095,10 +1129,15 @@ void gameClass::shutdown()
 		delete limboTextPlane;
 		limboTextPlane = 0;
 	}
-
+	if (limboTextPlanePressE)
+	{
+		limboTextPlanePressE->shutdown();
+		delete limboTextPlanePressE;
+		limboTextPlanePressE = 0;
+	}
 	if (limboPickupHolder)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			limboPickupHolder[i].shutdown();
 		}
@@ -1318,7 +1357,7 @@ bool gameClass::frameLimbo(double dt)
 
 	//enviroment
 	updateLimboBackground();
-
+	
 	//GUI
 	updateSlotXp(slot1xpMatLimbo, slot2xpMatLimbo);
 	updateGUIPolygon(slot1MatLimbo, slot2MatLimbo);
@@ -1331,7 +1370,7 @@ bool gameClass::frameLimbo(double dt)
 	//player
 	updatePlayer(limboWalkingPlane, dt);
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		limboPickupHolder[i].updateAnimation(dt);
 	}
@@ -1407,6 +1446,9 @@ bool gameClass::frameLimbo(double dt)
 		myfile << std::to_string(player->getSpeedVal()) + "\n";
 		myfile << std::to_string(SpeedCost) + "\n";
 		myfile << std::to_string(healthCost) + "\n";
+		myfile << std::to_string(player->getNrPixelFramgent()) + "\n";
+		myfile << std::to_string(player->getNrPolygons()) + "\n";
+		myfile << std::to_string(tempXP) + "\n";
 		myfile.close();
 
 
@@ -1737,13 +1779,16 @@ bool gameClass::frameMeny(double dt)
 		player->setPlayerHP(1);
 		player->setMaxHP(1);
 		player->setSpeedVal(10);
+		//player->setNrPixelFragments(20);
+		//player->setNrPolysgons(0);
+		//tempXP = 0;
 	}
 
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 1)
 	{
 		gameStateLevel = true;
 		std::string line;
-		int arr[4] = { 0,0 };
+		int arr[7] = { 0};
 		int i = 0;
 		std::ifstream myfile("readThis.txt");
 		if (myfile.is_open())
@@ -1761,6 +1806,9 @@ bool gameClass::frameMeny(double dt)
 		player->setSpeedVal(arr[1]);
 		SpeedCost = arr[2];
 		healthCost = arr[3];
+		player->setNrPixelFragments(arr[4]);
+		player->setNrPolysgons(arr[5]);
+		tempXP = arr[6];
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2366,28 +2414,28 @@ void gameClass::updateXpDisplayMat()
 	if (tempXP == 0)
 	{
 
-		xpDisplay->getObj()->setMaterialName("xp0.png");
+		xpDisplay->getObj()->setMaterialName("EXP0.png");
 
 	}
 	if (tempXP == 1)
 	{
 
-		xpDisplay->getObj()->setMaterialName("xp1.png");
+		xpDisplay->getObj()->setMaterialName("EXP1.png");
 
 
 	}
 	if (tempXP == 2)
 	{
-		xpDisplay->getObj()->setMaterialName("xp2.png");
+		xpDisplay->getObj()->setMaterialName("EXP2.png");
 	}
 	if (tempXP == 3)
 	{
-		xpDisplay->getObj()->setMaterialName("xp3.png");
+		xpDisplay->getObj()->setMaterialName("EXP3.png");
 	}
-	if (tempXP == 4)
+	/*if (tempXP == 4)
 	{
 		xpDisplay->getObj()->setMaterialName("xp4.png");
-	}
+	}*/
 	
 	xpDisplay->getObj()->setWorldMatrix(xpDisplayMat);
 }
@@ -2550,10 +2598,13 @@ void gameClass::updateLimboBackground()
 {
 	limboMat = XMMatrixIdentity();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		limboPickupHolder[i].getObj()->setWorldMatrix(limboMat);
 	}
+	limboPickupHolder[1].getObj()->setWorldMatrix(XMMatrixTranslation(1.1f, 0.27f, 0.0f));
+	limboPickupHolder[2].getObj()->setWorldMatrix(XMMatrixTranslation(1.35f, -1.65f, 0.0f));
+
 	limboBackPlane->getObj()->setWorldMatrix(limboMat);
 	limboFrontPlane->getObj()->setWorldMatrix(limboMat);
 	limboWalkingPlane->getObj()->setWorldMatrix(limboMat);
@@ -3649,12 +3700,13 @@ void gameClass::updateCollision(double dt)
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
+		isTextDestroy = true;
 		//derp
 		XMMATRIX yOffset;
 		pickupHolder[i].getTranslationMatStart(yOffset);
-		if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
+		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
 		{
-
+			isTextDestroy = false;
 			if (pickupHolder[i].getPickupType() == 1)
 			{
 				tempXP += 1;
@@ -3665,6 +3717,12 @@ void gameClass::updateCollision(double dt)
 				}
 				pickupHolder[i].setIsDestroy(true);
 			}
+
+			//pickupHolder[2].clone(*limboTextPlanePressE);
+			//pickupHolder[2].setFrameCount(4);
+			//pickupHolder[2].setAnimationCount(1);
+			//pickupHolder[2].setPickupType(5);
+			//pickupHolder[2].setIsDestroy(true);
 
 			if (pickupHolder[i].getPickupType() == 3 && inputDirectOther->isEnterPressed() && enterReleased) //type 3 means it's a RING
 			{
@@ -3703,8 +3761,49 @@ void gameClass::updateCollision(double dt)
 						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
 					}
 				}
+				
+				for (int j = 0; j < nrOfVisiblePickups; j++)
+				{
+					if (pickupHolder[j].getPickupType() == 5)
+					{
+						isTextInPickupHolder = false;
+						OutputDebugString(L"\nRemoveing text!\n");
+						pickupHolder[j].setIsDestroy(true);
+						isTextDestroy = true;
+					}
+				}
+
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
+			}
+		}
+
+		if (!isTextInPickupHolder && !isTextDestroy)
+		{
+			OutputDebugString(L"\nText created!\n");
+			pickupClass text;
+			text.clone(*limboTextPlanePressE);
+			nrOfVisiblePickups++;
+			addPickupToPickupHolder(text, nrOfVisiblePickups);
+			pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+			pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
+			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, -3.5f, 0.0f));
+			text.shutdown();
+			isTextInPickupHolder = true;
+		}
+		if (isTextInPickupHolder && isTextDestroy)
+		{
+			for (int j = 0; j < nrOfVisiblePickups; j++)
+			{
+				if (pickupHolder[j].getPickupType() == 5)
+				{
+					isTextInPickupHolder = false;
+					OutputDebugString(L"\nRemoveing text!\n");
+					pickupHolder[j].setIsDestroy(true);
+					isTextDestroy = true;
+				}
 			}
 		}
 	}

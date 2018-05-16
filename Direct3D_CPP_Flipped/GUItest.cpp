@@ -23,16 +23,12 @@ void GUItestClass::resetGUI()
 void GUItestClass::updateDestroy2(double dt)
 {
 	input->readKeyboard(dt);
-	if (this->input->isTPressed() && fakeTimer2 <= 0)
+	if (this->input->isEnterPressed() && fakeTimer2 <= 0)
 	{
 		fakeTimer2 = 200;
 		if (this->isDestroy == true)
 		{
 			this->isDestroy = false;
-		}
-		else if(this->isDestroy == false)
-		{
-			this->isDestroy = true;
 		}
 	}
 	else
@@ -137,7 +133,7 @@ bool GUItestClass::updateDestroyState(double dt)
 	bool check = false;
 	input->readKeyboard(dt);
 
-	if (this->input->isTPressed() && fakeTimer <= 0)
+	if (this->input->isEnterPressed() && fakeTimer <= 0)
 	{
 		fakeTimer = 100;
 		if (this->isDestroy == true)
