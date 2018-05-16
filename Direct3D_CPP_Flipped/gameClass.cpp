@@ -364,20 +364,28 @@ bool gameClass::initialize(int ShowWnd)
 	projectile = new projectileClass;
 	if (!projectile)
 	{
-		MessageBox(NULL, L"Error create pickup obj",
+		MessageBox(NULL, L"Error create projectile obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 	result = projectile->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
 	if (!result)
 	{
-		MessageBox(NULL, L"Error init pickup obj",
+		MessageBox(NULL, L"Error init projectile obj",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
 	projectile->getObj()->setMaterialName("texture1.jpg");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
 	projectile->getTranslationMatStart(playerMove);
+
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
+	projectile->setBoundingBoxMaxRight(tempBboxMax);
+	projectile->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax());
+
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
+	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin());
+	projectile->setBoundingBoxMinLeft(tempBboxMax);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -1506,7 +1514,7 @@ bool gameClass::frameGame(double dt)
 		}
 	}
 
-	if (!projectile->getIsDestroyed() && player->getFireballCast())
+	if (!projectile->getIsDestroyed() && projectile->getCheckIfObjHolder() && player->getFireballCast())
 	{
 		updateProjectile(dt);
 	}
@@ -3357,12 +3365,23 @@ void gameClass::updateProjectile(double dt)
 
 	//CD between fireballs
 	projectile->setLifeTime(dt);
-	if (projectile->getLifeTime() > 5.0)
+	if (projectile->getLifeTime() > 3.0f)
 	{
-		player->setFireballCast(false);
+		removeObjFromObjHolder(projectile->getObj());
 		projectile->resetProjectile();
+		player->setFireballCast(false);
 	}
-	//Check collision
+
+	//If collision with platforms -> remove projectile
+	if (checkCollisionPlatformBot(platform, projectile->getObj(), projectileMoveMat) ||
+		checkCollisionPlatformTop(platform, projectile->getObj(), projectileMoveMat) ||
+		checkCollisionPlatformRight(platform, projectile->getObj(), projectileMoveMat) ||
+		checkCollisionPlatformLeft(platform, projectile->getObj(), projectileMoveMat))
+	{
+		removeObjFromObjHolder(projectile->getObj());
+		projectile->resetProjectile();
+		player->setFireballCast(false);
+	}
 }
 
 void gameClass::updateCollision(double dt)
@@ -3435,6 +3454,76 @@ void gameClass::updateCollision(double dt)
 			}
 			player->setIfInObjHolder(false);
 		}
+	}
+
+	if (enemy->getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+	{
+		if (enemy->hurtState())
+		{
+			//enemy->resetMove();
+			//enemy->getTranslationMatStart(masterMovementEnemyMat);
+			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			OutputDebugString(L"\nenemy lost hP by Fireball!\n");
+		}
+		if (enemy->getEnemyHP() <= 0)
+		{
+			player->setNrPolysgons(player->getNrPolygons() + 1);
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
+			for (int i = 0; i < 2; i++)
+			{
+				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
+				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
+				pickupClass pickup2;
+				pickup2.clone(*expFragment);
+				nrOfVisiblePickups++;
+				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
+				pickup2.shutdown();
+				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+			}
+			player->setIfInObjHolder(false);
+		}
+		removeObjFromObjHolder(projectile->getObj());
+		projectile->resetProjectile();
+		player->setFireballCast(false);
+	}
+
+	else if (enemy->getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+	{
+		if (enemy->hurtState())
+		{
+			//enemy->resetMove();
+			//enemy->getTranslationMatStart(masterMovementEnemyMat);
+			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			OutputDebugString(L"\nenemy lost hP by Fireball!\n");
+		}
+		if (enemy->getEnemyHP() <= 0)
+		{
+			player->setNrPolysgons(player->getNrPolygons() + 1);
+			removeObjFromObjHolder(enemy->getObj());
+			enemy->setIsActive(false);
+			for (int i = 0; i < 2; i++)
+			{
+				XMMATRIX offset = XMMatrixTranslation(i * 2, 1.2f, 0.1f);
+				XMMATRIX scale = XMMatrixScaling(0.3f, 0.7f, 0.0f);
+				pickupClass pickup2;
+				pickup2.clone(*expFragment);
+				nrOfVisiblePickups++;
+				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
+				pickup2.shutdown();
+				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+			}
+			player->setIfInObjHolder(false);
+		}
+		removeObjFromObjHolder(projectile->getObj());
+		projectile->resetProjectile();
+		player->setFireballCast(false);
 	}
 
 	enemy->timeCountdown(dt);
