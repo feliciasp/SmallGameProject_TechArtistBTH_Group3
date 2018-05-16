@@ -247,7 +247,7 @@ void objectClass::setMaterialName(std::string name)
 		 frameCount++;
 		 timer = 0.0f;
 
-		 if (frameCount > 4)
+		 if (frameCount > 8)
 		 {
 			 frameCount = 1;
 		 }
@@ -290,7 +290,7 @@ void objectClass::setMaterialName(std::string name)
 
 			 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
 
-			 transformMatrix += tVertices[i].weights[j].value * tTransform;
+			 transformMatrix += globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
 		 }
 
 
