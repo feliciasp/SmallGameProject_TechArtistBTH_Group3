@@ -15,7 +15,7 @@ public:
 	playerClass(const playerClass& other);
 	~playerClass();
 
-	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
+	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd, int width, int height);
 	void shutdown();
 	void setTranslation(float x);
 

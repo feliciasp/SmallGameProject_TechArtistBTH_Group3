@@ -16,8 +16,6 @@ playerClass::playerClass()
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
 	isInObjHolder = false;
-
-	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -86,9 +84,11 @@ playerClass::playerClass()
 	fireballCooldown = 0.0f;
 
 	polygoner = 0;
-	fargments = 0;
-	maxHP = HP;
-	speedVal = 10.0f;
+	fargments = 20;
+
+	//HP = 1;
+	/*maxHP = HP;
+	speedVal = 10.0f;*/
 
 	showShadow = true;
 
@@ -103,7 +103,7 @@ playerClass::~playerClass()
 {
 }
 
-bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
+bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd,int width,int height)
 {
 	bool result;
 
@@ -131,7 +131,7 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = input->initialize(hInstance, hwnd);
+	result = input->initialize(hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",

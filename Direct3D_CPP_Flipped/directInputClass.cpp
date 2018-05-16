@@ -4,6 +4,7 @@ directInput::directInput()
 {
 	directInputOther = 0;
 	keyboard = 0;
+	mouse = 0;
 }
 
 directInput::directInput(const directInput & other)
@@ -15,9 +16,17 @@ directInput::~directInput()
 {
 }
 
-bool directInput::initialize(HINSTANCE hInstance, HWND hwnd)
+bool directInput::initialize(HINSTANCE hInstance, HWND hwnd, int widthS, int heightS)
 {
 	HRESULT result;
+
+	//use for positioning the mouse
+	width = widthS;
+	height = heightS;
+
+	// Initialize mouse location
+	mouseX = 0;
+	mouseY = 0;
 
 	//init main direct input interface
 	result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInputOther, NULL);
@@ -61,6 +70,39 @@ bool directInput::initialize(HINSTANCE hInstance, HWND hwnd)
 		return false;
 	}
 
+	////MOUSE
+	result = directInputOther->CreateDevice(GUID_SysMouse, &mouse, NULL);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error init mouse",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	// Set the data format
+	result = mouse->SetDataFormat(&c_dfDIMouse);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error set mouse data",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	// set coop
+	result = mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error setting coop",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	// get mouse
+	result = mouse->Acquire();
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error getting mouse",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
 	return true;
 }
 
@@ -77,6 +119,13 @@ void directInput::shutdown()
 		directInputOther->Release();
 		directInputOther = 0;
 	}
+	if (mouse)
+	{
+		mouse->Unacquire();
+		mouse->Release();
+		mouse = 0;
+	}
+
 }
 
 bool directInput::frame(double dt)
@@ -87,6 +136,15 @@ bool directInput::frame(double dt)
 	if (!result)
 	{
 		MessageBox(NULL, L"Error reading keyboard",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	//read current state of mouse
+	result = readMouse();
+	if (!result)
+	{
+		MessageBox(NULL, L"Error reading mouse",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
@@ -308,10 +366,69 @@ bool directInput::readKeyboard(double dt)
 	result = keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 	if (FAILED(result))
 	{
-		MessageBox(NULL, L"Error reading kayboard",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
+		// If the keyboard lost focus or was not acquired then try to get control back.
+		if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
+		{
+			keyboard->Acquire();
+		}
+		else
+		{
+			MessageBox(NULL, L"could not get keyboard back",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 	}
 
 	return true;
+}
+
+
+bool directInput::readMouse()
+{
+	HRESULT result;
+	// Read the mouse device.
+	result = mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&mouseState);
+	if (FAILED(result))
+	{
+		//if mouse focus was lost get it back
+		if ((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
+		{
+			mouse->Acquire();
+		}
+		else
+		{
+			MessageBox(NULL, L"could not get mouse back",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void directInput::processInput()
+{
+	// Update mouse location from frame
+	mouseX += mouseState.lX;
+	mouseY += mouseState.lY;
+
+	// Ensure the mouse location doesn't exceed the screen width or height.
+	if (mouseX < 0)
+	{
+		mouseX = 0; 
+	}
+	if (mouseY < 0) 
+	{ 
+		mouseY = 0; 
+	}
+
+	if (mouseX > width) 
+	{
+		mouseX = width; 
+	}
+	if (mouseY > height) 
+	{ 
+		mouseY = height; 
+	}
+
 }

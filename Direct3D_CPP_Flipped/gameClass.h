@@ -23,6 +23,9 @@
 #include <cstdlib>
 #include <string>
 
+#include <iostream>     // std::cout
+#include <fstream>      // std::ifstream
+
 using namespace DirectX;
 
 
@@ -161,6 +164,8 @@ private:
 	XMMATRIX heart1;
 	XMMATRIX heart2;
 	XMMATRIX heart3;
+	XMMATRIX heart4;
+	XMMATRIX heart5;
 
 	GUItestClass* slot1;
 	GUItestClass* slot2;
@@ -214,6 +219,18 @@ private:
 		void updateLimboBackground();
 
 		pickupClass* limboPickupHolder;
+
+		GUItestClass* healthUpgradeCount;
+		XMMATRIX healthUpgradeCountMat;
+		GUItestClass* speedUpgradeCount;
+		void updateCountersShop();
+		XMMATRIX speedUpgradeCountMat;
+
+		GUItestClass* totalCostPendingSlot2;
+		XMMATRIX totalCostPendingSlot2Mat;
+		GUItestClass* totalCostPendingSlot1;
+		void pendingCostUpdate();
+		XMMATRIX totalCostPendingSlot1Mat;
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;
