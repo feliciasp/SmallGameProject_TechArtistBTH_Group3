@@ -42,6 +42,13 @@ enemyClass::~enemyClass()
 {
 }
 
+void enemyClass::clone(const enemyClass & other)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
+	obj->setType(3);
+}
+
 bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 {
 	bool result;
@@ -97,8 +104,8 @@ void enemyClass::resetEnemy()
 {
 	moveVal = 0;
 	translation = XMMatrixIdentity();
-	isActive = true;
-	checkIfObjHolder = false;
+	isActive = false;
+	checkIfObjHolder = true;
 	HP = 3;
 	isHurt = false;
 	isAttack = false;

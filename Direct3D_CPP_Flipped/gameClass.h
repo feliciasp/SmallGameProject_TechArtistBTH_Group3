@@ -60,7 +60,11 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
+	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
+	void removeEnemyFromEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
+
 	void initializeRings();
+	void initializeEnemies();
 
 	void checkReleasedKeys();
 
@@ -72,7 +76,7 @@ private:
 	bool initializeWindow(int ShowWnd, int& width, int& height);
 	void shutdownWindow();
 
-	bool ringsInitialized;
+	bool enemiesInitialized;
 
 	LPCWSTR appName;
 	HINSTANCE hInstance;
@@ -98,6 +102,7 @@ private:
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
+	enemyClass* enemyHolder;
 
 	std::vector<objectClass*> objHolder;
 	std::vector<objectClass*> objHolderMeny;
@@ -143,6 +148,7 @@ private:
 	bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 	int nrOfVisiblePickups;
+	int nrOfVisibleEnemies;
 
 	bool gameStateLevel;
 	bool gameStateMeny;
