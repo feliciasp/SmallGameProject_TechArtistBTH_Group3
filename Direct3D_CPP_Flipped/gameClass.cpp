@@ -2197,8 +2197,7 @@ void gameClass::updateCamera()
 	float useThisX = XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)))/ 2);
 	//float useThisX = XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + differenceX;
 
-	float useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + 
-		(XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)));
+	float useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)));
 	//int useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + differenceX;
 
 	if (useThisX > -147 && useThisX <= 10)
