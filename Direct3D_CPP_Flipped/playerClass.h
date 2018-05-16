@@ -98,6 +98,8 @@ public:
 	float getSpeedVal();
 	void setSpeedVal(float x);
 
+	
+
 private:
 	bool isHurt;
 	bool hurtFromLeft;
@@ -191,6 +193,8 @@ private:
 
 	bool weaponBought[4];
 	int weaponCost[4];
+
+
 
 };
 
