@@ -222,6 +222,16 @@ ID3D11DeviceContext * d3dClass::GetDeviceContect()
 	return this->deviceContext;
 }
 
+ID3D11RenderTargetView * d3dClass::getRenderTargetBackBuffer()
+{
+	return this->renderTargetBackBuffer;
+}
+
+ID3D11DepthStencilView * d3dClass::getDepthStencilView()
+{
+	return this->depthStencilView;
+}
+
 void d3dClass::getProjMatrix(XMMATRIX & matrix)
 {
 	matrix = this->projMatrix;

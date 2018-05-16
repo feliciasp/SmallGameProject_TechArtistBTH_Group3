@@ -508,7 +508,7 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	ringDisplay->getObj()->setWorldMatrix(ringDisplayMat);
-	ringDisplay->getObj()->setMaterialName("sampleRing.png");
+	//ringDisplay->getObj()->setMaterialName("sampleRing.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing2.png");
 	ringDisplay->setIsDestroy(true);
@@ -2217,13 +2217,13 @@ void gameClass::updateCamera()
 	}
 	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -147)
 	{
-		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updatePosition(camera->getTempX(), useThisY);
+		camera->updateTarget(camera->getTempX(), useThisY);
 	}
 	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= 10)
 	{
-		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
-		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
+		camera->updatePosition(camera->getTempX(), useThisY);
+		camera->updateTarget(camera->getTempX(), useThisY);
 	}
 
 }
@@ -3683,15 +3683,17 @@ void gameClass::updateCollision(double dt)
 				}
 				this->player->setHasRing(true);
 				this->player->setRingType(pickupHolder[i].getRingType());
-				ringDisplay->setIsDestroy(false);
 				if (ringDisplay->getIsDestry() && !ringDisplay->getCheckIfObjHolder())
 				{
+					//OutputDebugString(L"\ENTRED IN THIS1!\n");
 					addObjectToObjHolder(ringDisplay->getObj());
 					ringDisplay->setIsDestroy(false);
 					ringDisplay->setCheckIfObjHolder(true);
 				}
+				ringDisplay->setIsDestroy(false);
 				if (!ringDisplay->getIsDestry() && ringDisplay->getCheckIfObjHolder())
 				{
+					//OutputDebugString(L"\ENTRED IN THIS2!\n");
 					if (pickupHolder[i].getRingType() == 0)
 					{
 						ringDisplay->getObj()->setMaterialName("sampleRing.png");
@@ -3704,10 +3706,8 @@ void gameClass::updateCollision(double dt)
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
 			}
-
 		}
 	}
-
 }
 
 bool gameClass::checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld)

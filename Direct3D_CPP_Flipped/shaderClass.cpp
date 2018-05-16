@@ -24,7 +24,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -35,6 +35,14 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		MessageBox(NULL, L"Error setting shader parameters",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
+	}
+	if (type == 2 || type == 4)
+	{
+		devCon->OMSetRenderTargets(1, &renderTargetBackBuffer, 0);
+	}
+	else
+	{
+		devCon->OMSetRenderTargets(1, &renderTargetBackBuffer, depthStencilView);
 	}
 	//render buffer with shader
 	if (type == 1)

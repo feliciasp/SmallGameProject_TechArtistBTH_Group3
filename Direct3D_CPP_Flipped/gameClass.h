@@ -23,9 +23,6 @@
 #include <cstdlib>
 #include <string>
 
-#include <iostream>     // std::cout
-#include <fstream>      // std::ifstream
-
 using namespace DirectX;
 
 
