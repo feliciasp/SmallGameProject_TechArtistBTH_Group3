@@ -64,6 +64,13 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
 		renderPickup(devCon, indexCount, name);
 	}
+
+	else if (type == 5)
+	{
+		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
+		renderPickup(devCon, indexCount, name);
+	}
+
 	else
 	{
 		renderShader(devCon, indexCount, name);

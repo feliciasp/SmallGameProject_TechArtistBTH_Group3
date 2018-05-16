@@ -10,10 +10,18 @@ projectileClass::projectileClass()
 	goesRight = true;
 	moveValX = 0.0f;
 	lifeTime = 0.0f;
-	bboxMinRight = { 0.0f, 0.0f };
-	bboxMaxRight = { 0.0f,0.0f };
-	bboxMinLeft = { 0.0f, 0.0f };
+
 	bboxMaxLeft = { 0.0f,0.0f };
+	bboxMinLeft = { 0.0f, 0.0f };
+	bboxMaxRight = { 0.0f,0.0f };
+	bboxMinRight = { 0.0f, 0.0f };
+
+	currentFrame = 1;
+	frameCount = 4;
+	currentAnimation = 1;
+	animationCount = 1;
+	animationSpeed = 0.1f;
+	currentTime = 0.0f;
 }
 
 projectileClass::projectileClass(const projectileClass & other)
@@ -42,6 +50,7 @@ bool projectileClass::initlialize(ID3D11Device * device, const char * filename)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	obj->setType(5);
 
 	return true;
 }
@@ -135,11 +144,11 @@ void projectileClass::moveProjectile(double dt)
 {
 	if (goesRight)
 	{
-		moveValX += 15.0f * dt;
+		moveValX += 5.0f * dt;
 	}
 	else 
 	{
-		moveValX += -15.0f * dt;
+		moveValX += -5.0f * dt;
 	}
 
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
@@ -184,4 +193,53 @@ void projectileClass::setLifeTime(double value)
 double projectileClass::getLifeTime()
 {
 	return this->lifeTime;
+}
+
+void projectileClass::updateAnimation(double dt)
+{
+	if (currentTime > animationSpeed)
+	{
+		currentTime = 0.0f;
+		currentFrame++;
+		if (currentFrame > frameCount)
+		{
+			currentFrame = 1;
+		}
+	}
+	currentTime += 1 * dt;
+}
+
+int projectileClass::getCurrentFrame()
+{
+	return this->currentFrame;
+}
+
+void projectileClass::setFrameCount(int other)
+{
+	this->frameCount = other;
+}
+
+int projectileClass::getFrameCount()
+{
+	return this->frameCount;
+}
+
+void projectileClass::setCurrentAnimation(int other)
+{
+	this->currentAnimation = other;
+}
+
+int projectileClass::getCurrentAnimation()
+{
+	return this->currentAnimation;
+}
+
+void projectileClass::setAnimationCount(int other)
+{
+	this->animationCount = other;
+}
+
+int projectileClass::getAnimationCount()
+{
+	return this->animationCount;
 }

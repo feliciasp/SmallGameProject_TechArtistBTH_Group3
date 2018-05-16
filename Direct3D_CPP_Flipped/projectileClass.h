@@ -47,6 +47,15 @@ public:
 	void setLifeTime(double value);
 	double getLifeTime();
 
+	void updateAnimation(double dt);
+	int getCurrentFrame();
+	void setFrameCount(int other);
+	int getFrameCount();
+	void setCurrentAnimation(int other);
+	int getCurrentAnimation();
+	void setAnimationCount(int other);
+	int getAnimationCount();
+
 private:
 	objectClass* obj;
 	bool isDestroyed;
@@ -60,9 +69,15 @@ private:
 
 	XMVECTOR bboxMaxLeft;
 	XMVECTOR bboxMinLeft;
-
 	XMVECTOR bboxMaxRight;
 	XMVECTOR bboxMinRight;
+
+	int currentFrame;
+	int frameCount;
+	int currentAnimation;
+	int animationCount;
+	float animationSpeed;
+	float currentTime;
 };
 
 #endif
