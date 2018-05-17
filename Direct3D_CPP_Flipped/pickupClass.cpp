@@ -150,7 +150,10 @@ void pickupClass::updateAnimation(double dt)
 		{
 			animationSpeed = 0.1f;
 		}
-		
+		if (pickupType == 6)
+		{
+			animationSpeed = 0.08;
+		}
 		if (currentTime > animationSpeed)
 		{
 			currentTime = 0;
