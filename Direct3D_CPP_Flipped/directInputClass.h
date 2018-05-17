@@ -8,7 +8,8 @@
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
 #include <dinput.h>
-
+#include <Xinput.h>
+#pragma comment(lib, "xinput.lib")
 using namespace DirectX;
 
 class directInput 
@@ -42,6 +43,11 @@ class directInput
 		bool readMouse();
 		void processInput();
 
+		//Gamepad
+		XINPUT_GAMEPAD* getState();
+		bool checkConnection();
+		bool readGamepad();
+
 	private:
 		IDirectInput8 * directInputOther;
 		IDirectInputDevice8* keyboard;
@@ -54,7 +60,9 @@ class directInput
 		int mouseX;
 		int mouseY;
 
-
+		//Gamepad
+		int controllerId;
+		XINPUT_STATE state;
 };
 
 #endif

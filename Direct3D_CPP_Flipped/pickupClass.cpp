@@ -146,6 +146,10 @@ void pickupClass::updateAnimation(double dt)
 
 	if (isAnimated)
 	{
+		if (pickupType == 7)
+		{
+			animationSpeed = 0.1f;
+		}
 		if (pickupType == 6)
 		{
 			animationSpeed = 0.08;
