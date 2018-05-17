@@ -72,6 +72,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	slot2 = 0;
 	slot1Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.85f, 0.82f, 0.0f); 
 	slot2Mat = XMMatrixScaling(0.015f, 0.03f, 0.0f) * XMMatrixTranslation(0.78f, 0.82f, 0.0f);
+	polygonDispMat = XMMatrixScaling(0.026f, 0.05f, 0.0f) * XMMatrixTranslation(0.70f, 0.82f, 0.0f);
 	ringDisplay = 0;
 	ringDisplayMat = XMMatrixScaling(0.04f, 0.07f, 0.0f) * XMMatrixTranslation(-0.85f, 0.57f, 0.0f);
 	xpDisplay = 0;
@@ -473,9 +474,11 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "7.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "8.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "9.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingRedSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingBlueSpriteSheet.png");
 	slot1->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot1->getObj());
-	
+
 	//GUI POLYGON COUNT
 	slot2 = new GUItestClass;
 	if (!slot2)
@@ -494,7 +497,27 @@ bool gameClass::initialize(int ShowWnd)
 	slot2->getObj()->setWorldMatrix(slot2Mat);
 	slot2->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot2->getObj());
-	
+
+	//GUI POLYGON COUNT
+	polygonDisp = new GUItestClass;
+	if (!polygonDisp)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = polygonDisp->initlialize(graphics->getD3D()->GetDevice(), "guiSkit3.bin", hInstance, hwnd, width, height);
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	polygonDisp->getObj()->setWorldMatrix(polygonDispMat);
+	polygonDisp->getObj()->setMaterialName("Polygon.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Polygon.png");
+	addObjectToObjHolder(polygonDisp->getObj());
+
 	//GUI RING HOLDER
 	ringDisplay = new GUItestClass;
 	if (!ringDisplay)
@@ -765,12 +788,6 @@ bool gameClass::initialize(int ShowWnd)
 	limboPickupHolder[2].setAnimationCount(1);
 	limboPickupHolder[2].setPickupType(5);
 
-	//pickupHolder[2].clone(*limboTextPlanePressE);
-	//pickupHolder[2].setFrameCount(4);
-	//pickupHolder[2].setAnimationCount(1);
-	//pickupHolder[2].setPickupType(5);
-	//pickupHolder[2].setIsDestroy(true);
-
 	addObjectToObjHolderLimbo(limboPickupHolder[2].getObj());
 	//LIMBO UPGRADE
 	upgradeGUI = new GUItestClass;
@@ -1039,6 +1056,12 @@ void gameClass::shutdown()
 		speedUpgradeCount->shutdown();
 		delete speedUpgradeCount;
 		speedUpgradeCount = 0;
+	}
+	if (polygonDisp)
+	{
+		polygonDisp->shutdown();
+		delete polygonDisp;
+		polygonDisp = 0;
 	}
 	if (healthUpgradeCount)
 	{
@@ -2110,7 +2133,7 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 		{
 			if (i != index)
 			{
-				OutputDebugString(L"\nTransferring\n");
+				OutputDebugString(L"\nRemoving pickup\n");
 				tempArray[j] = pickupHolder[i];
 				j++;
 			}
@@ -2254,26 +2277,21 @@ void gameClass::updateCamera()
 	//float useThisX = XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + differenceX;
 
 	float useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)));
+	
 	//int useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + differenceX;
 
-	if (useThisX > -147 && useThisX <= 10)
+	if (useThisX > -147 && useThisX < 10)
 	{
 		camera->updatePosition(useThisX, useThisY);
 		camera->updateTarget(useThisX, useThisY);
 		camera->setTempX(useThisX);
-		camera->setTempY(useThisY);
 	}
-	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= -147)
+	else 
 	{
 		camera->updatePosition(camera->getTempX(), useThisY);
 		camera->updateTarget(camera->getTempX(), useThisY);
 	}
-	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= 10)
-	{
-		camera->updatePosition(camera->getTempX(), useThisY);
-		camera->updateTarget(camera->getTempX(), useThisY);
-	}
-
+	
 }
 
 void gameClass::staticBackground()
@@ -2402,6 +2420,7 @@ void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
 	}
 	slot1->getObj()->setWorldMatrix(mat1);
 	slot2->getObj()->setWorldMatrix(mat2);
+	polygonDisp->getObj()->setWorldMatrix(polygonDispMat);
 }
 
 void gameClass::updateRingDisplay()
@@ -3700,13 +3719,34 @@ void gameClass::updateCollision(double dt)
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
-		isTextDestroy = true;
+		//
+		if (!isTextInPickupHolder && !isTextDestroy)
+		{
+			OutputDebugString(L"\nText created!\n");
+			pickupClass text;
+			text.clone(*limboTextPlanePressE);
+			nrOfVisiblePickups++;
+			addPickupToPickupHolder(text, nrOfVisiblePickups);
+			pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+			pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
+			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, -3.5f, 0.0f));
+			text.shutdown();
+			isTextDestroy = false;
+			isTextInPickupHolder = true;
+		}
+	
 		//derp
 		XMMATRIX yOffset;
 		pickupHolder[i].getTranslationMatStart(yOffset);
 		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
 		{
-			isTextDestroy = false;
+			if (pickupHolder[i].getPickupType() == 3)
+			{
+				isTextDestroy = false;
+			}
+
 			if (pickupHolder[i].getPickupType() == 1)
 			{
 				tempXP += 1;
@@ -3717,12 +3757,6 @@ void gameClass::updateCollision(double dt)
 				}
 				pickupHolder[i].setIsDestroy(true);
 			}
-
-			//pickupHolder[2].clone(*limboTextPlanePressE);
-			//pickupHolder[2].setFrameCount(4);
-			//pickupHolder[2].setAnimationCount(1);
-			//pickupHolder[2].setPickupType(5);
-			//pickupHolder[2].setIsDestroy(true);
 
 			if (pickupHolder[i].getPickupType() == 3 && inputDirectOther->isEnterPressed() && enterReleased) //type 3 means it's a RING
 			{
@@ -3767,31 +3801,30 @@ void gameClass::updateCollision(double dt)
 					if (pickupHolder[j].getPickupType() == 5)
 					{
 						isTextInPickupHolder = false;
-						OutputDebugString(L"\nRemoveing text!\n");
+						OutputDebugString(L"\nRemoveing text 2!\n");
 						pickupHolder[j].setIsDestroy(true);
 						isTextDestroy = true;
 					}
 				}
 
+				OutputDebugString(L"\nRing was picked up so cool effect is spawning!\n");
+				pickupClass effect;
+				effect.clone(*ring);
+				nrOfVisiblePickups++;
+				addPickupToPickupHolder(effect, nrOfVisiblePickups);
+				if (player->getRingType() == 0)
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingBlueSpriteSheet.png");
+				if (player->getRingType() == 1)
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingRedSpriteSheet.png");
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
+				pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+				pickupHolder[nrOfVisiblePickups - 1].setPickupType(6);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+				effect.shutdown();
+
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
 			}
-		}
-
-		if (!isTextInPickupHolder && !isTextDestroy)
-		{
-			OutputDebugString(L"\nText created!\n");
-			pickupClass text;
-			text.clone(*limboTextPlanePressE);
-			nrOfVisiblePickups++;
-			addPickupToPickupHolder(text, nrOfVisiblePickups);
-			pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
-			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
-			pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
-			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, -3.5f, 0.0f));
-			text.shutdown();
-			isTextInPickupHolder = true;
 		}
 		if (isTextInPickupHolder && isTextDestroy)
 		{
@@ -3804,6 +3837,17 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[j].setIsDestroy(true);
 					isTextDestroy = true;
 				}
+			}
+		}
+	}
+	for (int i = 0; i < nrOfVisiblePickups; i++)
+	{
+		if (pickupHolder[i].getPickupType() == 6)
+		{
+			pickupHolder[i].setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+			if (pickupHolder[i].getCurrentFrame() == 9)
+			{
+				pickupHolder[i].setIsDestroy(true);
 			}
 		}
 	}

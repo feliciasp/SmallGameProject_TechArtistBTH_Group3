@@ -172,6 +172,9 @@ private:
 	XMMATRIX slot2MatLimbo;
 	void updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2);
 
+	GUItestClass* polygonDisp;
+	XMMATRIX polygonDispMat;
+
 	GUItestClass* ringDisplay;
 	XMMATRIX ringDisplayMat;
 	void updateRingDisplay();
