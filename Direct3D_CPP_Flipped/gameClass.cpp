@@ -1716,8 +1716,8 @@ bool gameClass::frameMeny(double dt)
 
 	if (firstFrame && soundAvailable)
 	{
-	sound->playAmbient(0);
-	firstFrame = false;
+		sound->playAmbient(0);
+		firstFrame = false;
 	}
 
 	checkReleasedKeys();
@@ -2224,7 +2224,7 @@ void gameClass::updateCamera()
 		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 	}
-	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) <= 10)
+	else if (XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) >= 10)
 	{
 		camera->updatePosition(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
 		camera->updateTarget(camera->getTempX(), XMVectorGetY(XMVector3Transform(player->getObj()->getPosition(), playerMove)));
@@ -3365,12 +3365,12 @@ void gameClass::updateProjectile(double dt)
 	//Move projectile
 	projectile->moveProjectile(dt);
 	projectile->getTransX(projectileMoveMat);
-	projectile->getObj()->setWorldMatrix(projectileMoveMat);
+	projectile->getObj()->setWorldMatrix(XMMatrixScaling(0.6f, 0.5f, 0.0f) * projectileMoveMat);
 	projectile->updateAnimation(dt);
 
 	//Lifetime for fireballs
 	projectile->setLifeTime(dt);
-	if (projectile->getLifeTime() > 3.0f)
+	if (projectile->getLifeTime() > 1.5f)
 	{
 		removeObjFromObjHolder(projectile->getObj());
 		projectile->resetProjectile();

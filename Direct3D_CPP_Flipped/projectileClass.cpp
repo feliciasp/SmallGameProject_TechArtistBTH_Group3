@@ -144,11 +144,11 @@ void projectileClass::moveProjectile(double dt)
 {
 	if (goesRight)
 	{
-		moveValX += 5.0f * dt;
+		moveValX += 20.0f * dt;
 	}
 	else 
 	{
-		moveValX += -5.0f * dt;
+		moveValX += -20.0f * dt;
 	}
 
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
