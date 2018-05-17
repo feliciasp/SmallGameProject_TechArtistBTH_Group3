@@ -58,7 +58,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	nrOfVisiblePickups = 0;
 
-	projectileMoveMat = XMMatrixIdentity();
+	projectileMoveMat = XMMatrixScaling(0.0f, 0.0f, 0.0f) * XMMatrixTranslation(2.0f, 0.0f, 0.0f);
 
 
 	gameStateMeny = true;
@@ -111,6 +111,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	isTextInPickupHolder = false;
 	isTextDestroy = true;
+
+	portalMat = XMMatrixTranslation(10.0f, 0.0f, 0.0f);
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -922,6 +924,24 @@ bool gameClass::initialize(int ShowWnd)
 	totalCostPendingSlot2->getObj()->setMaterialName("0.png");
 	totalCostPendingSlot2->setIsDestroy(true);
 
+	//PORTAL
+	portalPlane = new pickupClass;
+	if (!portalPlane)
+	{
+		MessageBox(NULL, L"Error create portal obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = portalPlane->initlialize(graphics->getD3D()->GetDevice(), "Portal.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init portal obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	portalPlane->getObj()->setMaterialName("PortalSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), portalPlane->getObj()->getMaterialName());
+
 	////////////////////////
 	//WIN				////
 	////////////////////////
@@ -1200,6 +1220,12 @@ void gameClass::shutdown()
 		delete menyHighlight;
 		menyHighlight = 0;
 	}
+	if (portalPlane)
+	{
+		portalPlane->shutdown();
+		delete portalPlane;
+		portalPlane = 0;
+	}
 
 	shutdownWindow();
 
@@ -1429,6 +1455,7 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLevel = true;
 		gameStateLimbo = false;
 		gameStateMeny = false;
+		gameStateWin = false;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
 
@@ -1459,6 +1486,7 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLevel = false;
 		gameStateLimbo = false;
 		gameStateMeny = true;
+		gameStateWin = false;
 		player->resetPlayer();
 		upgradeGUI->setIsDestroy(true);
 
@@ -1479,6 +1507,7 @@ bool gameClass::frameLimbo(double dt)
 //where all the processing for our app is done here. right now it checks if user has precces anything. if its escape then quit. if no then we call our graphics obj to do its frame processing and render the graphics for the frame
 bool gameClass::frameGame(double dt)
 {
+
 	//DO STUFFS
 	bool result;
 
@@ -1739,7 +1768,6 @@ bool gameClass::frameMeny(double dt)
 {
 	bool result;
 
-
 	result = inputDirectOther->frame(dt);
 	if (!result)
 	{
@@ -1748,8 +1776,8 @@ bool gameClass::frameMeny(double dt)
 
 	if (firstFrame && soundAvailable)
 	{
-	sound->playAmbient(0);
-	firstFrame = false;
+		sound->playAmbient(0);
+		firstFrame = false;
 	}
 
 	checkReleasedKeys();
@@ -1764,21 +1792,45 @@ bool gameClass::frameMeny(double dt)
 	{
 		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), 0);
 		if (!result)
-
 		{
 			return false;
 		}
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEnterPressed() &&  counterOverlay == 0)
+	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
 	{
 		gameStateLevel = true;
+		gameStateMeny = false;
+		gameStateWin = false;
+		gameStateLimbo = false;
+
 		if (soundAvailable)
 			sound->playAmbient(1);
+		//player->resetPlayer();
 		player->setPlayerHP(1);
 		player->setMaxHP(1);
 		player->setSpeedVal(10);
+
+		//RESET BEGIN
+		player->resetPlayer();
+		camera->reset();
+		if (pickupHolder)
+		{
+			for (int i = 0; i < nrOfVisiblePickups; i++)
+			{
+				pickupHolder[i].resetPickup();
+			}
+		}
+		initializeRings();
+		enemy->resetEnemy();
+		projectile->resetProjectile();
+		for (int i = 0; i < 5; i++)
+		{
+			heartHolder[i].resetGUI();
+		}
+		//RESET END
+
 		//player->setNrPixelFragments(20);
 		//player->setNrPolysgons(0);
 		//tempXP = 0;
@@ -1787,6 +1839,9 @@ bool gameClass::frameMeny(double dt)
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 1)
 	{
 		gameStateLevel = true;
+		gameStateMeny = false;
+		gameStateWin = false;
+		gameStateLimbo = false;
 		std::string line;
 		int arr[7] = { 0};
 		int i = 0;
@@ -2123,6 +2178,15 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 
 void gameClass::initializeRings()
 {
+	nrOfVisiblePickups++;
+	addPickupToPickupHolder(*portalPlane, nrOfVisiblePickups);
+
+	pickupHolder[nrOfVisiblePickups - 1].setFrameCount(24);
+	pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+	pickupHolder[nrOfVisiblePickups - 1].setPickupType(7);
+	//pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+	pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(portalMat);
+	
 	for (int i = 0; i < 1; i++)
 	{
 		srand(time(NULL));
@@ -3729,12 +3793,6 @@ void gameClass::updateCollision(double dt)
 				pickupHolder[i].setIsDestroy(true);
 			}
 
-			//pickupHolder[2].clone(*limboTextPlanePressE);
-			//pickupHolder[2].setFrameCount(4);
-			//pickupHolder[2].setAnimationCount(1);
-			//pickupHolder[2].setPickupType(5);
-			//pickupHolder[2].setIsDestroy(true);
-
 			if (pickupHolder[i].getPickupType() == 3 && inputDirectOther->isEnterPressed() && enterReleased) //type 3 means it's a RING
 			{
 				if (player->getHasRing())
@@ -3786,6 +3844,20 @@ void gameClass::updateCollision(double dt)
 
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
+			}
+
+			if (pickupHolder[i].getPickupType() == 7)
+			{
+				//OutputDebugString(L"\nPORTAL!!!\n");
+				gameStateLevel = false;
+				gameStateLimbo = false;
+				gameStateWin = true;
+				gameStateMeny = false;
+				/*if (tempXP == 4)
+				{
+					
+				}*/
+				//pickupHolder[i].setIsDestroy(true);
 			}
 		}
 
