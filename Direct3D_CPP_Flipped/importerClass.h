@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-struct AnimationKeyFrame
+struct animationKeyFrame
 {
 	animatedJoint* animatedSkeleton;
 };
@@ -16,12 +16,11 @@ struct AnimationKeyFrame
 struct Animation
 {
 	AnimationHeader animationInfo;
-	AnimationKeyFrame* keyFrames;
+	animationKeyFrame* keyFrames;
 };
 
-struct LoadedMesh
-{
-	Mesh meshHeader;
+struct LoadedMesh {
+	Mesh mHeader;
 	Vertex* vertices;
 	Joint* skeleton;
 	Animation* animation;

@@ -254,12 +254,12 @@ void objectClass::setMaterialName(std::string name)
 	 }
 	 
 
-	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(frameCount);
+	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(3);
 	 Joint* joints = mesh.getJoints();
 
 	 Vertex* tVertices = new Vertex[mesh.getVertexCount()];
 
-	 memcpy(tVertices, mesh.getVertices(0), sizeof(Vertex) * mesh.getVertexCount());
+	 memcpy(tVertices, mesh.getVertices(), sizeof(Vertex) * mesh.getVertexCount());
 
 	 for (int i = 0; i < mesh.getVertexCount(); i++)
 	 {
@@ -269,31 +269,26 @@ void objectClass::setMaterialName(std::string name)
 		 XMVECTOR newVertex = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		 XMVECTOR newNormal = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
-		 
-
 		 for (int j = 0; j < 4; j++)
 		 {
 			 XMMATRIX transformMatrix = XMMatrixIdentity();
 			 int jointIndex = tVertices[i].weights[j].jointIndex;
 			 
-			 XMVECTOR vec1 = XMVectorSet(animatedJoint[1].keyFrameTransform[0][0], animatedJoint[1].keyFrameTransform[0][1], animatedJoint[1].keyFrameTransform[0][2], animatedJoint[1].keyFrameTransform[0][3]);
-			 XMVECTOR vec2 = XMVectorSet(animatedJoint[1].keyFrameTransform[1][0], animatedJoint[1].keyFrameTransform[1][1], animatedJoint[1].keyFrameTransform[1][2], animatedJoint[1].keyFrameTransform[1][3]);
-			 XMVECTOR vec3 = XMVectorSet(animatedJoint[1].keyFrameTransform[2][0], animatedJoint[1].keyFrameTransform[2][1], animatedJoint[1].keyFrameTransform[2][2], animatedJoint[1].keyFrameTransform[2][3]);
-			 XMVECTOR vec4 = XMVectorSet(animatedJoint[1].keyFrameTransform[3][0], animatedJoint[1].keyFrameTransform[3][1], animatedJoint[1].keyFrameTransform[3][2], animatedJoint[1].keyFrameTransform[3][3]);
+			 XMVECTOR vec1 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[0][0], animatedJoint[jointIndex].keyFrameTransform[0][1], animatedJoint[jointIndex].keyFrameTransform[0][2], animatedJoint[jointIndex].keyFrameTransform[0][3]);
+			 XMVECTOR vec2 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[1][0], animatedJoint[jointIndex].keyFrameTransform[1][1], animatedJoint[jointIndex].keyFrameTransform[1][2], animatedJoint[jointIndex].keyFrameTransform[1][3]);
+			 XMVECTOR vec3 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[2][0], animatedJoint[jointIndex].keyFrameTransform[2][1], animatedJoint[jointIndex].keyFrameTransform[2][2], animatedJoint[jointIndex].keyFrameTransform[2][3]);
+			 XMVECTOR vec4 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[3][0], animatedJoint[jointIndex].keyFrameTransform[3][1], animatedJoint[jointIndex].keyFrameTransform[3][2], animatedJoint[jointIndex].keyFrameTransform[3][3]);
 
 			 XMMATRIX tTransform = XMMATRIX(vec1, vec2, vec3, vec4);
 
-			 
-			 vec1 = XMVectorSet(joints[1].globalBindposeInverse[0][0], joints[1].globalBindposeInverse[0][1], joints[1].globalBindposeInverse[0][2], joints[1].globalBindposeInverse[0][3]);
-			 vec2 = XMVectorSet(joints[1].globalBindposeInverse[1][0], joints[1].globalBindposeInverse[1][1], joints[1].globalBindposeInverse[1][2], joints[1].globalBindposeInverse[1][3]);
-			 vec3 = XMVectorSet(joints[1].globalBindposeInverse[2][0], joints[1].globalBindposeInverse[2][1], joints[1].globalBindposeInverse[2][2], joints[1].globalBindposeInverse[2][3]);
-			 vec4 = XMVectorSet(joints[1].globalBindposeInverse[3][0], joints[1].globalBindposeInverse[3][1], joints[1].globalBindposeInverse[3][2], joints[1].globalBindposeInverse[3][3]);
+			 vec1 = XMVectorSet(joints[jointIndex].globalBindposeInverse[0][0], joints[jointIndex].globalBindposeInverse[0][1], joints[jointIndex].globalBindposeInverse[0][2], joints[jointIndex].globalBindposeInverse[0][3]);
+			 vec2 = XMVectorSet(joints[jointIndex].globalBindposeInverse[1][0], joints[jointIndex].globalBindposeInverse[1][1], joints[jointIndex].globalBindposeInverse[1][2], joints[jointIndex].globalBindposeInverse[1][3]);
+			 vec3 = XMVectorSet(joints[jointIndex].globalBindposeInverse[2][0], joints[jointIndex].globalBindposeInverse[2][1], joints[jointIndex].globalBindposeInverse[2][2], joints[jointIndex].globalBindposeInverse[2][3]);
+			 vec4 = XMVectorSet(joints[jointIndex].globalBindposeInverse[3][0], joints[jointIndex].globalBindposeInverse[3][1], joints[jointIndex].globalBindposeInverse[3][2], joints[jointIndex].globalBindposeInverse[3][3]);
 
 			 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
 
-			 transformMatrix = (globalBindPoseInverse * tTransform * tVertices[i].weights[j].value);
-
-			 
+			 transformMatrix = globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
 
 			 newVertex += XMVector4Transform(vPoint, transformMatrix);
 			 newNormal += XMVector4Transform(normal, transformMatrix);

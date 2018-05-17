@@ -34,14 +34,14 @@ void Importer::clone(const Importer & other)
 	for (int i = 0; i < other.header.meshCount; i++)
 	{
 		//loadedMeshes[i].meshHeader = other.loadedMeshes[i].meshHeader;
-		loadedMeshes[i].meshHeader.vertexCount = other.loadedMeshes[i].meshHeader.vertexCount;
-		loadedMeshes[i].meshHeader.minX = other.loadedMeshes[i].meshHeader.minX;
-		loadedMeshes[i].meshHeader.minY = other.loadedMeshes[i].meshHeader.minY;
-		loadedMeshes[i].meshHeader.minZ = other.loadedMeshes[i].meshHeader.minZ;
-		loadedMeshes[i].meshHeader.maxX = other.loadedMeshes[i].meshHeader.maxX;
-		loadedMeshes[i].meshHeader.maxY = other.loadedMeshes[i].meshHeader.maxY;
-		loadedMeshes[i].meshHeader.maxZ = other.loadedMeshes[i].meshHeader.maxZ;
-		loadedMeshes[i].vertices = new Vertex[other.loadedMeshes[i].meshHeader.vertexCount];
+		loadedMeshes[i].mHeader.vertexCount = other.loadedMeshes[i].mHeader.vertexCount;
+		loadedMeshes[i].mHeader.minX = other.loadedMeshes[i].mHeader.minX;
+		loadedMeshes[i].mHeader.minY = other.loadedMeshes[i].mHeader.minY;
+		loadedMeshes[i].mHeader.minZ = other.loadedMeshes[i].mHeader.minZ;
+		loadedMeshes[i].mHeader.maxX = other.loadedMeshes[i].mHeader.maxX;
+		loadedMeshes[i].mHeader.maxY = other.loadedMeshes[i].mHeader.maxY;
+		loadedMeshes[i].mHeader.maxZ = other.loadedMeshes[i].mHeader.maxZ;
+		loadedMeshes[i].vertices = new Vertex[other.loadedMeshes[i].mHeader.vertexCount];
 		memcpy(loadedMeshes[i].vertices, other.loadedMeshes[i].vertices, sizeof(other.loadedMeshes[i].vertices));
 	}
 }
@@ -125,25 +125,25 @@ bool Importer::loadMesh(const char * filename)
 
 		for (int i = 0; i < h.meshCount; i++)
 		{
-			infile.read((char*)&loadedMeshes[i].meshHeader, sizeof(Mesh));
-			this->loadedMeshes[i].vertices = new Vertex[loadedMeshes[i].meshHeader.vertexCount];
-			infile.read((char*)loadedMeshes[i].vertices, sizeof(Vertex) * loadedMeshes[i].meshHeader.vertexCount);
-			if (loadedMeshes[i].meshHeader.jointCount > 0)
+			infile.read((char*)&loadedMeshes[i].mHeader, sizeof(Mesh));
+			this->loadedMeshes[i].vertices = new Vertex[loadedMeshes[i].mHeader.vertexCount];
+			infile.read((char*)loadedMeshes[i].vertices, sizeof(Vertex) * loadedMeshes[i].mHeader.vertexCount);
+			if (loadedMeshes[i].mHeader.jointCount > 0)
 			{
-				this->loadedMeshes[i].skeleton = new Joint[loadedMeshes[i].meshHeader.jointCount];
-				infile.read((char*)loadedMeshes[i].skeleton, sizeof(Joint) * loadedMeshes[i].meshHeader.jointCount);
+				this->loadedMeshes[i].skeleton = new Joint[loadedMeshes[i].mHeader.jointCount];
+				infile.read((char*)loadedMeshes[i].skeleton, sizeof(Joint) * loadedMeshes[i].mHeader.jointCount);
 			}
-			if (loadedMeshes[i].meshHeader.animationCount > 0)
+			if (loadedMeshes[i].mHeader.animationCount > 0)
 			{
-				this->loadedMeshes[i].animation = new Animation[loadedMeshes[i].meshHeader.animationCount];
-				for (int k = 0; k < loadedMeshes[i].meshHeader.animationCount; k++)
+				this->loadedMeshes[i].animation = new Animation[loadedMeshes[i].mHeader.animationCount];
+				for (int k = 0; k < loadedMeshes[i].mHeader.animationCount; k++)
 				{
 					infile.read((char*)&loadedMeshes[i].animation[k].animationInfo, sizeof(AnimationHeader));
-					this->loadedMeshes[i].animation[k].keyFrames = new AnimationKeyFrame[loadedMeshes[i].animation[k].animationInfo.animationLength];
+					this->loadedMeshes[i].animation[k].keyFrames = new animationKeyFrame[loadedMeshes[i].animation[k].animationInfo.animationLength];
 					for (int j = 0; j < loadedMeshes[i].animation[k].animationInfo.animationLength; j++)
 					{
-						this->loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton = new animatedJoint[loadedMeshes[i].meshHeader.jointCount];
-						infile.read((char*)loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton, sizeof(animatedJoint) * loadedMeshes[i].meshHeader.jointCount);
+						this->loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton = new animatedJoint[loadedMeshes[i].mHeader.jointCount];
+						infile.read((char*)loadedMeshes[i].animation[k].keyFrames[j].animatedSkeleton, sizeof(animatedJoint) * loadedMeshes[i].mHeader.jointCount);
 					}
 				}
 			}
@@ -169,7 +169,7 @@ bool Importer::loadMaterial(const char * filename)
 int Importer::getVertexCount() const
 {
 	if (this->header.meshCount > 0)
-		return this->loadedMeshes->meshHeader.vertexCount;
+		return this->loadedMeshes->mHeader.vertexCount;
 	return 0;
 }
 
@@ -178,8 +178,8 @@ int Importer::getVertexCount(const char* meshName) const
 {
 	for (int i = 0; i < this->header.meshCount; i++)
 	{
-		if (!strcmp(this->loadedMeshes[i].meshHeader.meshName, meshName))
-			return this->loadedMeshes[i].meshHeader.vertexCount;
+		if (!strcmp(this->loadedMeshes[i].mHeader.meshName, meshName))
+			return this->loadedMeshes[i].mHeader.vertexCount;
 	}
 
 	return -1;
@@ -187,15 +187,15 @@ int Importer::getVertexCount(const char* meshName) const
 
 int Importer::getVertexCount(int meshID) const
 {
-	return this->loadedMeshes[meshID].meshHeader.vertexCount;
+	return this->loadedMeshes[meshID].mHeader.vertexCount;
 }
 
 char* Importer::getMaterialID(const char* meshName) const
 {
 	for (int i = 0; i < this->header.meshCount; i++)
 	{
-		if (!strcmp(this->loadedMeshes[i].meshHeader.meshName, meshName))
-			return this->loadedMeshes[i].meshHeader.materialName;
+		if (!strcmp(this->loadedMeshes[i].mHeader.meshName, meshName))
+			return this->loadedMeshes[i].mHeader.materialName;
 	}
 
 	return nullptr;
@@ -208,30 +208,30 @@ int Importer::getMeshCount() const
 
 void Importer::getMinBBox(float & minX, float & minY, float & minZ)
 {
-	minX = this->loadedMeshes->meshHeader.minX;
-	minY = this->loadedMeshes->meshHeader.minY;
-	minZ = this->loadedMeshes->meshHeader.minZ;
+	minX = this->loadedMeshes->mHeader.minX;
+	minY = this->loadedMeshes->mHeader.minY;
+	minZ = this->loadedMeshes->mHeader.minZ;
 }
 
 void Importer::getMaxBBox(float & maxX, float & maxY, float & maxZ)
 {
-	maxX = this->loadedMeshes->meshHeader.maxX;
-	maxY = this->loadedMeshes->meshHeader.maxY;
-	maxZ = this->loadedMeshes->meshHeader.maxZ;
+	maxX = this->loadedMeshes->mHeader.maxX;
+	maxY = this->loadedMeshes->mHeader.maxY;
+	maxZ = this->loadedMeshes->mHeader.maxZ;
 }
 
 void Importer::getMinBBox(float & minX, float & minY, float & minZ, int meshID)
 {
-	minX = this->loadedMeshes[meshID].meshHeader.minX;
-	minY = this->loadedMeshes[meshID].meshHeader.minY;
-	minZ = this->loadedMeshes[meshID].meshHeader.minZ;
+	minX = this->loadedMeshes[meshID].mHeader.minX;
+	minY = this->loadedMeshes[meshID].mHeader.minY;
+	minZ = this->loadedMeshes[meshID].mHeader.minZ;
 }
 
 void Importer::getMaxBBox(float & maxX, float & maxY, float & maxZ, int meshID)
 {
-	maxX = this->loadedMeshes[meshID].meshHeader.maxX;
-	maxY = this->loadedMeshes[meshID].meshHeader.maxY;
-	maxZ = this->loadedMeshes[meshID].meshHeader.maxZ;
+	maxX = this->loadedMeshes[meshID].mHeader.maxX;
+	maxY = this->loadedMeshes[meshID].mHeader.maxY;
+	maxZ = this->loadedMeshes[meshID].mHeader.maxZ;
 }
 
 LoadedMesh Importer::getMesh() const
@@ -249,7 +249,7 @@ Vertex * Importer::getVertices(const char* meshName) const
 {
 	for (int i = 0; i < this->header.meshCount; i++)
 	{
-		if (!strcmp(this->loadedMeshes[i].meshHeader.meshName, meshName))
+		if (!strcmp(this->loadedMeshes[i].mHeader.meshName, meshName))
 			return this->loadedMeshes[i].vertices;
 	}
 
@@ -273,7 +273,7 @@ animatedJoint * Importer::getAnimatedJointsAtKey(int keyFrame)
 
 int Importer::getJointCount() const
 {
-	return this->loadedMeshes->meshHeader.jointCount;
+	return this->loadedMeshes->mHeader.jointCount;
 }
 
 int Importer::getAnimationLength()
@@ -293,7 +293,7 @@ int Importer::getEndFrame()
 
 int Importer::getNrOfAnimations()
 {
-	return this->loadedMeshes->meshHeader.animationCount;
+	return this->loadedMeshes->mHeader.animationCount;
 }
 
 

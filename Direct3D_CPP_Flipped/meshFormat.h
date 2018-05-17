@@ -7,6 +7,12 @@ struct MyFormat {
 	int cameraCount;
 };
 
+struct Camera {
+	float x, y, z;
+	float upX, upY, upZ;
+	float lookAtX, lookAtY, lookAtZ;
+};
+
 struct Material {
 	char materialName[100];
 	char textureName[100];
@@ -25,7 +31,7 @@ struct Mesh {
 
 struct Weight
 {
-	float value = 0.0f;
+	float value = -1.0f;
 	int jointIndex = -1;
 };
 
@@ -57,7 +63,6 @@ struct animatedJoint {
 	int parentIndex;
 	float keyFrameTransform[4][4];
 };
-
 
 
 
