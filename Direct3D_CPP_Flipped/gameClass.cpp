@@ -111,6 +111,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	isTextInPickupHolder = false;
 	isTextDestroy = true;
+
+	portalMat = XMMatrixIdentity();
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -922,6 +924,24 @@ bool gameClass::initialize(int ShowWnd)
 	totalCostPendingSlot2->getObj()->setMaterialName("0.png");
 	totalCostPendingSlot2->setIsDestroy(true);
 
+	//PORTAL
+	portalPlane = new pickupClass;
+	if (!portalPlane)
+	{
+		MessageBox(NULL, L"Error create portal obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = portalPlane->initlialize(graphics->getD3D()->GetDevice(), "Portal.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init portal obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	portalPlane->getObj()->setMaterialName("Portal.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), portalPlane->getObj()->getMaterialName());
+
 	////////////////////////
 	//WIN				////
 	////////////////////////
@@ -1199,6 +1219,12 @@ void gameClass::shutdown()
 		menyHighlight->shutdown();
 		delete menyHighlight;
 		menyHighlight = 0;
+	}
+	if (portalPlane)
+	{
+		portalPlane->shutdown();
+		delete portalPlane;
+		portalPlane = 0;
 	}
 
 	shutdownWindow();
@@ -2123,6 +2149,14 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 
 void gameClass::initializeRings()
 {
+	/*nrOfVisiblePickups++;
+	addPickupToPickupHolder(*portalPlane, nrOfVisiblePickups);
+
+	pickupHolder[nrOfVisiblePickups - 1].setFrameCount(1);
+	pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+	pickupHolder[nrOfVisiblePickups - 1].setPickupType(7);
+	pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);*/
+	
 	for (int i = 0; i < 1; i++)
 	{
 		srand(time(NULL));
@@ -3776,6 +3810,18 @@ void gameClass::updateCollision(double dt)
 				pickupHolder[i].setIsDestroy(true);
 				enterReleased = false;
 			}
+
+			//if (pickupHolder[i].getPickupType() == 7)
+			//{
+			//	OutputDebugString(L"\nPORTAL!!!\n");
+			//	/*if (tempXP == 4)
+			//	{
+			//		player->setNrPixelFragments(this->player->getNrPixelFramgent() + 5);
+			//		tempXP = 0;
+			//	}*/
+			//	pickupHolder[i].setIsDestroy(true);
+			//}
+
 		}
 
 		if (!isTextInPickupHolder && !isTextDestroy)

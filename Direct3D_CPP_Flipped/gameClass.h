@@ -275,6 +275,10 @@ private:
 	////RANDOM
 	bool isTextInPickupHolder;
 	bool isTextDestroy;
+
+	//PORTAL
+	pickupClass *portalPlane;
+	XMMATRIX portalMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
