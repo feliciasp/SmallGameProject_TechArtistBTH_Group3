@@ -277,7 +277,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "animationTest.bin");
+	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "animationTest2.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",

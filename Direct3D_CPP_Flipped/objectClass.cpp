@@ -242,12 +242,12 @@ void objectClass::setMaterialName(std::string name)
 
  void objectClass::playAnimation(ID3D11DeviceContext * deviceCon, float dt)
  {
-	 if (timer > 0.2f)
+	 if (timer > 0.6f)
 	 {
 		 frameCount++;
 		 timer = 0.0f;
 
-		 if (frameCount > 8)
+		 if (frameCount >= 8)
 		 {
 			 frameCount = 1;
 		 }
@@ -264,7 +264,7 @@ void objectClass::setMaterialName(std::string name)
 	 for (int i = 0; i < mesh.getVertexCount(); i++)
 	 {
 		 XMVECTOR vPoint = XMVectorSet(tVertices[i].x, tVertices[i].y, tVertices[i].z, 1.0f);
-		 XMVECTOR normal = XMVectorSet(tVertices[i].nx, tVertices[i].ny, tVertices[i].nz, 1.0f);
+		 XMVECTOR normal = XMVectorSet(tVertices[i].nx, tVertices[i].ny, tVertices[i].nz, 0.0f);
 
 		 XMVECTOR newVertex = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		 XMVECTOR newNormal = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
@@ -290,13 +290,11 @@ void objectClass::setMaterialName(std::string name)
 
 			 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
 
-			 transformMatrix += globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
+			 transformMatrix = globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
+
+			 newVertex += XMVector4Transform(vPoint, transformMatrix);
+			 newNormal += XMVector4Transform(normal, transformMatrix);
 		 }
-
-
-		 newVertex = XMVector4Transform(vPoint, transformMatrix);
-		 newNormal = XMVector4Transform(normal, transformMatrix);
-
 
 		 tVertices[i].x = XMVectorGetX(newVertex);
 		 tVertices[i].y = XMVectorGetY(newVertex);
