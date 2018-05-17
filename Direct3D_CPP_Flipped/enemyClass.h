@@ -82,6 +82,12 @@ class enemyClass
 		XMVECTOR getStartPos();
 		int getHurt();
 
+		void getMasterMovementEnemy(XMMATRIX &other);
+		void setMasterMovementEnemy(XMMATRIX & other);
+
+		void getEnemyTranslationMatrix(XMMATRIX &other);
+		void setEnemyTranslationMatrix(XMMATRIX & other);
+
 	private:
 		objectClass* obj;
 		bool isActive;
@@ -89,9 +95,14 @@ class enemyClass
 
 		float temptest;
 		float moveVal;
+
+		
 		XMMATRIX translation;
 		XMMATRIX transStart;
+		//ENEMY FALLING MAT
 		XMMATRIX translationInY;
+		XMMATRIX masterMoveMat;
+		XMMATRIX tranlsationInXMatrix;
 
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
@@ -131,6 +142,9 @@ class enemyClass
 		XMVECTOR bboxMinRight;
 		int tonsOfDmg;
 		int hurt;
+
+		//NEW SHIT
+
 };
 
 

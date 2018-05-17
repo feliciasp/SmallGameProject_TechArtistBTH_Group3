@@ -51,8 +51,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 	movementInput = 0;
 	projectile = 0;
 	moveTest = 2.0f;
-	enemyFallingMat = XMMatrixIdentity();
-	enemyTranslationMatrix = XMMatrixIdentity();
+	tempEnemyIfAirThenFallMatrix = XMMatrixIdentity();
+	tempEnemyTranslationMatrix = XMMatrixIdentity();
 	heartHolder = 0;
 	pickupHolder = 0;
 
@@ -291,7 +291,9 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	enemy->getTranslationMatStart(enemyMatPos);
+	//COPY A MATRIX IN ENEMY THAT HOLD THE SPAWN POINT
+	enemy->getTranslationMatStart(tempEnemyStartingPositionMatrix);
+	enemy->setTranslation(0.0f);
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
 
@@ -2195,37 +2197,43 @@ void gameClass::updateConstantMatrices()
 void gameClass::updateEnemy(double dt)
 {
 	enemy->updateFalling(dt);
-	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
+	enemy->getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
+	//jag vet att detta är förvirrande men denna tranlationmat func hämtar ut ett värde i x som gör att vår sak rör på oss
+	enemy->getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
+	enemy->getFallingMat(tempEnemyIfAirThenFallMatrix);
+	enemy->getMasterMovementEnemy(tempMasterMovementEnemyMat);
+	//denna håller i alla värden så att vi inte flippar bounding boxen också
+	enemy->getEnemyTranslationMatrix(tempEnemyTranslationMatrix);
 	if (!enemy->getRoationCheck())
 	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
 	}
-	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
+	enemy->getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
 	///////////////
-	enemy->checkCollisionsY(checkCollisionPlatformTop(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), enemyTranslationMatrix));
-	enemy->checkCollisionsX(checkCollisionPlatformLeft(platform, enemy->getObj(), enemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), enemyTranslationMatrix));
-	enemy->getObj()->setWorldMatrix(enemyMatPos);
-	enemy->getTranslationMat(matMul);
-	enemy->getFallingMat(enemyFallingMat);
+	enemy->checkCollisionsY(checkCollisionPlatformTop(platform, enemy->getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformBot(platform, enemy->getObj(), tempEnemyTranslationMatrix));
+	enemy->checkCollisionsX(checkCollisionPlatformLeft(platform, enemy->getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformRight(platform, enemy->getObj(), tempEnemyTranslationMatrix));
+	enemy->getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
+	enemy->getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
+	enemy->getFallingMat(tempEnemyIfAirThenFallMatrix);
 	if (!enemy->getRoationCheck())
 	{
-		masterMovementEnemyMat = enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
 	}
 	else
 	{
-		masterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * enemyFallingMat * matMul * enemyMatPos;
-		enemyTranslationMatrix = enemyFallingMat * matMul * enemyMatPos;
+		tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
 	}
-	enemy->getObj()->setWorldMatrix(masterMovementEnemyMat);
+	enemy->setMasterMovementEnemy(tempMasterMovementEnemyMat);
+	enemy->setEnemyTranslationMatrix(tempEnemyTranslationMatrix);
+	enemy->getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
 }
 
 void gameClass::updatePlayer(platformClass* platform, double dt)
@@ -3458,17 +3466,17 @@ void gameClass::updateCollision(double dt)
 {
 	float enemyMove = enemy->getMove();
 
-	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
-	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
-	lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix));
-	lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemy->getStartPos(), enemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix));
+	enemy->getEnemyTranslationMatrix(tempEnemyTranslationMatrix);
 
-	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+	lengthBetween1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
+	lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix));
+	lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getStartPos(), tempEnemyTranslationMatrix));
+	lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemy->getStartPos(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix));
+
+	if (enemy->getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 	{
 		if (enemy->hurtState())
 		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
@@ -3487,19 +3495,17 @@ void gameClass::updateCollision(double dt)
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
 			player->setIfInObjHolder(false);
 		}
 	}
-	else if (enemy->getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+	else if (enemy->getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
 	{
 		if (enemy->hurtState())
 		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
@@ -3518,7 +3524,7 @@ void gameClass::updateCollision(double dt)
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
@@ -3526,12 +3532,10 @@ void gameClass::updateCollision(double dt)
 		}
 	}
 
-	if (enemy->getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+	if (enemy->getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 	{
 		if (enemy->hurtState())
 		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 		}
@@ -3550,7 +3554,7 @@ void gameClass::updateCollision(double dt)
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
@@ -3561,12 +3565,10 @@ void gameClass::updateCollision(double dt)
 		player->setFireballCast(false);
 	}
 
-	else if (enemy->getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+	else if (enemy->getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
 	{
 		if (enemy->hurtState())
 		{
-			//enemy->resetMove();
-			//enemy->getTranslationMatStart(masterMovementEnemyMat);
 			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
 			OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 		}
@@ -3585,7 +3587,7 @@ void gameClass::updateCollision(double dt)
 				addPickupToPickupHolder(pickup2, nrOfVisiblePickups);
 				pickup2.shutdown();
 				pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * enemyTranslationMatrix * offset);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
 			}
@@ -3603,7 +3605,7 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
@@ -3650,7 +3652,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setTranslation(enemy->getMove());
 		}
 	}
-	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) < XMVectorGetX(enemy->getStartPos()))
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) < XMVectorGetX(enemy->getStartPos()))
 	{
 		enemy->setMove(-1.5f * dt);
 		enemy->setTranslation(enemy->getMove());
@@ -3664,7 +3666,7 @@ void gameClass::updateCollision(double dt)
 		if (lengthBetween2 <= XMVectorGetX(enemy->getRangeVector()) - 3)
 		{
 			enemy->setMove(0.0f);
-			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponRight(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+			if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 			{
 				if (enemy->attackCooldown())
 				{
@@ -3709,7 +3711,7 @@ void gameClass::updateCollision(double dt)
 			enemy->setMove(-2.5f * dt);
 		}
 	}
-	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), enemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) > XMVectorGetX(enemy->getStartPos()))
+	else if (enemy->getIsActive() && XMVectorGetX(XMVector3Transform(enemy->getObj()->getPosition(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) > XMVectorGetX(enemy->getStartPos()))
 	{
 		enemy->setMove(1.5f * dt);
 		enemy->setTranslation(enemy->getMove());

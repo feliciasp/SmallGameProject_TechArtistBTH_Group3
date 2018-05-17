@@ -109,9 +109,9 @@ private:
 
 	XMMATRIX world, view, proj, ortoProj;
 	void updateConstantMatrices();
-	XMMATRIX enemyMatPos, matMul, enemyFallingMat;
-	XMMATRIX masterMovementEnemyMat;
-	XMMATRIX enemyTranslationMatrix;
+	XMMATRIX tempEnemyStartingPositionMatrix, tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame, tempEnemyIfAirThenFallMatrix;
+	XMMATRIX tempMasterMovementEnemyMat;
+	XMMATRIX tempEnemyTranslationMatrix;
 	void updateEnemy(double dt);
 	XMMATRIX playerMove;
 	void updatePlayer(platformClass* platform, double dt);
