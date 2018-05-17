@@ -286,6 +286,10 @@ void playerClass::handleMovement(double dt)
 	showShadow = true;
 
 	input->readKeyboard(dt);
+	if (input->readGamepad())
+	{
+		OutputDebugString(L"Controller connected");
+	}
 
 	if (dodgeCooldownActive)
 	{
