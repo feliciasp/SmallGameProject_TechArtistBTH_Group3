@@ -182,9 +182,10 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 
-	player->getObj()->setMaterialName("playerMovement.png");
+	player->getObj()->setMaterialName("PlayerSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
+	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "StrawhatSpriteSheet.png");
 
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
@@ -458,7 +459,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	limboSmithPlane->getObj()->setMaterialName("LimboSmith.png");
+	limboSmithPlane->getObj()->setMaterialName("SmithTest.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getMaterialName());
 
 	addObjectToObjHolderLimbo(limboSmithPlane->getObj());
