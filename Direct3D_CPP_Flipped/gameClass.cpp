@@ -3080,11 +3080,13 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		costHPBeginning = healthCost;
 		costSpeedBeginnning = SpeedCost;
 		activeShopState = 0;
+		player->setSpeedVal(0.0f);
 	}
 	if (upgradeGUI->getIsDestry() && upgradeGUI->getCheckIfObjHolder())
 	{
 		removeObjFromObjHolderLimbo(upgradeGUI->getObj());
 		upgradeGUI->setCheckIfObjHolder(false);
+		player->setSpeedVal(10.0f);
 	}
 	if (!upgradeOverlay->getIsDestry() && !upgradeOverlay->getCheckIfObjHolder())
 	{
@@ -3189,6 +3191,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (shopOverlayCount == 0)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
@@ -3202,6 +3205,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				}
 
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
@@ -3215,6 +3219,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (shopOverlayCount == 1)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowRightPressed() && arrowRightReleased)
 				{
 					arrowRightReleased = false;
@@ -3228,6 +3233,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				}
 
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 				{
 					arrowLeftReleased = false;
@@ -3244,6 +3250,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (upgradeOvlerlayCounterWeapons == 0)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(0))
 				{
 					enterReleased = false;
@@ -3257,6 +3264,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (upgradeOvlerlayCounterWeapons == 1)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(1))
 				{
 					enterReleased = false;
@@ -3270,6 +3278,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (upgradeOvlerlayCounterWeapons == 2)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(2))
 				{
 					enterReleased = false;
@@ -3283,6 +3292,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (upgradeOvlerlayCounterWeapons == 3)
 			{
 				inputDirectOther->readKeyboard(dt);
+				inputDirectOther->readGamepad();
 				if (inputDirectOther->isEnterPressed() && enterReleased && !player->getNrWeaponBought(3))
 				{
 					enterReleased = false;
@@ -3300,6 +3310,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0 || getShopOverlayCounter() == 2 && getShopOverlayCounterRow() == 0)
 		{
 			inputDirectOther->readKeyboard(dt);
+			inputDirectOther->readGamepad();
 			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
 				enterReleased = false;
