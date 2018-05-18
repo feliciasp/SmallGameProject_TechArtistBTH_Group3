@@ -247,14 +247,14 @@ void objectClass::setMaterialName(std::string name)
 		 frameCount++;
 		 timer = 0.0f;
 
-		 if (frameCount >= 8)
+		 if (frameCount >= mesh.getAnimationLength() - 1)
 		 {
 			 frameCount = 1;
 		 }
 	 }
 	 
 
-	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(3);
+	 animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(frameCount);
 	 Joint* joints = mesh.getJoints();
 
 	 Vertex* tVertices = new Vertex[mesh.getVertexCount()];
@@ -271,27 +271,31 @@ void objectClass::setMaterialName(std::string name)
 
 		 for (int j = 0; j < 4; j++)
 		 {
-			 XMMATRIX transformMatrix = XMMatrixIdentity();
-			 int jointIndex = tVertices[i].weights[j].jointIndex;
+			 if (tVertices[i].weights[j].jointIndex != -1)
+			 {
+				 XMMATRIX transformMatrix = XMMatrixIdentity();
+				 int jointIndex = tVertices[i].weights[j].jointIndex;
+
+				 XMVECTOR vec1 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[0][0], animatedJoint[jointIndex].keyFrameTransform[0][1], animatedJoint[jointIndex].keyFrameTransform[0][2], animatedJoint[jointIndex].keyFrameTransform[0][3]);
+				 XMVECTOR vec2 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[1][0], animatedJoint[jointIndex].keyFrameTransform[1][1], animatedJoint[jointIndex].keyFrameTransform[1][2], animatedJoint[jointIndex].keyFrameTransform[1][3]);
+				 XMVECTOR vec3 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[2][0], animatedJoint[jointIndex].keyFrameTransform[2][1], animatedJoint[jointIndex].keyFrameTransform[2][2], animatedJoint[jointIndex].keyFrameTransform[2][3]);
+				 XMVECTOR vec4 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[3][0], animatedJoint[jointIndex].keyFrameTransform[3][1], animatedJoint[jointIndex].keyFrameTransform[3][2], animatedJoint[jointIndex].keyFrameTransform[3][3]);
+
+				 XMMATRIX tTransform = XMMATRIX(vec1, vec2, vec3, vec4);
+
+				 vec1 = XMVectorSet(joints[jointIndex].globalBindposeInverse[0][0], joints[jointIndex].globalBindposeInverse[0][1], joints[jointIndex].globalBindposeInverse[0][2], joints[jointIndex].globalBindposeInverse[0][3]);
+				 vec2 = XMVectorSet(joints[jointIndex].globalBindposeInverse[1][0], joints[jointIndex].globalBindposeInverse[1][1], joints[jointIndex].globalBindposeInverse[1][2], joints[jointIndex].globalBindposeInverse[1][3]);
+				 vec3 = XMVectorSet(joints[jointIndex].globalBindposeInverse[2][0], joints[jointIndex].globalBindposeInverse[2][1], joints[jointIndex].globalBindposeInverse[2][2], joints[jointIndex].globalBindposeInverse[2][3]);
+				 vec4 = XMVectorSet(joints[jointIndex].globalBindposeInverse[3][0], joints[jointIndex].globalBindposeInverse[3][1], joints[jointIndex].globalBindposeInverse[3][2], joints[jointIndex].globalBindposeInverse[3][3]);
+
+				 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
+
+				 transformMatrix = globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
+
+				 newVertex += XMVector4Transform(vPoint, transformMatrix);
+				 newNormal += XMVector4Transform(normal, transformMatrix);
+			 }
 			 
-			 XMVECTOR vec1 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[0][0], animatedJoint[jointIndex].keyFrameTransform[0][1], animatedJoint[jointIndex].keyFrameTransform[0][2], animatedJoint[jointIndex].keyFrameTransform[0][3]);
-			 XMVECTOR vec2 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[1][0], animatedJoint[jointIndex].keyFrameTransform[1][1], animatedJoint[jointIndex].keyFrameTransform[1][2], animatedJoint[jointIndex].keyFrameTransform[1][3]);
-			 XMVECTOR vec3 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[2][0], animatedJoint[jointIndex].keyFrameTransform[2][1], animatedJoint[jointIndex].keyFrameTransform[2][2], animatedJoint[jointIndex].keyFrameTransform[2][3]);
-			 XMVECTOR vec4 = XMVectorSet(animatedJoint[jointIndex].keyFrameTransform[3][0], animatedJoint[jointIndex].keyFrameTransform[3][1], animatedJoint[jointIndex].keyFrameTransform[3][2], animatedJoint[jointIndex].keyFrameTransform[3][3]);
-
-			 XMMATRIX tTransform = XMMATRIX(vec1, vec2, vec3, vec4);
-
-			 vec1 = XMVectorSet(joints[jointIndex].globalBindposeInverse[0][0], joints[jointIndex].globalBindposeInverse[0][1], joints[jointIndex].globalBindposeInverse[0][2], joints[jointIndex].globalBindposeInverse[0][3]);
-			 vec2 = XMVectorSet(joints[jointIndex].globalBindposeInverse[1][0], joints[jointIndex].globalBindposeInverse[1][1], joints[jointIndex].globalBindposeInverse[1][2], joints[jointIndex].globalBindposeInverse[1][3]);
-			 vec3 = XMVectorSet(joints[jointIndex].globalBindposeInverse[2][0], joints[jointIndex].globalBindposeInverse[2][1], joints[jointIndex].globalBindposeInverse[2][2], joints[jointIndex].globalBindposeInverse[2][3]);
-			 vec4 = XMVectorSet(joints[jointIndex].globalBindposeInverse[3][0], joints[jointIndex].globalBindposeInverse[3][1], joints[jointIndex].globalBindposeInverse[3][2], joints[jointIndex].globalBindposeInverse[3][3]);
-
-			 XMMATRIX globalBindPoseInverse = XMMATRIX(vec1, vec2, vec3, vec4);
-
-			 transformMatrix = globalBindPoseInverse * tTransform * tVertices[i].weights[j].value;
-
-			 newVertex += XMVector4Transform(vPoint, transformMatrix);
-			 newNormal += XMVector4Transform(normal, transformMatrix);
 		 }
 
 		 tVertices[i].x = XMVectorGetX(newVertex);
@@ -306,8 +310,6 @@ void objectClass::setMaterialName(std::string name)
 
 	 int jointCount = mesh.getJointCount();
 	 int animationCount = mesh.getAnimationLength();
-
-		
 
 	 D3D11_MAPPED_SUBRESOURCE resource;
 	 deviceCon->Map(*vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
