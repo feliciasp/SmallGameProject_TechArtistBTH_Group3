@@ -300,7 +300,7 @@ void enemyClass::getTranslationMatStart(XMMATRIX & other)
 
 void enemyClass::setStartMat(float x)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, 3.0f, 0.0f);
 }
 
 float enemyClass::getMove()

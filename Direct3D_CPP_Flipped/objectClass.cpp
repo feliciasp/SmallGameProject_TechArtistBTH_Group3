@@ -242,7 +242,9 @@ void objectClass::setMaterialName(std::string name)
 
  void objectClass::playAnimation(ID3D11DeviceContext * deviceCon, float dt)
  {
-	 if (timer > 0.6f)
+	 float fps = 1.0f / 24.0f;
+	 
+	 if (timer > fps)
 	 {
 		 frameCount++;
 		 timer = 0.0f;
@@ -302,9 +304,9 @@ void objectClass::setMaterialName(std::string name)
 		 tVertices[i].y = XMVectorGetY(newVertex);
 		 tVertices[i].z = XMVectorGetZ(newVertex);
 
-		 /*tVertices[i].nx = XMVectorGetX(newNormal);
+		 tVertices[i].nx = XMVectorGetX(newNormal);
 		 tVertices[i].ny = XMVectorGetY(newNormal);
-		 tVertices[i].nz = XMVectorGetZ(newNormal);*/
+		 tVertices[i].nz = XMVectorGetZ(newNormal);
 	 }
 
 
@@ -317,4 +319,6 @@ void objectClass::setMaterialName(std::string name)
 	 deviceCon->Unmap(*vertexBuffer, 0);
 
 	 timer += 1 * dt;
+
+	 delete[] tVertices;
  }
