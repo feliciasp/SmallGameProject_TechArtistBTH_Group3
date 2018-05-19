@@ -31,6 +31,9 @@ class d3dClass
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContect();
 
+		ID3D11RenderTargetView* getRenderTargetBackBuffer();
+		ID3D11DepthStencilView* getDepthStencilView();
+
 		void getProjMatrix(XMMATRIX& matrix);
 		void getWorldMatrix(XMMATRIX& matrix);
 		//void getOrtoMatrix(XMMATRIX& matrix);		///?????????????????????

@@ -23,9 +23,6 @@
 #include <cstdlib>
 #include <string>
 
-#include <iostream>     // std::cout
-#include <fstream>      // std::ifstream
-
 using namespace DirectX;
 
 
@@ -112,9 +109,9 @@ private:
 
 	XMMATRIX world, view, proj, ortoProj;
 	void updateConstantMatrices();
-	XMMATRIX enemyMatPos, matMul, enemyFallingMat;
-	XMMATRIX masterMovementEnemyMat;
-	XMMATRIX enemyTranslationMatrix;
+	XMMATRIX tempEnemyStartingPositionMatrix, tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame, tempEnemyIfAirThenFallMatrix;
+	XMMATRIX tempMasterMovementEnemyMat;
+	XMMATRIX tempEnemyTranslationMatrix;
 	void updateEnemy(double dt);
 	XMMATRIX playerMove;
 	void updatePlayer(platformClass* platform, double dt);
@@ -175,6 +172,9 @@ private:
 	XMMATRIX slot2MatLimbo;
 	void updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2);
 
+	GUItestClass* polygonDisp;
+	XMMATRIX polygonDispMat;
+
 	GUItestClass* ringDisplay;
 	XMMATRIX ringDisplayMat;
 	void updateRingDisplay();
@@ -215,6 +215,7 @@ private:
 		backgroundClass* limboBackPlane;
 		pickupClass* limboTextPlane;
 		platformClass* limboWalkingPlane;
+		pickupClass* limboTextPlanePressE;
 		XMMATRIX limboMat;
 		void updateLimboBackground();
 
@@ -273,6 +274,10 @@ private:
 
 	backgroundClass* playerShadowPlane;
 	XMMATRIX shadowMat;
+
+	////RANDOM
+	bool isTextInPickupHolder;
+	bool isTextDestroy;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

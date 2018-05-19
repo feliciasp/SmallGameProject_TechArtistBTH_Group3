@@ -7,6 +7,8 @@ enemyClass::enemyClass()
 	moveVal = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
+	masterMoveMat = XMMatrixIdentity();
+	tranlsationInXMatrix = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
 	rangeCheck = { 4.0f, 0.0f, 0.0f };
 	isActive = true;
@@ -257,7 +259,6 @@ void enemyClass::checkCollisionsX(bool left, bool right)
 	{
 		collidingRight = true;
 	}
-		
 }
 
 //bool enemyClass::getCollidingX()
@@ -396,4 +397,24 @@ XMVECTOR enemyClass::getStartPos()
 int enemyClass::getHurt()
 {
 	return this->hurt;
+}
+
+void enemyClass::getMasterMovementEnemy(XMMATRIX & other)
+{
+	other = this->masterMoveMat;
+}
+
+void enemyClass::setMasterMovementEnemy(XMMATRIX & other)
+{
+	this->masterMoveMat = other;
+}
+
+void enemyClass::getEnemyTranslationMatrix(XMMATRIX & other)
+{
+	other = this->tranlsationInXMatrix;
+}
+
+void enemyClass::setEnemyTranslationMatrix(XMMATRIX & other)
+{
+	this->tranlsationInXMatrix = other;
 }
