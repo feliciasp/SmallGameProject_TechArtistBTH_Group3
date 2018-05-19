@@ -111,7 +111,9 @@ gameClass::gameClass(HINSTANCE hInstance)
 	totalPendingCost = 0;
 
 	isTextInPickupHolder = false;
+	isTextInPickupHolder2 = false;
 	isTextDestroy = true;
+	isTextDestroy2 = true;
 }
 
 //empty copycontructor. not used but if we define it it will be empty. if we do not the compiler will generate one and it might not be emtpy.
@@ -316,7 +318,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = background->initlialize(graphics->getD3D()->GetDevice(), "1backgroundScene.bin");
+	result = background->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init background obj",
@@ -325,6 +327,25 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	background->getObj()->setMaterialName("texture3.jpg");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
+
+	//background test
+	ladders = new backgroundClass;
+	if (!ladders)
+	{
+		MessageBox(NULL, L"Error create background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = ladders->initlialize(graphics->getD3D()->GetDevice(), "2Ladders.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	ladders->getObj()->setMaterialName("ladder_PNG14808.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ladders->getObj()->getMaterialName());
+	addObjectToObjHolder(ladders->getObj());
 
 	//pickup test
 	expFragment = new pickupClass;
@@ -436,7 +457,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = platform->initlialize(graphics->getD3D()->GetDevice(), "1platformScene.bin");
+	result = platform->initlialize(graphics->getD3D()->GetDevice(), "2dummyPlatform.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init pickup obj",
@@ -862,7 +883,6 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->getObj()->setType(3);
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
 
-
 	//
 	//HEalth count
 	healthUpgradeCount = new GUItestClass;
@@ -1003,6 +1023,12 @@ void gameClass::shutdown()
 		xpDisplay = 0;
 	}
 
+	if (ladders)
+	{
+		ladders->shutdown();
+		delete ladders;
+		ladders = 0;
+	}
 
 	if (sound)
 	{
@@ -1984,7 +2010,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
-
 void gameClass::getMoveMat(XMMATRIX& mat)
 {
 	mat = moveMatTest;
@@ -2248,14 +2273,13 @@ void gameClass::updateEnemy(double dt)
 
 void gameClass::updatePlayer(platformClass* platform, double dt)
 {
-	player->handleMovement(dt);
+	player->handleMovement(dt, isTextDestroy2);
 	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 	player->checkCollisions(checkCollisionPlatformTop(platform, player->getObj(), playerMove), checkCollisionPlatformLeft(platform, player->getObj(), playerMove), checkCollisionPlatformRight(platform, player->getObj(), playerMove), checkCollisionPlatformBot(platform, player->getObj(), playerMove));
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
-
 }
 
 void gameClass::updatePlayerShadow()
@@ -2317,6 +2341,8 @@ void gameClass::staticBackground()
 {
 	backgroundMat = XMMatrixIdentity();
 	background->getObj()->setWorldMatrix(backgroundMat);
+
+	ladders->getObj()->setWorldMatrix(backgroundMat);
 }
 
 void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
@@ -3731,6 +3757,51 @@ void gameClass::updateCollision(double dt)
 
 	enemy->updateAttackCooldownTimer(dt);
 
+
+	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(ladders->getObj()->getBoundingBoxMin(), XMMatrixIdentity()), XMVector3Transform(ladders->getObj()->getBoundingBoxMax(), XMMatrixIdentity()), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+	{
+		isTextDestroy2 = false;
+		if (!isTextInPickupHolder2 && !isTextDestroy2)
+		{
+			OutputDebugString(L"\nText created22!\n");
+			pickupClass text2;
+			text2.clone(*limboTextPlanePressE);
+			nrOfVisiblePickups++;
+			addPickupToPickupHolder(text2, nrOfVisiblePickups);
+			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+			pickupHolder[nrOfVisiblePickups - 1].setPickupType(8);
+			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixIdentity());
+			text2.shutdown();
+			isTextDestroy2 = false;
+			isTextInPickupHolder2 = true;
+		}
+	}
+	else
+	{
+		isTextDestroy2 = true;
+	}
+	if (isTextInPickupHolder2 && isTextDestroy2)
+	{
+		for (int j = 0; j < nrOfVisiblePickups; j++)
+		{
+			if (pickupHolder[j].getPickupType() == 8)
+			{
+				isTextInPickupHolder2 = false;
+				OutputDebugString(L"\nRemoveing text!\n");
+				pickupHolder[j].setIsDestroy(true);
+				isTextDestroy2 = true;
+			}
+		}
+	}
+	for (int i = 0; i < nrOfVisiblePickups; i++)
+	{
+		if (pickupHolder[i].getPickupType() == 8)
+		{
+			pickupHolder[i].setTranslationMatStart(XMMatrixScaling(0.7, 0.7, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) - 1.5f + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) - 3.9f, 0.0f));
+		}
+	}
+
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
 		//
@@ -3751,7 +3822,7 @@ void gameClass::updateCollision(double dt)
 			isTextInPickupHolder = true;
 		}
 	
-		//derp
+		//IF WE PICKUP A RING
 		XMMATRIX yOffset;
 		pickupHolder[i].getTranslationMatStart(yOffset);
 		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
@@ -3809,7 +3880,7 @@ void gameClass::updateCollision(double dt)
 						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
 					}
 				}
-				
+
 				for (int j = 0; j < nrOfVisiblePickups; j++)
 				{
 					if (pickupHolder[j].getPickupType() == 5)
@@ -3840,20 +3911,25 @@ void gameClass::updateCollision(double dt)
 				enterReleased = false;
 			}
 		}
-		if (isTextInPickupHolder && isTextDestroy)
+		else
 		{
-			for (int j = 0; j < nrOfVisiblePickups; j++)
+			isTextDestroy = true;
+		}
+	}
+	if (isTextInPickupHolder && isTextDestroy)
+	{
+		for (int j = 0; j < nrOfVisiblePickups; j++)
+		{
+			if (pickupHolder[j].getPickupType() == 5)
 			{
-				if (pickupHolder[j].getPickupType() == 5)
-				{
-					isTextInPickupHolder = false;
-					OutputDebugString(L"\nRemoveing text!\n");
-					pickupHolder[j].setIsDestroy(true);
-					isTextDestroy = true;
-				}
+				isTextInPickupHolder = false;
+				OutputDebugString(L"\nRemoveing text!\n");
+				pickupHolder[j].setIsDestroy(true);
+				isTextDestroy = true;
 			}
 		}
 	}
+
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
 		if (pickupHolder[i].getPickupType() == 6)

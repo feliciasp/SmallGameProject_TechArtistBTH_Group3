@@ -30,7 +30,7 @@ public:
 
 	XMVECTOR getTriggerCheck();
 
-	void handleMovement(double dt);
+	void handleMovement(double dt, bool check);
 	void checkCollisions(bool top, bool left, bool right, bool bot);
 	void getMoveMat(XMMATRIX& mat);
 

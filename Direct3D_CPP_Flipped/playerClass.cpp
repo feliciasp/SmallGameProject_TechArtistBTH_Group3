@@ -264,7 +264,7 @@ XMVECTOR playerClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void playerClass::handleMovement(double dt)
+void playerClass::handleMovement(double dt, bool checkClimb)
 {
 	
 	oldMoveValX = moveValX;
@@ -275,9 +275,18 @@ void playerClass::handleMovement(double dt)
 
 	idle = true;
 
+	bool isCliming = false;
 
 	justJumped = false;
-	moveValY += upSpeed * dt;
+	if (this->input->isEnterPressed() && !fallBack && !isDodging && !checkClimb)
+	{
+		moveValY += 6 * dt;
+		isCliming = true;
+	}
+	else
+	{
+		moveValY += upSpeed * dt;
+	}
 
 
 	currentAnimation = 1;
@@ -399,6 +408,7 @@ void playerClass::handleMovement(double dt)
 			}
 		}
 	}
+
 	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
 		moveValX += -speedVal * dt;
@@ -511,14 +521,12 @@ void playerClass::handleMovement(double dt)
 		timeBetweenFrames = 0.1f;
 	}
 	
-	if (upSpeed > -1.0f && !fallBack)
+	if (upSpeed > -1.0f && !fallBack && !isCliming)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
-
-	else if (upSpeed < -1.0f && !fallBack && !isDodging) //upSpeed less than -1.0f;
-
+	else if (upSpeed < -1.0f && !fallBack && !isDodging && !isCliming) //upSpeed less than -1.0f;
 	{
 		if (falling == false && attacking == false)
 		{

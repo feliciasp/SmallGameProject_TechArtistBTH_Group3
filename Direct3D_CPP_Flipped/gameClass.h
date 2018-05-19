@@ -89,6 +89,7 @@ private:
 	directInput* movementInput;
 	enemyClass* enemy;
 	backgroundClass* background;
+	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
 	playerClass* player;
@@ -278,6 +279,8 @@ private:
 	////RANDOM
 	bool isTextInPickupHolder;
 	bool isTextDestroy;
+	bool isTextInPickupHolder2;
+	bool isTextDestroy2;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
