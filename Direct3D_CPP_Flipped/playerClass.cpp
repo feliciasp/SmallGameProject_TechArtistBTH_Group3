@@ -564,7 +564,7 @@ void playerClass::handleMovement(double dt)
 	if (fireballWasCast)
 	{
 		fireballCooldown += dt;
-		if (fireballCooldown > 3.0f)
+		if (fireballCooldown > 6.0f)
 		{
 			fireballCooldown = 0.0f;
 			fireballWasCast = false;

@@ -381,17 +381,17 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	projectile->getObj()->setMaterialName("texture1.jpg");
+	projectile->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
 	projectile->getTranslationMatStart(playerMove);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
-	projectile->setBoundingBoxMaxRight(tempBboxMax);
-	projectile->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax());
+	projectile->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
+	projectile->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax() * 0.3f);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
-	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin());
-	projectile->setBoundingBoxMinLeft(tempBboxMax);
+	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
+	projectile->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	//GUI
 	GUIheart1 = new GUItestClass;
@@ -1646,13 +1646,23 @@ bool gameClass::frameGame(double dt)
 			pickupTypeChecker++;
 		}
 
-		else if (objHolder[i]->getType() == 3) {
+		else if (objHolder[i]->getType() == 3) 
+		{
 			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), enemy->getHurt());
 			if (!result)
 			{
 				return false;
 			}
 
+		}
+
+		else if (objHolder[i]->getType() == 5)
+		{
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+			if (!result)
+			{
+				return false;
+			}
 		}
 
 		else
@@ -1773,8 +1783,8 @@ bool gameClass::frameMeny(double dt)
 
 	if (firstFrame && soundAvailable)
 	{
-	sound->playAmbient(0);
-	firstFrame = false;
+		sound->playAmbient(0);
+		firstFrame = false;
 	}
 
 	checkReleasedKeys();
@@ -2294,6 +2304,7 @@ void gameClass::updateCamera()
 		camera->updateTarget(useThisX, useThisY);
 		camera->setTempX(useThisX);
 	}
+
 	else 
 	{
 		camera->updatePosition(camera->getTempX(), useThisY);
@@ -3439,11 +3450,12 @@ void gameClass::updateProjectile(double dt)
 	//Move projectile
 	projectile->moveProjectile(dt);
 	projectile->getTransX(projectileMoveMat);
-	projectile->getObj()->setWorldMatrix(projectileMoveMat);
+	projectile->getObj()->setWorldMatrix(XMMatrixScaling(0.6f, 0.5f, 0.0f) * projectileMoveMat);
+	projectile->updateAnimation(dt);
 
-	//CD between fireballs
+	//Lifetime for fireballs
 	projectile->setLifeTime(dt);
-	if (projectile->getLifeTime() > 3.0f)
+	if (projectile->getLifeTime() > 1.5f)
 	{
 		removeObjFromObjHolder(projectile->getObj());
 		projectile->resetProjectile();
