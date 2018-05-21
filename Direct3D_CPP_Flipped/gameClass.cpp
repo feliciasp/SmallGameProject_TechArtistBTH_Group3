@@ -3312,6 +3312,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(0));
 						player->setNrWeaponBought(0, true);
+						//player->setWeponType(1);
 					}
 				}
 			}
@@ -3472,6 +3473,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		totalCostPendingSlot1->setIsDestroy(true);
 		totalCostPendingSlot2->setIsDestroy(true);
 	}
+	//if (playr->GetTwjiregjne)
+	//{
+	//	DEBUG has 1
+	//}
 }
 
 int gameClass::getShopOverlayCounter()
