@@ -35,7 +35,7 @@ class shaderClass
 		shaderClass(const shaderClass& other);
 		~shaderClass();
 
-		bool render(ID3D11DeviceContext* devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped);
+		bool render(ID3D11DeviceContext* devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped);
 		bool createShaderClass(ID3D11Device* device);
 		bool createTextureReasourceAndTextureView(ID3D11Device* device, std::string name);
 		
@@ -106,7 +106,7 @@ class shaderClass
 		bool setPlayerShaderParameters(ID3D11DeviceContext* devCon, bool flipped, int frameCount, int currentFrame, int currentAnimation);
 		void renderShader(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderShaderScreenSpace(ID3D11DeviceContext* devCon, int indexCount, std::string name);
-		void renderShaderSprite(ID3D11DeviceContext* devCon, int indexCount, std::string name);
+		void renderShaderSprite(ID3D11DeviceContext* devCon, int indexCount, std::string name, int weaponType);
 		void renderEnemy(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderPickup(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 

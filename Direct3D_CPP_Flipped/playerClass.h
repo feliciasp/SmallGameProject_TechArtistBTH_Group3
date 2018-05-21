@@ -53,6 +53,8 @@ public:
 	float getAnimationTime();
 	float getcurrentTime();
 
+	void setAnimation(int animation);
+
 	bool hurtState();
 
 	void updateTimer();
@@ -62,7 +64,6 @@ public:
 
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
-
 
 	bool getInvulnurable();
 
@@ -97,8 +98,9 @@ public:
 	float getSpeedVal();
 	void setSpeedVal(float x);
 
-	//setWeaponType
-	//getWeapomType
+	void setWeaponType(int type);
+	int getWeaponType();
+
 
 private:
 	bool isHurt;
@@ -111,10 +113,14 @@ private:
 
 	objectClass* obj;
 	directInput* input;
-	weaponClass* weapon;
-	//int wichWeapon;
-	//0 = sjavel;
-	//1 = sword;
+
+	weaponClass* weapon1;
+	weaponClass* weapon2;
+	weaponClass* weapon3;
+	weaponClass* weapon4;
+	weaponClass* weapon5;
+	int weaponType;
+
 	SoundClass* sound;
 	bool soundAvailable;
 
@@ -198,7 +204,6 @@ private:
 
 	bool weaponBought[4];
 	int weaponCost[4];
-
 };
 
 
