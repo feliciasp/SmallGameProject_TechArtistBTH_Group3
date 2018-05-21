@@ -13,7 +13,7 @@ enemyClass::enemyClass()
 	rangeCheck = { 4.0f, 0.0f, 0.0f };
 	isActive = true;
 	checkIfObjHolder = false;
-	HP = 3;
+	HP = 4;
 	isAttack = false;
 	isHurt = false;
 	attackTimer = 1.0f;
@@ -101,7 +101,7 @@ void enemyClass::resetEnemy()
 	translation = XMMatrixIdentity();
 	isActive = true;
 	checkIfObjHolder = false;
-	HP = 3;
+	HP = 4;
 	isHurt = false;
 	isAttack = false;
 	attackTimer = 1.0f;

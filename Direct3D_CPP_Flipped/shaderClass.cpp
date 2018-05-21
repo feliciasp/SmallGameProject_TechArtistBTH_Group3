@@ -24,7 +24,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -59,7 +59,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		renderShaderSprite(devCon, indexCount, name);
+		renderShaderSprite(devCon, indexCount, name, weaponType);
 	}
 
 	else if (type == 3)
@@ -673,7 +673,7 @@ void shaderClass::renderShaderScreenSpace(ID3D11DeviceContext * devCon, int inde
 	devCon->Draw(indexCount, 0);
 }
 
-void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCount, std::string name, int weaponType)
 {
 	devCon->IASetInputLayout(vertexLayout);
 	devCon->VSSetShader(vertexShader, nullptr, 0);
@@ -685,10 +685,32 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
-
-		if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png")
-		{
-			devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+		switch (weaponType) {
+			case 0:
+				if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png"){
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+			break;
+			case 1:
+				if (matNameHolder[i].nameMat == "GoldShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 2:
+				if (matNameHolder[i].nameMat == "MagicShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 3:
+				if (matNameHolder[i].nameMat == "BloodShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 4:
+				if (matNameHolder[i].nameMat == "DarkShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
 		}
 	}
 	devCon->PSSetSamplers(0, 1, &textureSample);

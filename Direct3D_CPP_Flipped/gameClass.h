@@ -206,33 +206,31 @@ private:
 	int menyTimer;
 	bool menyCheck;
 
-	
 	bool firstFrame;
 
-
 	/////////LIMBO STUFF
-		backgroundClass* limboFrontPlane;
-		pickupClass* limboSmithPlane;
-		backgroundClass* limboBackPlane;
-		pickupClass* limboTextPlane;
-		platformClass* limboWalkingPlane;
-		pickupClass* limboTextPlanePressE;
-		XMMATRIX limboMat;
-		void updateLimboBackground();
+	backgroundClass* limboFrontPlane;
+	pickupClass* limboSmithPlane;
+	backgroundClass* limboBackPlane;
+	pickupClass* limboTextPlane;
+	platformClass* limboWalkingPlane;
+	pickupClass* limboTextPlanePressE;
+	XMMATRIX limboMat;
+	void updateLimboBackground();
 
-		pickupClass* limboPickupHolder;
+	pickupClass* limboPickupHolder;
 
-		GUItestClass* healthUpgradeCount;
-		XMMATRIX healthUpgradeCountMat;
-		GUItestClass* speedUpgradeCount;
-		void updateCountersShop();
-		XMMATRIX speedUpgradeCountMat;
+	GUItestClass* healthUpgradeCount;
+	XMMATRIX healthUpgradeCountMat;
+	GUItestClass* speedUpgradeCount;
+	void updateCountersShop();
+	XMMATRIX speedUpgradeCountMat;
 
-		GUItestClass* totalCostPendingSlot2;
-		XMMATRIX totalCostPendingSlot2Mat;
-		GUItestClass* totalCostPendingSlot1;
-		void pendingCostUpdate();
-		XMMATRIX totalCostPendingSlot1Mat;
+	GUItestClass* totalCostPendingSlot2;
+	XMMATRIX totalCostPendingSlot2Mat;
+	GUItestClass* totalCostPendingSlot1;
+	void pendingCostUpdate();
+	XMMATRIX totalCostPendingSlot1Mat;
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;

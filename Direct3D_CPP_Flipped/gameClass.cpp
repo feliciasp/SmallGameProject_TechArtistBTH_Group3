@@ -248,9 +248,14 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 
-	player->getObj()->setMaterialName("playerMovement.png");
+	player->getObj()->setMaterialName("playerSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
+
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "GoldShovelSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicShovelSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "BloodShovelSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "DarkShovelSpriteSheet.png");
 
 	XMVECTOR tempBboxMax;
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
@@ -1392,7 +1397,7 @@ bool gameClass::frameWin(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderWin.size(); i++)
 	{
-		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), 0);
+		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
 		if (!result)
 		{
 			return false;
@@ -1488,7 +1493,7 @@ bool gameClass::frameLimbo(double dt)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -1498,7 +1503,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
 			pickupCheck++;
 			if (!result)
 			{
@@ -1507,7 +1512,7 @@ bool gameClass::frameLimbo(double dt)
 		}
 
 		else if (objHolderLimbo[i]->getType() == 3) {
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 2);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 2);
 			if (!result)
 			{
 				return false;
@@ -1517,7 +1522,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), 0);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -1552,6 +1557,7 @@ bool gameClass::frameLimbo(double dt)
 		myfile << std::to_string(player->getNrPixelFramgent()) + "\n";
 		myfile << std::to_string(player->getNrPolygons()) + "\n";
 		myfile << std::to_string(tempXP) + "\n";
+		myfile << std::to_string(player->getWeaponType()) + "\n";
 		myfile.close();
 
 
@@ -1706,7 +1712,7 @@ bool gameClass::frameGame(double dt)
 	{
 		if (objHolder[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -1716,7 +1722,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0, pickupHolder[pickupTypeChecker].getFrameCount(), pickupHolder[pickupTypeChecker].getCurrentFrame());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, pickupHolder[pickupTypeChecker].getFrameCount(), pickupHolder[pickupTypeChecker].getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -1726,7 +1732,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 3) 
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), enemy->getHurt());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), enemy->getHurt());
 			if (!result)
 			{
 				return false;
@@ -1736,7 +1742,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 5)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
 			if (!result)
 			{
 				return false;
@@ -1745,7 +1751,7 @@ bool gameClass::frameGame(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), 0);
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -1774,9 +1780,10 @@ bool gameClass::frameGame(double dt)
 	return false;
 	}*/
 
-	if (player->getPlayerHP() == 0)
+	if (player->getCurrentAnimation() == 7 && player->getCurrentFrame() == 9 )
 	{
 		player->resetPlayer();
+		player->setAnimation(1);
 		camera->reset();
 		if (pickupHolder)
 		{
@@ -1875,7 +1882,7 @@ bool gameClass::frameMeny(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderMeny.size(); i++)
 	{
-		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), 0);
+		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
 		if (!result)
 
 		{
@@ -1884,7 +1891,7 @@ bool gameClass::frameMeny(double dt)
 	}
 	graphics->endScene();
 
-	if (inputDirectOther->isEnterPressed() &&  counterOverlay == 0)
+	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
 	{
 		gameStateLevel = true;
 		if (soundAvailable)
@@ -1895,13 +1902,19 @@ bool gameClass::frameMeny(double dt)
 		//player->setNrPixelFragments(20);
 		//player->setNrPolysgons(0);
 		//tempXP = 0;
+
+		player->setWeaponType(0);
+
+		for (int i = 0; i < 4; i++) {
+			player->setNrWeaponBought(i, false);
+		}
 	}
 
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 1)
 	{
 		gameStateLevel = true;
 		std::string line;
-		int arr[7] = { 0};
+		int arr[8] = {0};
 		int i = 0;
 		std::ifstream myfile("readThis.txt");
 		if (myfile.is_open())
@@ -1922,6 +1935,7 @@ bool gameClass::frameMeny(double dt)
 		player->setNrPixelFragments(arr[4]);
 		player->setNrPolysgons(arr[5]);
 		tempXP = arr[6];
+		player->setWeaponType(arr[7]);
 	}
 
 	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
@@ -2334,7 +2348,9 @@ void gameClass::updateEnemy(double dt)
 
 void gameClass::updatePlayer(platformClass* platform, double dt)
 {
-	player->handleMovement(dt, isTextDestroy2);
+	if (player->getCurrentAnimation() != 7) {
+		player->handleMovement(dt, isTextDestroy2);
+	}
 	player->updateAnimation(dt);
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
@@ -3312,6 +3328,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(0));
 						player->setNrWeaponBought(0, true);
+						//Change weapon
+						player->setWeaponType(1);
 					}
 				}
 			}
@@ -3325,6 +3343,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(1));
 						player->setNrWeaponBought(1, true);
+						//Change weapon
+						player->setWeaponType(2);
 					}
 				}
 			}
@@ -3338,6 +3358,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(2));
 						player->setNrWeaponBought(2, true);
+						//Change weapon
+						player->setWeaponType(3);
 					}
 				}
 			}
@@ -3351,6 +3373,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(3));
 						player->setNrWeaponBought(3, true);
+						//Change weapon
+						player->setWeaponType(4);
 					}
 				}
 			}
@@ -3576,7 +3600,7 @@ void gameClass::updateCollision(double dt)
 	{
 		if (enemy->hurtState())
 		{
-			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			enemy->setEnemyHP(enemy->getEnemyHP() - player->getWeapon()->getDamage());
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
 		if (enemy->getEnemyHP() <= 0)
@@ -3605,7 +3629,7 @@ void gameClass::updateCollision(double dt)
 	{
 		if (enemy->hurtState())
 		{
-			enemy->setEnemyHP(enemy->getEnemyHP() - 1);
+			enemy->setEnemyHP(enemy->getEnemyHP() - player->getWeapon()->getDamage());
 			OutputDebugString(L"\nenemy lost hP!\n");
 		}
 		if (enemy->getEnemyHP() <= 0)
