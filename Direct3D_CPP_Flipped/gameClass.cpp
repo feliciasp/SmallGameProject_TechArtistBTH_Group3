@@ -110,8 +110,8 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	totalPendingCost = 0;
 
-	isTextInPickupHolder = false;
 	isTextInPickupHolder2 = false;
+	isTextInPickupHolder = false;
 	isTextDestroy = true;
 	isTextDestroy2 = true;
 }
@@ -3788,7 +3788,7 @@ void gameClass::updateCollision(double dt)
 			if (pickupHolder[j].getPickupType() == 8)
 			{
 				isTextInPickupHolder2 = false;
-				OutputDebugString(L"\nRemoveing text!\n");
+				OutputDebugString(L"\nRemoveing text22!\n");
 				pickupHolder[j].setIsDestroy(true);
 				isTextDestroy2 = true;
 			}
@@ -3804,24 +3804,6 @@ void gameClass::updateCollision(double dt)
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
-		//
-		if (!isTextInPickupHolder && !isTextDestroy)
-		{
-			OutputDebugString(L"\nText created!\n");
-			pickupClass text;
-			text.clone(*limboTextPlanePressE);
-			nrOfVisiblePickups++;
-			addPickupToPickupHolder(text, nrOfVisiblePickups);
-			pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
-			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
-			pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
-			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, -3.5f, 0.0f));
-			text.shutdown();
-			isTextDestroy = false;
-			isTextInPickupHolder = true;
-		}
-	
 		//IF WE PICKUP A RING
 		XMMATRIX yOffset;
 		pickupHolder[i].getTranslationMatStart(yOffset);
@@ -3830,6 +3812,21 @@ void gameClass::updateCollision(double dt)
 			if (pickupHolder[i].getPickupType() == 3)
 			{
 				isTextDestroy = false;
+				if (!isTextInPickupHolder && !isTextDestroy)
+				{
+					OutputDebugString(L"\nText created!\n");
+					pickupClass text;
+					text.clone(*limboTextPlanePressE);
+					nrOfVisiblePickups++;
+					addPickupToPickupHolder(text, nrOfVisiblePickups);
+					pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
+					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+					pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+					pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
+					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, 15.6f, 0.0f));
+					text.shutdown();
+					isTextInPickupHolder = true;
+				}
 			}
 
 			if (pickupHolder[i].getPickupType() == 1)
@@ -3911,9 +3908,11 @@ void gameClass::updateCollision(double dt)
 				enterReleased = false;
 			}
 		}
-		else
+		else if(player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
 		{
+			//OutputDebugString(L"\nNO COLLISION!\n");
 			isTextDestroy = true;
+			
 		}
 	}
 	if (isTextInPickupHolder && isTextDestroy)
