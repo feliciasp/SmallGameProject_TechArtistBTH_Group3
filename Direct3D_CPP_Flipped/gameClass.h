@@ -60,7 +60,7 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
-	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, float x, float y);
+	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, XMVECTOR vector, int type);
 	void removeEnemyFromEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
 
 	void initializeRings();
@@ -92,8 +92,11 @@ private:
 	cameraClass* camera;
 	directInput* movementInput;
 	enemyClass* enemy;
+	enemyClass* enemy2;
+	enemyClass* boss;
 	backgroundClass* background;
 	backgroundClass* spawnEnemys;
+	backgroundClass* pickupSpawn;
 	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;

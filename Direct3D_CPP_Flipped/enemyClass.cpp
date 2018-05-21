@@ -44,13 +44,14 @@ enemyClass::~enemyClass()
 {
 }
 
-void enemyClass::clone(const enemyClass & other, float x, float y)
+void enemyClass::clone(const enemyClass & other, XMVECTOR vector, int type)
 {
 	obj = new objectClass;
 	obj->clone(*other.obj);
 	obj->setType(3);
+	enemyType = type;
 
-	setStartMat(x, y);
+	setStartMat(XMVectorGetX(vector), XMVectorGetY(vector));
 }
 
 bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
@@ -426,4 +427,14 @@ void enemyClass::getEnemyTranslationMatrix(XMMATRIX & other)
 void enemyClass::setEnemyTranslationMatrix(XMMATRIX & other)
 {
 	this->tranlsationInXMatrix = other;
+}
+
+void enemyClass::setEnemyType(int x)
+{
+	this->enemyType = x;
+}
+
+int enemyClass::getEnemyType()
+{
+	return this->enemyType;
 }
