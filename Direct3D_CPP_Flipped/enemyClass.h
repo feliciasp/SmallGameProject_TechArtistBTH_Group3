@@ -10,6 +10,7 @@ class enemyClass
 		enemyClass();
 		enemyClass(const enemyClass& other);
 		~enemyClass();
+		void clone(const enemyClass& other, float x, float y);
 
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
@@ -18,7 +19,7 @@ class enemyClass
 		objectClass* getObj();
 		void getTranslationMat(XMMATRIX& other);
 		void getTranslationMatStart(XMMATRIX& other);
-		void setStartMat(float x);
+		void setStartMat(float x, float y);
 
 		float getMove();
 		void setMove(float x);
