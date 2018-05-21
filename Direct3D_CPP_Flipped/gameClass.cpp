@@ -348,7 +348,7 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	ladders->getObj()->setMaterialName("ladder_PNG14808.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ladders->getObj()->getMaterialName());
-	addObjectToObjHolder(ladders->getObj());
+	
 
 	//pickup test
 	expFragment = new pickupClass;
@@ -472,7 +472,7 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
-
+	addObjectToObjHolder(ladders->getObj());
 
 	//GUI POLYGON COUNT
 	slot1 = new GUItestClass;
@@ -3818,29 +3818,32 @@ void gameClass::updateCollision(double dt)
 
 	enemy->updateAttackCooldownTimer(dt);
 
-
-	if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(ladders->getObj()->getBoundingBoxMin(), XMMatrixIdentity()), XMVector3Transform(ladders->getObj()->getBoundingBoxMax(), XMMatrixIdentity()), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+	for (int i = 0; i < ladders->getObj()->getMeshCount(); i++)
 	{
-		isTextDestroy2 = false;
-		if (!isTextInPickupHolder2 && !isTextDestroy2)
+		if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(ladders->getObj()->getBoundingBoxMin(i), XMMatrixIdentity()), XMVector3Transform(ladders->getObj()->getBoundingBoxMax(i), XMMatrixIdentity()), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
 		{
-			OutputDebugString(L"\nText created22!\n");
-			pickupClass text2;
-			text2.clone(*limboTextPlanePressE);
-			nrOfVisiblePickups++;
-			addPickupToPickupHolder(text2, nrOfVisiblePickups);
-			pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
-			pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
-			pickupHolder[nrOfVisiblePickups - 1].setPickupType(8);
-			pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixIdentity());
-			text2.shutdown();
 			isTextDestroy2 = false;
-			isTextInPickupHolder2 = true;
+			if (!isTextInPickupHolder2 && !isTextDestroy2)
+			{
+				OutputDebugString(L"\nText created22!\n");
+				pickupClass text2;
+				text2.clone(*limboTextPlanePressE);
+				nrOfVisiblePickups++;
+				addPickupToPickupHolder(text2, nrOfVisiblePickups);
+				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+				pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+				pickupHolder[nrOfVisiblePickups - 1].setPickupType(8);
+				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixIdentity());
+				text2.shutdown();
+				isTextDestroy2 = false;
+				isTextInPickupHolder2 = true;
+			}
+			i = ladders->getObj()->getMeshCount();
 		}
-	}
-	else
-	{
-		isTextDestroy2 = true;
+		else 
+		{
+			isTextDestroy2 = true;
+		}
 	}
 	if (isTextInPickupHolder2 && isTextDestroy2)
 	{
@@ -3865,7 +3868,6 @@ void gameClass::updateCollision(double dt)
 
 	for (int i = 0; i < nrOfVisiblePickups; i++)
 	{
-		//IF WE PICKUP A RING
 		XMMATRIX yOffset;
 		pickupHolder[i].getTranslationMatStart(yOffset);
 		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
@@ -3888,7 +3890,51 @@ void gameClass::updateCollision(double dt)
 					text.shutdown();
 					isTextInPickupHolder = true;
 				}
+
+				if (pickupHolder[i].getPickupType() == 3 && inputDirectOther->isEnterPressed() && enterReleased) //type 3 means it's a RING
+				{
+					for (int j = 0; j < nrOfVisiblePickups; j++)
+					{
+						if (pickupHolder[j].getPickupType() == 5)
+						{
+							isTextInPickupHolder = false;
+							OutputDebugString(L"\nRemoveing text 2!\n");
+							pickupHolder[j].setIsDestroy(true);
+							isTextDestroy = true;
+						}
+					}
+					enterReleased = true;
+				}
+				i = nrOfVisiblePickups;
 			}
+		}
+		else
+		{
+			//OutputDebugString(L"\nNO COLLISION!\n");
+			isTextDestroy = true;
+		}
+	}
+	if (isTextInPickupHolder && isTextDestroy)
+	{
+		for (int j = 0; j < nrOfVisiblePickups; j++)
+		{
+			if (pickupHolder[j].getPickupType() == 5)
+			{
+				isTextInPickupHolder = false;
+				OutputDebugString(L"\nRemoveing text!\n");
+				pickupHolder[j].setIsDestroy(true);
+				isTextDestroy = true;
+			}
+		}
+	}
+
+	for (int i = 0; i < nrOfVisiblePickups; i++)
+	{
+		//IF WE PICKUP A RING
+		XMMATRIX yOffset;
+		pickupHolder[i].getTranslationMatStart(yOffset);
+		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
+		{
 
 			if (pickupHolder[i].getPickupType() == 1)
 			{
@@ -3939,17 +3985,7 @@ void gameClass::updateCollision(double dt)
 					}
 				}
 
-				for (int j = 0; j < nrOfVisiblePickups; j++)
-				{
-					if (pickupHolder[j].getPickupType() == 5)
-					{
-						isTextInPickupHolder = false;
-						OutputDebugString(L"\nRemoveing text 2!\n");
-						pickupHolder[j].setIsDestroy(true);
-						isTextDestroy = true;
-					}
-				}
-
+				
 				OutputDebugString(L"\nRing was picked up so cool effect is spawning!\n");
 				pickupClass effect;
 				effect.clone(*ring);
@@ -3981,25 +4017,6 @@ void gameClass::updateCollision(double dt)
 
 				}*/
 				//pickupHolder[i].setIsDestroy(true);
-			}
-		}
-		else if(player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
-		{
-			//OutputDebugString(L"\nNO COLLISION!\n");
-			isTextDestroy = true;
-			
-		}
-	}
-	if (isTextInPickupHolder && isTextDestroy)
-	{
-		for (int j = 0; j < nrOfVisiblePickups; j++)
-		{
-			if (pickupHolder[j].getPickupType() == 5)
-			{
-				isTextInPickupHolder = false;
-				OutputDebugString(L"\nRemoveing text!\n");
-				pickupHolder[j].setIsDestroy(true);
-				isTextDestroy = true;
 			}
 		}
 	}
