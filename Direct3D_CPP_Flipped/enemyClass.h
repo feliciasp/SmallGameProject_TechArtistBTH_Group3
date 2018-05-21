@@ -10,6 +10,7 @@ class enemyClass
 		enemyClass();
 		enemyClass(const enemyClass& other);
 		~enemyClass();
+		void clone(const enemyClass& other, float x);
 
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
