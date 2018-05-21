@@ -217,7 +217,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	camera->setPosition(0.0f, 0.0f, -20.0f, 0.0f);
+	camera->setPosition(0.0f, 0.0f, -100.0f, 0.0f);
 
 	//create sound obj
 	sound = new SoundClass;
@@ -1792,25 +1792,6 @@ bool gameClass::frameGame(double dt)
 	}
 	graphics->endScene();
 
-
-	/*if (enemy->getEnemyHP() == 0)
-	{
-	player->resetPlayer();
-	pickupHolder[0].resetPickup();
-	enemy->resetEnemy();
-	projectile->resetProjectile();
-	for (int i = 0; i < 3; i++)
-	{
-	heartHolder[i].resetGUI();
-	}
-
-	gameStateLevel = false;
-	gameStateMeny = false;
-	gameStateLimbo = false;
-	gameStateWin = true;
-	return false;
-	}*/
-
 	if (player->getPlayerHP() == 0)
 	{
 		player->resetPlayer();
@@ -2278,7 +2259,7 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 	}
 }
 
-void gameClass::addEnemyToEnemyHolder(enemyClass & enemy, int nrOfVisibleEnemies, float x)
+void gameClass::addEnemyToEnemyHolder(enemyClass & enemy, int nrOfVisibleEnemies, float x, float y)
 {
 
 	enemyClass* tempArray = new enemyClass[nrOfVisibleEnemies];
@@ -2291,7 +2272,7 @@ void gameClass::addEnemyToEnemyHolder(enemyClass & enemy, int nrOfVisibleEnemies
 	delete[] enemyHolder;
 	OutputDebugString(L"\nEnemy Created\n");
 	enemyHolder = tempArray;
-	enemyHolder[nrOfVisibleEnemies - 1].clone(enemy, x);
+	enemyHolder[nrOfVisibleEnemies - 1].clone(enemy, x, y);
 }
 
 void gameClass::removeEnemyFromEnemyHolder(enemyClass & enemy, int nrOfVisibleEnemies)
@@ -2365,9 +2346,9 @@ void gameClass::initializeEnemies()
 	for (int i = 0; i < 2; i++)
 	{
 		enemyClass enemyTemp;
-		enemyTemp.clone(*enemy, (i + 1) * 2);
+		enemyTemp.clone(*enemy, (i + 1) * 2, i * 30);
 		nrOfVisibleEnemies++;
-		addEnemyToEnemyHolder(enemyTemp, nrOfVisibleEnemies, (i + 1) * 2);
+		addEnemyToEnemyHolder(enemyTemp, nrOfVisibleEnemies, i * -80, i * 20);
 		enemyHolder[nrOfVisibleEnemies - 1].getTranslationMatStart(tempEnemyStartingPositionMatrix);
 		enemyHolder[nrOfVisibleEnemies - 1].setIsActive(true);
 

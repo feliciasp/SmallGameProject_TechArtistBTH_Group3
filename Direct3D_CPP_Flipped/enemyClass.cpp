@@ -44,13 +44,13 @@ enemyClass::~enemyClass()
 {
 }
 
-void enemyClass::clone(const enemyClass & other, float x)
+void enemyClass::clone(const enemyClass & other, float x, float y)
 {
 	obj = new objectClass;
 	obj->clone(*other.obj);
 	obj->setType(3);
 
-	setStartMat(x + 5);
+	setStartMat(x, y);
 }
 
 bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
@@ -74,7 +74,7 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 	obj->setType(3);
 
 	startPos = {5.0f, 0.0f, 0.0f};
-	setStartMat(5.0f);
+	setStartMat(5.0f, 0.0f);
 
 	return true;
 }
@@ -308,9 +308,9 @@ void enemyClass::getTranslationMatStart(XMMATRIX & other)
 	other = this->transStart;
 }
 
-void enemyClass::setStartMat(float x)
+void enemyClass::setStartMat(float x, float y)
 {
-	this->transStart = XMMatrixTranslation(x - 5, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, y, 0.0f);
 }
 
 float enemyClass::getMove()

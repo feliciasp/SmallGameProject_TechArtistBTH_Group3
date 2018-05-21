@@ -60,7 +60,7 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
-	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, float x);
+	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, float x, float y);
 	void removeEnemyFromEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
 
 	void initializeRings();
