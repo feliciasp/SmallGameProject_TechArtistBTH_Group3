@@ -58,7 +58,7 @@ bool collisionClass::checkCollisionLeft(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XM
 	{
 		check1 = true;
 	}
-	if (XMVectorGetY(bbox1Max) - 0.04f >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) + 0.04f <= XMVectorGetY(bbox2Max))
+	if (XMVectorGetY(bbox1Max) - 0.1f >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) + 0.1f <= XMVectorGetY(bbox2Max))
 	{
 		check2 = true;
 	}
@@ -77,7 +77,7 @@ bool collisionClass::checkCollisionRight(XMVECTOR bbox1Min, XMVECTOR bbox1Max, X
 	{
 		check1 = true;
 	}
-	if (XMVectorGetY(bbox1Max) - 0.04f >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) + 0.04f <= XMVectorGetY(bbox2Max))
+	if (XMVectorGetY(bbox1Max) - 0.1f >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) + 0.1f <= XMVectorGetY(bbox2Max))
 	{
 		check2 = true;
 	}
