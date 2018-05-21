@@ -97,7 +97,8 @@ public:
 	float getSpeedVal();
 	void setSpeedVal(float x);
 
-	
+	//setWeaponType
+	//getWeapomType
 
 private:
 	bool isHurt;
@@ -111,6 +112,9 @@ private:
 	objectClass* obj;
 	directInput* input;
 	weaponClass* weapon;
+	//int wichWeapon;
+	//0 = sjavel;
+	//1 = sword;
 	SoundClass* sound;
 	bool soundAvailable;
 
@@ -194,8 +198,6 @@ private:
 
 	bool weaponBought[4];
 	int weaponCost[4];
-
-
 
 };
 

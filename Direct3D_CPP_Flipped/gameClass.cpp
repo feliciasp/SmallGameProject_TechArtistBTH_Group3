@@ -41,6 +41,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	countEnemy = 0;
 	SpeedCost = 1;
 
+	spawnEnemys = 0;
 
 	player = 0;
 	camera = 0;
@@ -333,6 +334,8 @@ bool gameClass::initialize(int ShowWnd)
 	background->getObj()->setMaterialName("texture3.jpg");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
 
+	//spawnEnemys
+
 	//background test
 	ladders = new backgroundClass;
 	if (!ladders)
@@ -350,7 +353,26 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	ladders->getObj()->setMaterialName("ladder_PNG14808.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ladders->getObj()->getMaterialName());
-	
+
+
+	//spawnEnemys test
+	spawnEnemys = new backgroundClass;
+	if (!spawnEnemys)
+	{
+		MessageBox(NULL, L"Error create background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = spawnEnemys->initlialize(graphics->getD3D()->GetDevice(), "spawnEnemys.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	spawnEnemys->getObj()->setMaterialName("ladder_PNG14808.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spawnEnemys->getObj()->getMaterialName());
+
 
 	//pickup test
 	expFragment = new pickupClass;
@@ -1113,6 +1135,12 @@ void gameClass::shutdown()
 		slot1xp->shutdown();
 		delete slot1xp;
 		slot1xp = 0;
+	}
+	if (spawnEnemys)
+	{
+		spawnEnemys->shutdown();
+		delete spawnEnemys;
+		spawnEnemys = 0;
 	}
 	if (speedUpgradeCount)
 	{
@@ -2317,14 +2345,14 @@ void gameClass::initializeRings()
 	//pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 	pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(portalMat);
 	
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		srand(time(NULL));
 		pickupClass ringTemp;
 		ringTemp.clone(*ring);
 		nrOfVisiblePickups++;
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
-		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(-30.0f + (i * 10), 20.6f, 0.1f));
+		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(-30.0f + (i * -10), 20.6f, 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
@@ -2488,7 +2516,7 @@ void gameClass::updateCamera()
 	
 	//int useThisY = XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + differenceX;
 
-	if (useThisX > -147 && useThisX < 10)
+	if (useThisX > -147 && useThisX < 20)
 	{
 		camera->updatePosition(useThisX, useThisY);
 		camera->updateTarget(useThisX, useThisY);
@@ -3417,6 +3445,7 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					{
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(0));
 						player->setNrWeaponBought(0, true);
+						//player->setWeponType(1);
 					}
 				}
 			}
@@ -3577,6 +3606,10 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		totalCostPendingSlot1->setIsDestroy(true);
 		totalCostPendingSlot2->setIsDestroy(true);
 	}
+	//if (playr->GetTwjiregjne)
+	//{
+	//	DEBUG has 1
+	//}
 }
 
 int gameClass::getShopOverlayCounter()
@@ -3996,7 +4029,7 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
 					pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
 					pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
-					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-31.9f, 15.6f, 0.0f));
+					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-1.9, -4.9f, 0.0) * XMMatrixScaling(2.6, 1.5, 0.0) * yOffset);
 					text.shutdown();
 					isTextInPickupHolder = true;
 				}
@@ -4045,7 +4078,6 @@ void gameClass::updateCollision(double dt)
 		pickupHolder[i].getTranslationMatStart(yOffset);
 		if (!pickupHolder[i].getIsDestry() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(pickupHolder[i].getObj()->getBoundingBoxMax(), yOffset)))
 		{
-
 			if (pickupHolder[i].getPickupType() == 1)
 			{
 				tempXP += 1;
@@ -4095,7 +4127,6 @@ void gameClass::updateCollision(double dt)
 					}
 				}
 
-				
 				OutputDebugString(L"\nRing was picked up so cool effect is spawning!\n");
 				pickupClass effect;
 				effect.clone(*ring);

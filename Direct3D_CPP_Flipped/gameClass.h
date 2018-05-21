@@ -93,6 +93,7 @@ private:
 	directInput* movementInput;
 	enemyClass* enemy;
 	backgroundClass* background;
+	backgroundClass* spawnEnemys;
 	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
