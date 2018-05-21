@@ -16,6 +16,7 @@ enemyClass::enemyClass()
 	HP = 3;
 	isAttack = false;
 	isHurt = false;
+	isFrozen = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
 
@@ -165,6 +166,16 @@ void enemyClass::timeCountdown(float dt)
 		this->isHurt = false;
 		this->hurt = 0;
 	}
+}
+
+void enemyClass::setIsFrozen(bool check)
+{
+	this->isFrozen = check;
+}
+
+bool enemyClass::getIsFrozen()
+{
+	return this->isFrozen;
 }
 
 bool enemyClass::attackCooldown()

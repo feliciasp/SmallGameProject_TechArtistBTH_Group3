@@ -79,9 +79,9 @@ playerClass::playerClass()
 	spaceReleased = true;
 
 
-	fireballCast = false;
-	fireballWasCast = false;
-	fireballCooldown = 0.0f;
+	magicCast = false;
+	magicWasCast = false;
+	magicCooldown = 0.0f;
 
 	polygoner = 0;
 	fargments = 20;
@@ -560,22 +560,31 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	}
 
 
-	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast && fireballCooldown == 0.0f)
+	if (this->input->isPPressed() && hasRing && ringType == 1 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
 			sound->playSFX(1, 2);
 
-		fireballCast = true;
-		fireballWasCast = true;
+		magicCast = true;
+		magicWasCast = true;
 	}
 
-	if (fireballWasCast)
+	if (this->input->isPPressed() && hasRing && ringType == 2 && !magicCast && magicCooldown == 0.0f)
 	{
-		fireballCooldown += dt;
-		if (fireballCooldown > 6.0f)
+		if (soundAvailable)
+			sound->playSFX(1, 2);
+
+		magicCast = true;
+		magicWasCast = true;
+	}
+
+	if (magicWasCast)
+	{
+		magicCooldown += dt;
+		if (magicCooldown > 6.0f)
 		{
-			fireballCooldown = 0.0f;
-			fireballWasCast = false;
+			magicCooldown = 0.0f;
+			magicWasCast = false;
 		}
 	}
 
@@ -757,12 +766,12 @@ int playerClass::getRingType()
 
 void playerClass::setFireballCast(bool check)
 {
-	this->fireballCast = check;
+	this->magicCast = check;
 }
 
 bool playerClass::getFireballCast()
 {
-	return this->fireballCast;
+	return this->magicCast;
 }
 
 int playerClass::getNrPixelFramgent()
@@ -825,7 +834,7 @@ void playerClass::resetPlayer()
 
 	hasRing = false;
 
-	fireballCast = false;
+	magicCast = false;
 	isHurt = false;
 }
 

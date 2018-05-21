@@ -44,6 +44,9 @@ public:
 	void setGoesRight(bool check);
 	bool getGoesRight();
 
+	void setProjectileType(int other);
+	int getProjectileType();
+
 	void setLifeTime(double value);
 	double getLifeTime();
 
@@ -62,6 +65,7 @@ private:
 	XMMATRIX transStart;
 	bool checkIfSetToObjHolder;
 	bool goesRight; //true if projectile goes to right of screen.
+	int projectileType; //0 = FIREBALL, 1 = FROSTBOLT
 
 	float moveValX;
 	XMMATRIX transX;
