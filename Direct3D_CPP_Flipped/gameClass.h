@@ -60,7 +60,11 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
+	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, XMVECTOR vector, int type);
+	void removeEnemyFromEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
+
 	void initializeRings();
+	void initializeEnemies();
 
 	void checkReleasedKeys();
 
@@ -88,7 +92,11 @@ private:
 	cameraClass* camera;
 	directInput* movementInput;
 	enemyClass* enemy;
+	enemyClass* enemy2;
+	enemyClass* boss;
 	backgroundClass* background;
+	backgroundClass* spawnEnemys;
+	backgroundClass* pickupSpawn;
 	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
@@ -99,6 +107,7 @@ private:
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
+	enemyClass* enemyHolder;
 
 	std::vector<objectClass*> objHolder;
 	std::vector<objectClass*> objHolderMeny;
@@ -144,6 +153,7 @@ private:
 	bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 	int nrOfVisiblePickups;
+	int nrOfVisibleEnemies;
 
 	bool gameStateLevel;
 	bool gameStateMeny;

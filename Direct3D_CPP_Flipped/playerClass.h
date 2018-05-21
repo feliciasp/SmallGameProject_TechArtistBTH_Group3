@@ -101,6 +101,7 @@ public:
 	void setWeaponType(int type);
 	int getWeaponType();
 
+
 private:
 	bool isHurt;
 	bool hurtFromLeft;
