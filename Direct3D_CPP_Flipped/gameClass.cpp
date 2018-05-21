@@ -41,6 +41,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	countEnemy = 0;
 	SpeedCost = 1;
 
+	spawnEnemys = 0;
 
 	player = 0;
 	camera = 0;
@@ -331,6 +332,8 @@ bool gameClass::initialize(int ShowWnd)
 	background->getObj()->setMaterialName("texture3.jpg");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
 
+	//spawnEnemys
+
 	//background test
 	ladders = new backgroundClass;
 	if (!ladders)
@@ -348,7 +351,26 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	ladders->getObj()->setMaterialName("ladder_PNG14808.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ladders->getObj()->getMaterialName());
-	
+
+
+	//spawnEnemys test
+	spawnEnemys = new backgroundClass;
+	if (!spawnEnemys)
+	{
+		MessageBox(NULL, L"Error create background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = spawnEnemys->initlialize(graphics->getD3D()->GetDevice(), "spawnEnemys.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init background obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	spawnEnemys->getObj()->setMaterialName("ladder_PNG14808.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spawnEnemys->getObj()->getMaterialName());
+
 
 	//pickup test
 	expFragment = new pickupClass;
@@ -1099,6 +1121,12 @@ void gameClass::shutdown()
 		slot1xp->shutdown();
 		delete slot1xp;
 		slot1xp = 0;
+	}
+	if (spawnEnemys)
+	{
+		spawnEnemys->shutdown();
+		delete spawnEnemys;
+		spawnEnemys = 0;
 	}
 	if (speedUpgradeCount)
 	{
