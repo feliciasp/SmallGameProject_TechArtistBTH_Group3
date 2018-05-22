@@ -126,12 +126,17 @@ void pickupClass::updateAnimation(double dt)
 		isAnimated = false;
 		if (ringType == 0)
 		{
-			currentFrame = 6;
+			currentFrame = 9;
 		}
 
 		if (ringType == 1)
 		{
 			currentFrame = 3;
+		}
+
+		if (ringType == 2)
+		{
+			currentFrame = 6;
 		}
 	}
 

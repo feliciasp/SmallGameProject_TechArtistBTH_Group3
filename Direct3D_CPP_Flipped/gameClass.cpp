@@ -516,7 +516,8 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	projectile->getObj()->setMaterialName("MagicRedSpriteSheet.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), projectile->getObj()->getMaterialName());
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicRedSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicBlueSpriteSheet.png");
 	projectile->getTranslationMatStart(playerMove);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
@@ -1763,6 +1764,18 @@ bool gameClass::frameGame(double dt)
 	{
 		updateEnemy(dt);
 	}
+	if (enemyHolder[i].getIsActive() && enemyHolder[i].getIsFrozen())
+	{
+		//Frozen timer
+		projectile->setLifeTime(dt);
+		if (projectile->getLifeTime() > 3.0f)
+		{
+			enemyHolder[i].setIsFrozen(false);
+			removeObjFromObjHolder(projectile->getObj());
+			projectile->resetProjectile();
+			player->setFireballCast(false);
+		}
+	}
 
 	for (int i = 0; i < nrOfVisibleEnemies; i++)
 	{
@@ -2466,17 +2479,25 @@ void gameClass::initializeRings()
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
 		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(i)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(i)), 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
-		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
+		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 3);
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
 		{
 			OutputDebugString(L"\n1\n");
+			projectile->setProjectileType(0);
+			projectile->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 		}
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
 		{
 			OutputDebugString(L"\n0\n");
 		}
+		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 2)
+		{
+			OutputDebugString(L"\n2\n");
+			projectile->setProjectileType(1);
+			projectile->getObj()->setMaterialName("MagicBlueSpriteSheet.png");
+		}
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
 		ringTemp.shutdown();
 	}
 }
@@ -3903,8 +3924,7 @@ void gameClass::updateCollision(double dt)
 				player->setIfInObjHolder(false);
 			}
 		}
-
-		if (enemyHolder[i].getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+		if (projectile->getProjectileType() == 0 && enemyHolder[i].getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -3937,7 +3957,7 @@ void gameClass::updateCollision(double dt)
 			player->setFireballCast(false);
 		}
 
-		else if (enemyHolder[i].getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+		else if (projectile->getProjectileType() == 0 && enemyHolder[i].getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -3970,6 +3990,63 @@ void gameClass::updateCollision(double dt)
 			player->setFireballCast(false);
 		}
 
+//CHANGE THIS
+	if (projectile->getProjectileType() == 1 && enemy->getIsActive() && player->getFireballCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+	{
+		if (enemy->hurtState())
+		{
+			enemy->setIsFrozen(true);
+			OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
+		}
+		removeObjFromObjHolder(projectile->getObj());
+		projectile->resetProjectile();
+		player->setFireballCast(false);
+	}
+
+	else if (projectile->getProjectileType() == 1 && enemy->getIsActive() && player->getFireballCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemy->getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+	{
+		if (enemy->hurtState())
+		{
+			enemy->setIsFrozen(true);
+			OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
+		}
+		removeObjFromObjHolder(projectile->getObj());
+		projectile->resetProjectile();
+		player->setFireballCast(false);
+	}
+
+	enemy->timeCountdown(dt);
+
+	if (!enemy->getIsFrozen())
+	{
+		if (enemy->getIsActive() && lengthBetween1 <= XMVectorGetX(enemy->getTriggerCheck()) && lengthBetween1 >= 1.5f)
+		{
+			if (lengthBetween1 <= XMVectorGetX(enemy->getRangeVector()))
+			{
+				enemy->setMove(0.0f);
+				if (enemy->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemy->getBboxMinWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemy->getBboxMaxWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+				{
+					if (enemy->attackCooldown())
+					{
+						OutputDebugString(L"Attacking");
+
+						player->setPlayerHP(player->getPlayerHP() - 1);
+						player->setPlayerHurt(true);
+						player->setPlayerHurtFromLeft(true);
+						if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
+
+						{
+
+							heartHolder[player->getPlayerHP()].setIsDestroy(true);
+
+							removeObjFromObjHolder(heartHolder[player->getPlayerHP()].getObj());
+
+							heartHolder[player->getPlayerHP()].setCheckIfObjHolder(false);
+
+						}
+					}
+				}
+//CHANGE THIS ^
 		enemyHolder[i].timeCountdown(dt);
 
 		if (enemyHolder[i].getIsActive() && lengthBetween1 <= XMVectorGetX(enemyHolder[i].getTriggerCheck()) && lengthBetween1 >= 1.5f)
@@ -4038,7 +4115,6 @@ void gameClass::updateCollision(double dt)
 			//OutputDebugString(L"MOVING TO SPAWN");
 		}
 
-
 		if (enemyHolder[i].getIsActive() && lengthBetween2 <= XMVectorGetX(enemyHolder[i].getTriggerCheck()) && lengthBetween1 <= 1.5f)
 		{
 			//år höger
@@ -4105,9 +4181,9 @@ void gameClass::updateCollision(double dt)
 
 		enemyHolder[i].updateAttackCooldownTimer(dt);
 	}
-	
-	
 
+		enemy->updateAttackCooldownTimer(dt);
+	}
 	for (int i = 0; i < ladders->getObj()->getMeshCount(); i++)
 	{
 		if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(ladders->getObj()->getBoundingBoxMin(i), XMMatrixIdentity()), XMVector3Transform(ladders->getObj()->getBoundingBoxMax(i), XMMatrixIdentity()), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))

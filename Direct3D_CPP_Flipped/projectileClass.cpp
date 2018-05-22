@@ -10,6 +10,7 @@ projectileClass::projectileClass()
 	goesRight = true;
 	moveValX = 0.0f;
 	lifeTime = 0.0f;
+	projectileType = 0;
 
 	bboxMaxLeft = { 0.0f,0.0f };
 	bboxMinLeft = { 0.0f, 0.0f };
@@ -142,15 +143,28 @@ XMVECTOR projectileClass::getBoundingBoxMinRight()
 
 void projectileClass::moveProjectile(double dt)
 {
-	if (goesRight)
+	if (projectileType == 0)
 	{
-		moveValX += 20.0f * dt;
+		if (goesRight)
+		{
+			moveValX += 20.0f * dt;
+		}
+		else
+		{
+			moveValX += -20.0f * dt;
+		}
 	}
-	else 
+	if (projectileType == 1)
 	{
-		moveValX += -20.0f * dt;
+		if (goesRight)
+		{
+			moveValX += 15.0f * dt;
+		}
+		else
+		{
+			moveValX += -15.0f * dt;
+		}
 	}
-
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
 }
 
@@ -183,6 +197,16 @@ void projectileClass::setGoesRight(bool check)
 bool projectileClass::getGoesRight()
 {
 	return this->goesRight;
+}
+
+void projectileClass::setProjectileType(int other)
+{
+	this->projectileType = other;
+}
+
+int projectileClass::getProjectileType()
+{
+	return this->projectileType;
 }
 
 void projectileClass::setLifeTime(double value)
