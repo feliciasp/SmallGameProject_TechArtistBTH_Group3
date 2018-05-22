@@ -10,6 +10,7 @@ class enemyClass
 		enemyClass();
 		enemyClass(const enemyClass& other);
 		~enemyClass();
+		void clone(const enemyClass& other, XMVECTOR vector, int type);
 
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
@@ -18,7 +19,7 @@ class enemyClass
 		objectClass* getObj();
 		void getTranslationMat(XMMATRIX& other);
 		void getTranslationMatStart(XMMATRIX& other);
-		void setStartMat(float x);
+		void setStartMat(float x, float y);
 
 		float getMove();
 		void setMove(float x);
@@ -91,6 +92,9 @@ class enemyClass
 		void getEnemyTranslationMatrix(XMMATRIX &other);
 		void setEnemyTranslationMatrix(XMMATRIX & other);
 
+		void setEnemyType(int x);
+		int getEnemyType();
+
 	private:
 		objectClass* obj;
 		bool isActive;
@@ -146,6 +150,8 @@ class enemyClass
 		XMVECTOR bboxMinRight;
 		int tonsOfDmg;
 		int hurt;
+
+		int enemyType;
 
 		//NEW SHIT
 

@@ -16,6 +16,7 @@ playerClass::playerClass()
 	triggerCheck = { 4.0f, 0.0f, 0.0f };
 
 	isInObjHolder = false;
+
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -59,10 +60,11 @@ playerClass::playerClass()
 	{
 		weaponBought[i] = false;
 	}
-	for (int i = 0; i < 4; i++)
-	{
-		weaponCost[i] = 1;
-	}
+
+	weaponCost[0] = 3;
+	weaponCost[1] = 10;
+	weaponCost[2] = 30;
+	weaponCost[3] = 100;
 
 	dodge = false;
 	isDodging = false;
@@ -78,7 +80,6 @@ playerClass::playerClass()
 
 	spaceReleased = true;
 
-
 	magicCast = false;
 	magicWasCast = false;
 	magicCooldown = 0.0f;
@@ -86,13 +87,9 @@ playerClass::playerClass()
 	polygoner = 0;
 	fargments = 20;
 
-	//HP = 1;
-	/*maxHP = HP;
-	speedVal = 10.0f;*/
-
 	showShadow = true;
 
-
+	weaponType = 0;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -139,13 +136,90 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 		return false;
 	}
 
-	weapon = new weaponClass;
-	if (!weapon)
+	//WEAPONS BEGIN
+	XMVECTOR tempBboxMax;
+
+	weapon1 = new weaponClass;
+	if (!weapon1)
 	{
-		MessageBox(NULL, L"Error create object weapon",
+		MessageBox(NULL, L"Error create object weapon1",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	weapon1->setDamage(1);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon1->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon1->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon1->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon1->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon2 = new weaponClass;
+	if (!weapon2)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon2->setDamage(2);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon2->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon2->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon2->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon2->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon3 = new weaponClass;
+	if (!weapon3)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon3->setDamage(4);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon3->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon3->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon3->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon3->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon4 = new weaponClass;
+	if (!weapon4)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon4->setDamage(6);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon4->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon4->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon4->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon4->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon5 = new weaponClass;
+	if (!weapon5)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon5->setDamage(8);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon5->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon5->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon5->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon5->setBboxMinWeaponLeft(tempBboxMax);
+
+	//WEAPONS END
 
 	sound = new SoundClass;
 	if (!sound)
@@ -182,11 +256,35 @@ void playerClass::shutdown()
 		delete input;
 		input = 0;
 	}
-	if (weapon)
+	if (weapon1)
 	{
-		weapon->shutdown();
-		delete weapon;
-		weapon = 0;
+		weapon1->shutdown();
+		delete weapon1;
+		weapon1 = 0;
+	}
+	if (weapon2)
+	{
+		weapon2->shutdown();
+		delete weapon2;
+		weapon2 = 0;
+	}
+	if (weapon3)
+	{
+		weapon3->shutdown();
+		delete weapon3;
+		weapon3 = 0;
+	}
+	if (weapon4)
+	{
+		weapon4->shutdown();
+		delete weapon4;
+		weapon4 = 0;
+	}
+	if (weapon5)
+	{
+		weapon5->shutdown();
+		delete weapon5;
+		weapon5 = 0;
 	}
 	if (sound)
 	{
@@ -641,7 +739,12 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		moveValY = oldMoveValY;
 		upSpeed = 0.0f;
 	}
-		
+	
+	if (HP <= 0) {
+		currentAnimation = 7;
+		frameCount = 9;
+		timeBetweenFrames = 0.1f;
+	}
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 }
@@ -743,6 +846,16 @@ void playerClass::setSpeedVal(float x)
 	this->speedVal = x;
 }
 
+void playerClass::setWeaponType(int type)
+{
+	this->weaponType = type;
+}
+
+int playerClass::getWeaponType()
+{
+	return this->weaponType;
+}
+
 void playerClass::setHasRing(bool check)
 {
 	this->hasRing = check;
@@ -836,6 +949,7 @@ void playerClass::resetPlayer()
 
 	magicCast = false;
 	isHurt = false;
+
 }
 
 void playerClass::setPlayerHP(int x)
@@ -932,7 +1046,33 @@ float playerClass::getcurrentTime()
 	return this->currentTime;
 }
 
+void playerClass::setAnimation(int animation)
+{
+	this->currentAnimation = animation;
+}
+
 weaponClass * playerClass::getWeapon()
 {
-	return this->weapon;
+	switch (this->getWeaponType()) {
+		case 0:
+			OutputDebugString(L"\BASIC\n");
+			return this->weapon1;
+			break;
+		case 1:
+			OutputDebugString(L"\nGOLD\n");
+			return this->weapon2;
+			break;
+		case 2:
+			OutputDebugString(L"\nMAGIC\n");
+			return this->weapon3;
+			break;
+		case 3:
+			OutputDebugString(L"\nBLOOD\n");
+			return this->weapon4;
+			break;
+		case 4:
+			OutputDebugString(L"\nDARK\n");
+			return this->weapon5;
+			break;
+	}
 }

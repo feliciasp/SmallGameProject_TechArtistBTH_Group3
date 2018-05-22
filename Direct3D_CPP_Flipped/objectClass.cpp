@@ -206,6 +206,15 @@ XMVECTOR objectClass::getPosition()
 	return vecVPos;
 }
 
+XMVECTOR objectClass::getPositionWithIndex(int i)
+{
+	XMFLOAT3 vPos = { this->mesh.getVertices(i)[0].x,
+		this->mesh.getVertices(i)[0].y, this->mesh.getVertices(i)[0].z };
+	XMVECTOR vecVPos = XMLoadFloat3(&vPos);
+
+	return vecVPos;
+}
+
 void objectClass::getWorldMatrix(XMMATRIX & other)
 {
 	other = this->objWorld;
