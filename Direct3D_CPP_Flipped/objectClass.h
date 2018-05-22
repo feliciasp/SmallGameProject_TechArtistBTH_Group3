@@ -55,6 +55,18 @@ class objectClass
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
+		int getFrameCount();
+		void setFrameCount(int frameCount);
+
+		int getCurrentFrame();
+		void setCurrentFrame(int currentFrame);
+
+		int getCurrentAnimation();
+		void setCurrentAnimation(int currentAnimation);
+
+		int getAnimationCount();
+		void setAnimationCount(int animationCount);
+
 	private:
 
 		Importer mesh;
@@ -69,6 +81,11 @@ class objectClass
 
 		XMMATRIX objWorld;
 		std::string matName;
+
+		int frameCount;
+		int currentFrame;
+		int currentAnimation;
+		int animationCount;
 };
 
 #endif

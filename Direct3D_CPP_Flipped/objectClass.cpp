@@ -5,6 +5,11 @@ objectClass::objectClass()
 	vertexBuffer = 0;
 	collision = 0;
 	type = 0;
+
+	currentFrame = 1;
+	frameCount = 1;
+	animationCount = 1;
+	currentAnimation = 1;
 }
 
 objectClass::objectClass(const objectClass & other)
@@ -244,3 +249,43 @@ void objectClass::setMaterialName(std::string name)
 {
 	return this->matName;
 }
+
+ int objectClass::getFrameCount()
+ {
+	 return this->frameCount;
+ }
+
+ void objectClass::setFrameCount(int frameCount)
+ {
+	 this->frameCount = frameCount;
+ }
+
+ int objectClass::getCurrentFrame()
+ {
+	 return this->currentFrame;
+ }
+
+ void objectClass::setCurrentFrame(int currentFrame)
+ {
+	 this->currentFrame = currentFrame;
+ }
+
+ int objectClass::getCurrentAnimation()
+ {
+	 return this->currentAnimation;
+ }
+
+ void objectClass::setCurrentAnimation(int currentAnimation)
+ {
+	 this->currentAnimation = currentAnimation;
+ }
+
+ int objectClass::getAnimationCount()
+ {
+	 return this->animationCount;
+ }
+
+ void objectClass::setAnimationCount(int animationCount)
+ {
+	 this->animationCount = animationCount;
+ }
