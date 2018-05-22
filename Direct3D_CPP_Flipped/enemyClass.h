@@ -92,6 +92,7 @@ class enemyClass
 		void setEnemyType(int x);
 		int getEnemyType();
 
+		void setStartPos(float x, float y, float z);
 	private:
 		objectClass* obj;
 		bool isActive;
