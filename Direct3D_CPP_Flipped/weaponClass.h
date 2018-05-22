@@ -25,6 +25,9 @@ public:
 	void setBboxMaxWeaponLeft(XMVECTOR vector);
 	void setBboxMinWeaponLeft(XMVECTOR vector);
 
+	int getDamage();
+	void setDamage(int dmg);
+
 	XMVECTOR getBboxMaxWeaponLeft();
 	XMVECTOR getBboxMinWeaponLeft();
 
