@@ -15,7 +15,7 @@ public:
 	playerClass(const playerClass& other);
 	~playerClass();
 
-	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd);
+	bool initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd, int width, int height);
 	void shutdown();
 	void setTranslation(float x);
 
@@ -30,7 +30,7 @@ public:
 
 	XMVECTOR getTriggerCheck();
 
-	void handleMovement(double dt);
+	void handleMovement(double dt, bool check);
 	void checkCollisions(bool top, bool left, bool right, bool bot);
 	void getMoveMat(XMMATRIX& mat);
 
@@ -53,6 +53,8 @@ public:
 	float getAnimationTime();
 	float getcurrentTime();
 
+	void setAnimation(int animation);
+
 	bool hurtState();
 
 	void updateTimer();
@@ -63,7 +65,6 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
-
 	bool getInvulnurable();
 
 	void setHasRing(bool check);
@@ -71,7 +72,6 @@ public:
 
 	void setRingType(int other);
 	int getRingType();
-
 
 	void setFireballCast(bool check);
 	bool getFireballCast();
@@ -98,6 +98,10 @@ public:
 	float getSpeedVal();
 	void setSpeedVal(float x);
 
+	void setWeaponType(int type);
+	int getWeaponType();
+
+
 private:
 	bool isHurt;
 	bool hurtFromLeft;
@@ -109,8 +113,16 @@ private:
 
 	objectClass* obj;
 	directInput* input;
-	weaponClass* weapon;
+
+	weaponClass* weapon1;
+	weaponClass* weapon2;
+	weaponClass* weapon3;
+	weaponClass* weapon4;
+	weaponClass* weapon5;
+	int weaponType;
+
 	SoundClass* sound;
+	bool soundAvailable;
 
 	float moveVal;
 	XMMATRIX translation;
@@ -173,6 +185,8 @@ private:
 	bool attackReleased;
 
 	bool fireballCast; //has player cast fireball?
+	bool fireballWasCast;
+	float fireballCooldown;
 
 	bool hasRing;
 	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
@@ -190,7 +204,6 @@ private:
 
 	bool weaponBought[4];
 	int weaponCost[4];
-
 };
 
 

@@ -23,16 +23,12 @@ void GUItestClass::resetGUI()
 void GUItestClass::updateDestroy2(double dt)
 {
 	input->readKeyboard(dt);
-	if (this->input->isTPressed() && fakeTimer2 <= 0)
+	if (this->input->isEnterPressed() && fakeTimer2 <= 0)
 	{
 		fakeTimer2 = 200;
 		if (this->isDestroy == true)
 		{
 			this->isDestroy = false;
-		}
-		else if(this->isDestroy == false)
-		{
-			this->isDestroy = true;
 		}
 	}
 	else
@@ -69,7 +65,7 @@ GUItestClass::~GUItestClass()
 {
 }
 
-bool GUItestClass::initlialize(ID3D11Device * device, const char* filename, HINSTANCE hInstance, HWND hwnd)
+bool GUItestClass::initlialize(ID3D11Device * device, const char* filename, HINSTANCE hInstance, HWND hwnd, int width, int height)
 {
 	HRESULT result;
 	obj = new objectClass;
@@ -96,7 +92,7 @@ bool GUItestClass::initlialize(ID3D11Device * device, const char* filename, HINS
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = input->initialize(hInstance, hwnd);
+	result = input->initialize(hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",
@@ -137,7 +133,7 @@ bool GUItestClass::updateDestroyState(double dt)
 	bool check = false;
 	input->readKeyboard(dt);
 
-	if (this->input->isTPressed() && fakeTimer <= 0)
+	if (this->input->isEnterPressed() && fakeTimer <= 0)
 	{
 		fakeTimer = 100;
 		if (this->isDestroy == true)

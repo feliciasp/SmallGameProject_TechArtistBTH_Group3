@@ -3,6 +3,7 @@
 #define PICKUPCLASS_H
 
 #include "objectClass.h"
+#include <time.h>
 
 class pickupClass
 {

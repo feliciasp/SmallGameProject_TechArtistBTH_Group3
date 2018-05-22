@@ -10,6 +10,7 @@ class enemyClass
 		enemyClass();
 		enemyClass(const enemyClass& other);
 		~enemyClass();
+		void clone(const enemyClass& other, XMVECTOR vector, int type);
 
 		bool initlialize(ID3D11Device* device, const char* filename);
 		void shutdown();
@@ -18,11 +19,13 @@ class enemyClass
 		objectClass* getObj();
 		void getTranslationMat(XMMATRIX& other);
 		void getTranslationMatStart(XMMATRIX& other);
-		void setStartMat(float x);
+		void setStartMat(float x, float y);
 
 		float getMove();
 		void setMove(float x);
 		void resetMove();
+
+		/*bool getCollidingX();*/
 
 		XMVECTOR getTriggerCheck();
 		void updateFalling(double dt);
@@ -54,7 +57,8 @@ class enemyClass
 		void setRoationCheck(bool other);
 		bool getRoationCheck();
 
-		void checkCollisions(bool top, bool left, bool right, bool bot);
+		void checkCollisionsY(bool top, bool bot);
+		void checkCollisionsX(bool left, bool right);
 
 		void setRangeVector(XMVECTOR x);
 		XMVECTOR getRangeVector();
@@ -79,6 +83,16 @@ class enemyClass
 		XMVECTOR getStartPos();
 		int getHurt();
 
+		void getMasterMovementEnemy(XMMATRIX &other);
+		void setMasterMovementEnemy(XMMATRIX & other);
+
+		void getEnemyTranslationMatrix(XMMATRIX &other);
+		void setEnemyTranslationMatrix(XMMATRIX & other);
+
+		void setEnemyType(int x);
+		int getEnemyType();
+
+		void setStartPos(float x, float y, float z);
 	private:
 		objectClass* obj;
 		bool isActive;
@@ -86,9 +100,14 @@ class enemyClass
 
 		float temptest;
 		float moveVal;
+
+		
 		XMMATRIX translation;
 		XMMATRIX transStart;
+		//ENEMY FALLING MAT
 		XMMATRIX translationInY;
+		XMMATRIX masterMoveMat;
+		XMMATRIX tranlsationInXMatrix;
 
 		XMVECTOR triggerVector;
 		XMVECTOR triggerCheck;
@@ -117,6 +136,8 @@ class enemyClass
 		bool isAttacking;
 		void checkIfAttacking();
 
+		bool collidingRight;
+		bool collidingLeft;
 		//VAPEN
 
 		XMVECTOR bboxMaxLeft;
@@ -126,6 +147,11 @@ class enemyClass
 		XMVECTOR bboxMinRight;
 		int tonsOfDmg;
 		int hurt;
+
+		int enemyType;
+
+		//NEW SHIT
+
 };
 
 

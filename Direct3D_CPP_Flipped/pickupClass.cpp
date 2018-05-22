@@ -103,6 +103,9 @@ void pickupClass::getTranslationMatStart(XMMATRIX & other)
 void pickupClass::resetPickup()
 {
 	isDestroy = true;
+	srand(time(NULL));
+	ringType = rand() % 2;
+
 }
 
 
@@ -124,11 +127,13 @@ void pickupClass::updateAnimation(double dt)
 		if (ringType == 0)
 		{
 			currentFrame = 6;
+			obj->setCurrentFrame(6);
 		}
 
 		if (ringType == 1)
 		{
 			currentFrame = 3;
+			obj->setCurrentFrame(3);
 		}
 	}
 
@@ -136,6 +141,7 @@ void pickupClass::updateAnimation(double dt)
 	{
 		isAnimated = false;
 		currentFrame = 1;
+		obj->setCurrentFrame(1);
 	}
 
 	else
@@ -143,13 +149,19 @@ void pickupClass::updateAnimation(double dt)
 
 	if (isAnimated)
 	{
+		if (pickupType == 6)
+		{
+			animationSpeed = 0.08;
+		}
 		if (currentTime > animationSpeed)
 		{
 			currentTime = 0;
 			currentFrame++;
+			obj->setCurrentFrame(currentFrame);
 			if (currentFrame > frameCount)
 			{
 				currentFrame = 1;
+				obj->setCurrentFrame(1);
 			}
 		}
 		currentTime += 1 * dt;
@@ -159,6 +171,7 @@ void pickupClass::updateAnimation(double dt)
 void pickupClass::setFrameCount(int frameCount)
 {
 	this->frameCount = frameCount;
+	obj->setFrameCount(frameCount);
 }
 
 int pickupClass::getFrameCount()
@@ -174,6 +187,7 @@ int pickupClass::getCurrentFrame()
 void pickupClass::setCurrentAnimation(int currentAnimation)
 {
 	this->currentAnimation = currentAnimation;
+	obj->setCurrentAnimation(currentAnimation);
 }
 
 int pickupClass::getCurrentAnimation()
@@ -184,6 +198,7 @@ int pickupClass::getCurrentAnimation()
 void pickupClass::setAnimationCount(int animationCount)
 {
 	this->animationCount = animationCount;
+	obj->setAnimationCount(animationCount);
 }
 
 int pickupClass::getAnimationCount()

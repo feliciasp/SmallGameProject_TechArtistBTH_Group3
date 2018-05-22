@@ -7,11 +7,13 @@ enemyClass::enemyClass()
 	moveVal = 0;
 	translation = XMMatrixIdentity();
 	transStart = XMMatrixIdentity();
+	masterMoveMat = XMMatrixIdentity();
+	tranlsationInXMatrix = XMMatrixIdentity();
 	triggerCheck = { 10.5f, 0.0f, 0.0f};
 	rangeCheck = { 4.0f, 0.0f, 0.0f };
 	isActive = true;
 	checkIfObjHolder = false;
-	HP = 3;
+	HP = 4;
 	isAttack = false;
 	isHurt = false;
 	attackTimer = 1.0f;
@@ -21,6 +23,8 @@ enemyClass::enemyClass()
 	useRotation = false;
 
 	isHit = false;
+
+	/*collidingX = false;*/
 
 	//VAPEN
 	bboxMinRight = { 0.0f, 0.0f };
@@ -38,6 +42,17 @@ enemyClass::enemyClass(const enemyClass & other)
 
 enemyClass::~enemyClass()
 {
+}
+
+void enemyClass::clone(const enemyClass & other, XMVECTOR vector, int type)
+{
+	obj = new objectClass;
+	obj->clone(*other.obj);
+	obj->setType(3);
+	enemyType = type;
+
+	setStartMat(XMVectorGetX(vector), XMVectorGetY(vector));
+	setStartPos(XMVectorGetX(vector), XMVectorGetY(vector), XMVectorGetZ(vector));
 }
 
 bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
@@ -59,9 +74,6 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 		return false;
 	}
 	obj->setType(3);
-
-	startPos = {5.0f, 0.0f, 0.0f};
-	setStartMat(5.0f);
 
 	return true;
 }
@@ -95,9 +107,10 @@ void enemyClass::resetEnemy()
 {
 	moveVal = 0;
 	translation = XMMatrixIdentity();
-	isActive = true;
-	checkIfObjHolder = false;
-	HP = 3;
+
+	isActive = false;
+	HP = 4;
+
 	isHurt = false;
 	isAttack = false;
 	attackTimer = 1.0f;
@@ -228,7 +241,7 @@ int enemyClass::getAttackCooldown()
 	return this->attackTimer;
 }
 
-void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
+void enemyClass::checkCollisionsY(bool top, bool bot)
 {
 	if (top)
 	{
@@ -240,18 +253,27 @@ void enemyClass::checkCollisions(bool top, bool left, bool right, bool bot)
 		temptest = oldMoveValY;
 	}
 
-	/*if (left)
-	{
-		moveValX = oldMoveValX;
-	}
-	if (right)
-	{
-		moveValX = oldMoveValX;
-	}*/
-
 	this->translationInY = XMMatrixTranslation(0.0f, temptest, 0.0f);
 }
+void enemyClass::checkCollisionsX(bool left, bool right)
+{
+	collidingRight = false;
+	collidingLeft = false;
 
+	if (left && isFacingRight)
+	{
+		collidingLeft = true;
+	}
+	if (right && !isFacingRight)
+	{
+		collidingRight = true;
+	}
+}
+
+//bool enemyClass::getCollidingX()
+//{
+//	return this->collidingX;
+//}
 
 
 void enemyClass::setEnemyHurt(bool check)
@@ -286,9 +308,9 @@ void enemyClass::getTranslationMatStart(XMMATRIX & other)
 	other = this->transStart;
 }
 
-void enemyClass::setStartMat(float x)
+void enemyClass::setStartMat(float x, float y)
 {
-	this->transStart = XMMatrixTranslation(x, 0.0f, 0.0f);
+	this->transStart = XMMatrixTranslation(x, y, 0.0f);
 }
 
 float enemyClass::getMove()
@@ -298,7 +320,10 @@ float enemyClass::getMove()
 
 void enemyClass::setMove(float x)
 {
-	moveVal -= x;
+	if(!collidingRight && x < 0)
+		moveVal -= x;
+	if (!collidingLeft && x > 0)
+		moveVal -= x;
 }
 
 void enemyClass::resetMove()
@@ -381,4 +406,39 @@ XMVECTOR enemyClass::getStartPos()
 int enemyClass::getHurt()
 {
 	return this->hurt;
+}
+
+void enemyClass::getMasterMovementEnemy(XMMATRIX & other)
+{
+	other = this->masterMoveMat;
+}
+
+void enemyClass::setMasterMovementEnemy(XMMATRIX & other)
+{
+	this->masterMoveMat = other;
+}
+
+void enemyClass::getEnemyTranslationMatrix(XMMATRIX & other)
+{
+	other = this->tranlsationInXMatrix;
+}
+
+void enemyClass::setEnemyTranslationMatrix(XMMATRIX & other)
+{
+	this->tranlsationInXMatrix = other;
+}
+
+void enemyClass::setEnemyType(int x)
+{
+	this->enemyType = x;
+}
+
+int enemyClass::getEnemyType()
+{
+	return this->enemyType;
+}
+
+void enemyClass::setStartPos(float x, float y, float z)
+{
+	this->startPos = { x,y,z };
 }

@@ -59,6 +59,16 @@ void weaponClass::setBboxMinWeaponLeft(XMVECTOR vector)
 	this->bboxMinLeft = vector;
 }
 
+int weaponClass::getDamage()
+{
+	return this->tonsOfDmg;
+}
+
+void weaponClass::setDamage(int dmg)
+{
+	this->tonsOfDmg = dmg;
+}
+
 XMVECTOR weaponClass::getBboxMaxWeaponLeft()
 {
 	return this->bboxMaxLeft;

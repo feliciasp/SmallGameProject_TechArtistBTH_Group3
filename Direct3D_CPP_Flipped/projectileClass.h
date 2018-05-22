@@ -25,6 +25,15 @@ public:
 	void setTransX(XMMATRIX& other);
 	void getTransX(XMMATRIX& other);
 
+	void setBoundingBoxMaxLeft(XMVECTOR other);
+	void setBoundingBoxMinLeft(XMVECTOR other);
+	void setBoundingBoxMaxRight(XMVECTOR other);
+	void setBoundingBoxMinRight(XMVECTOR other);
+	XMVECTOR getBoundingBoxMaxLeft();
+	XMVECTOR getBoundingBoxMinLeft();
+	XMVECTOR getBoundingBoxMaxRight();
+	XMVECTOR getBoundingBoxMinRight();
+
 	void moveProjectile(double dt);
 
 	void resetProjectile();
@@ -38,16 +47,37 @@ public:
 	void setLifeTime(double value);
 	double getLifeTime();
 
+	void updateAnimation(double dt);
+	int getCurrentFrame();
+	void setFrameCount(int other);
+	int getFrameCount();
+	void setCurrentAnimation(int other);
+	int getCurrentAnimation();
+	void setAnimationCount(int other);
+	int getAnimationCount();
+
 private:
 	objectClass* obj;
 	bool isDestroyed;
 	XMMATRIX transStart;
 	bool checkIfSetToObjHolder;
-	bool goesRight; //true if goes to right of screen.
-	
+	bool goesRight; //true if projectile goes to right of screen.
+
 	float moveValX;
 	XMMATRIX transX;
 	double lifeTime;
+
+	XMVECTOR bboxMaxLeft;
+	XMVECTOR bboxMinLeft;
+	XMVECTOR bboxMaxRight;
+	XMVECTOR bboxMinRight;
+
+	int currentFrame;
+	int frameCount;
+	int currentAnimation;
+	int animationCount;
+	float animationSpeed;
+	float currentTime;
 };
 
 #endif

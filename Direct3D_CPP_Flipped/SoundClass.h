@@ -54,6 +54,10 @@ private:
 	bool playBackgroundSounds(IDirectSoundBuffer8* secondaryBuffer);
 	bool playSoundEffect(IDirectSoundBuffer8* secondaryBuffer);
 
+	bool isAttackBuffer1Playing;
+	bool isAttackBuffer2Playing;
+	bool isJumpBufferPlaying;
+
 	IDirectSound8* m_DirectSound;
 
 	//Primary buffer used for playing sounds
@@ -68,7 +72,8 @@ private:
 	IDirectSoundBuffer8* m_LimboAmbientSoundBuffer;
 
 	//SFX buffers
-	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer;
+	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer1;
+	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer2;
 	IDirectSoundBuffer8* m_FireballSoundBuffer;
 	IDirectSoundBuffer8* m_JumpSoundBuffer;
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;

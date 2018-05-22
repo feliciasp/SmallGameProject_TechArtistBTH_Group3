@@ -24,7 +24,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -35,6 +35,14 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		MessageBox(NULL, L"Error setting shader parameters",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
+	}
+	if (type == 2 || type == 4)
+	{
+		devCon->OMSetRenderTargets(1, &renderTargetBackBuffer, 0);
+	}
+	else
+	{
+		devCon->OMSetRenderTargets(1, &renderTargetBackBuffer, depthStencilView);
 	}
 	//render buffer with shader
 	if (type == 1)
@@ -51,7 +59,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		renderShaderSprite(devCon, indexCount, name);
+		renderShaderSprite(devCon, indexCount, name, weaponType);
 	}
 
 	else if (type == 3)
@@ -64,6 +72,13 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
 		renderPickup(devCon, indexCount, name);
 	}
+
+	else if (type == 5)
+	{
+		result = setPlayerShaderParameters(devCon, flipped, frameCount, currentFrame, currentAnimation);
+		renderPickup(devCon, indexCount, name);
+	}
+
 	else
 	{
 		renderShader(devCon, indexCount, name);
@@ -209,7 +224,7 @@ bool shaderClass::createSamplerDesc(ID3D11Device * device)
 	//Describe sampler desc
 	D3D11_SAMPLER_DESC texSampDesc;
 	ZeroMemory(&texSampDesc, sizeof(texSampDesc));
-	texSampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	texSampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	texSampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	texSampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	texSampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -218,6 +233,25 @@ bool shaderClass::createSamplerDesc(ID3D11Device * device)
 	texSampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	result = device->CreateSamplerState(&texSampDesc, &textureSample);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creating shader resource view",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+
+	//Describe sampler desc
+	D3D11_SAMPLER_DESC texSampDesc2;
+	ZeroMemory(&texSampDesc2, sizeof(texSampDesc2));
+	texSampDesc2.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	texSampDesc2.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	texSampDesc2.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	texSampDesc2.MinLOD = 0;
+	texSampDesc2.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = device->CreateSamplerState(&texSampDesc2, &textureSampleSmoothed);
 	if (FAILED(result))
 	{
 		MessageBox(NULL, L"Error creating shader resource view",
@@ -612,7 +646,7 @@ void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -633,14 +667,13 @@ void shaderClass::renderShaderScreenSpace(ID3D11DeviceContext * devCon, int inde
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
 }
 
-void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCount, std::string name, int weaponType)
 {
 	devCon->IASetInputLayout(vertexLayout);
 	devCon->VSSetShader(vertexShader, nullptr, 0);
@@ -652,13 +685,35 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
-
-		if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png")
-		{
-			devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+		switch (weaponType) {
+			case 0:
+				if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png"){
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+			break;
+			case 1:
+				if (matNameHolder[i].nameMat == "GoldShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 2:
+				if (matNameHolder[i].nameMat == "MagicShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 3:
+				if (matNameHolder[i].nameMat == "BloodShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
+			case 4:
+				if (matNameHolder[i].nameMat == "DarkShovelSpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -679,7 +734,7 @@ void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std:
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
-	//devCon->PSSetSamplers(0, 1, &textureSample);
+	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
 
 	//render triangle
 	devCon->Draw(indexCount, 0);
@@ -698,6 +753,7 @@ void shaderClass::renderPickup(ID3D11DeviceContext * devCon, int indexCount, std
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
 	}
+	devCon->PSSetSamplers(0, 1, &textureSample);
 
 	devCon->Draw(indexCount, 0);
 }
@@ -755,7 +811,6 @@ void shaderClass::shutdown()
 		textureViewNorm = 0;
 	}
 }
-
 
 void shaderClass::createNormalMapInfo(ID3D11Device * device)
 {

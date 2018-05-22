@@ -60,7 +60,11 @@ public:
 	void addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 	void removePickupFromPickupHolder(pickupClass &pickup, int nrOfVisiblePickups);
 
+	void addEnemyToEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies, XMVECTOR vector, int type);
+	void removeEnemyFromEnemyHolder(enemyClass &enemy, int nrOfVisibleEnemies);
+
 	void initializeRings();
+	void initializeEnemies();
 
 	void checkReleasedKeys();
 
@@ -79,6 +83,7 @@ private:
 	HWND hwnd;
 
 	SoundClass* sound;
+	bool soundAvailable;
 
 	directInput* inputDirectOther;
 	graphicsClass* graphics;
@@ -87,7 +92,12 @@ private:
 	cameraClass* camera;
 	directInput* movementInput;
 	enemyClass* enemy;
+	enemyClass* enemy2;
+	enemyClass* boss;
 	backgroundClass* background;
+	backgroundClass* spawnEnemys;
+	backgroundClass* pickupSpawn;
+	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
 	playerClass* player;
@@ -97,6 +107,7 @@ private:
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
+	enemyClass* enemyHolder;
 
 	std::vector<objectClass*> objHolder;
 	std::vector<objectClass*> objHolderMeny;
@@ -108,9 +119,9 @@ private:
 
 	XMMATRIX world, view, proj, ortoProj;
 	void updateConstantMatrices();
-	XMMATRIX enemyMatPos, matMul, enemyFallingMat;
-	XMMATRIX masterMovementEnemyMat;
-	XMMATRIX enemyTranslationMatrix;
+	XMMATRIX tempEnemyStartingPositionMatrix, tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame, tempEnemyIfAirThenFallMatrix;
+	XMMATRIX tempMasterMovementEnemyMat;
+	XMMATRIX tempEnemyTranslationMatrix;
 	void updateEnemy(double dt);
 	XMMATRIX playerMove;
 	void updatePlayer(platformClass* platform, double dt);
@@ -142,6 +153,7 @@ private:
 	bool checkCollisionPlatformBot(platformClass* platform, objectClass *obj, XMMATRIX objWorld);
 
 	int nrOfVisiblePickups;
+	int nrOfVisibleEnemies;
 
 	bool gameStateLevel;
 	bool gameStateMeny;
@@ -160,6 +172,8 @@ private:
 	XMMATRIX heart1;
 	XMMATRIX heart2;
 	XMMATRIX heart3;
+	XMMATRIX heart4;
+	XMMATRIX heart5;
 
 	GUItestClass* slot1;
 	GUItestClass* slot2;
@@ -168,6 +182,9 @@ private:
 	XMMATRIX slot1MatLimbo;
 	XMMATRIX slot2MatLimbo;
 	void updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2);
+
+	GUItestClass* polygonDisp;
+	XMMATRIX polygonDispMat;
 
 	GUItestClass* ringDisplay;
 	XMMATRIX ringDisplayMat;
@@ -199,20 +216,31 @@ private:
 	int menyTimer;
 	bool menyCheck;
 
-	
 	bool firstFrame;
 
-
 	/////////LIMBO STUFF
-		backgroundClass* limboFrontPlane;
-		pickupClass* limboSmithPlane;
-		backgroundClass* limboBackPlane;
-		pickupClass* limboTextPlane;
-		platformClass* limboWalkingPlane;
-		XMMATRIX limboMat;
-		void updateLimboBackground();
+	backgroundClass* limboFrontPlane;
+	pickupClass* limboSmithPlane;
+	backgroundClass* limboBackPlane;
+	pickupClass* limboTextPlane;
+	platformClass* limboWalkingPlane;
+	pickupClass* limboTextPlanePressE;
+	XMMATRIX limboMat;
+	void updateLimboBackground();
 
-		pickupClass* limboPickupHolder;
+	pickupClass* limboPickupHolder;
+
+	GUItestClass* healthUpgradeCount;
+	XMMATRIX healthUpgradeCountMat;
+	GUItestClass* speedUpgradeCount;
+	void updateCountersShop();
+	XMMATRIX speedUpgradeCountMat;
+
+	GUItestClass* totalCostPendingSlot2;
+	XMMATRIX totalCostPendingSlot2Mat;
+	GUItestClass* totalCostPendingSlot1;
+	void pendingCostUpdate();
+	XMMATRIX totalCostPendingSlot1Mat;
 
 	//has to do with shop
 	GUItestClass* upgradeGUI;
@@ -255,6 +283,16 @@ private:
 
 	backgroundClass* playerShadowPlane;
 	XMMATRIX shadowMat;
+
+	////RANDOM
+	bool isTextInPickupHolder;
+	bool isTextDestroy;
+	bool isTextInPickupHolder2;
+	bool isTextDestroy2;
+
+	//PORTAL
+	pickupClass *portalPlane;
+	XMMATRIX portalMat;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class

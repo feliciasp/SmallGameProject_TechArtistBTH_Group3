@@ -6,7 +6,8 @@ playerClass::playerClass()
 	moveVal = 0;
 	input = 0;
 	sound = 0;
-	
+	soundAvailable = true;
+
 	hasRing = false;
 	ringType = 0;
 
@@ -16,7 +17,6 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
-	HP = 1;
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -60,10 +60,11 @@ playerClass::playerClass()
 	{
 		weaponBought[i] = false;
 	}
-	for (int i = 0; i < 4; i++)
-	{
-		weaponCost[i] = 1;
-	}
+
+	weaponCost[0] = 3;
+	weaponCost[1] = 10;
+	weaponCost[2] = 30;
+	weaponCost[3] = 100;
 
 	dodge = false;
 	isDodging = false;
@@ -79,17 +80,16 @@ playerClass::playerClass()
 
 	spaceReleased = true;
 
-
 	fireballCast = false;
+	fireballWasCast = false;
+	fireballCooldown = 0.0f;
 
 	polygoner = 0;
-	fargments = 0;
-	maxHP = HP;
-	speedVal = 10.0f;
+	fargments = 20;
 
 	showShadow = true;
 
-
+	weaponType = 0;
 }
 
 playerClass::playerClass(const playerClass & other)
@@ -100,7 +100,7 @@ playerClass::~playerClass()
 {
 }
 
-bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd)
+bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTANCE hInstance, HWND hwnd,int width,int height)
 {
 	bool result;
 
@@ -128,7 +128,7 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = input->initialize(hInstance, hwnd);
+	result = input->initialize(hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy obj",
@@ -136,13 +136,90 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 		return false;
 	}
 
-	weapon = new weaponClass;
-	if (!weapon)
+	//WEAPONS BEGIN
+	XMVECTOR tempBboxMax;
+
+	weapon1 = new weaponClass;
+	if (!weapon1)
 	{
-		MessageBox(NULL, L"Error create object weapon",
+		MessageBox(NULL, L"Error create object weapon1",
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	weapon1->setDamage(1);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon1->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon1->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon1->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon1->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon2 = new weaponClass;
+	if (!weapon2)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon2->setDamage(2);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon2->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon2->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon2->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon2->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon3 = new weaponClass;
+	if (!weapon3)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon3->setDamage(4);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon3->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon3->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon3->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon3->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon4 = new weaponClass;
+	if (!weapon4)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon4->setDamage(6);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon4->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon4->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon4->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon4->setBboxMinWeaponLeft(tempBboxMax);
+
+	weapon5 = new weaponClass;
+	if (!weapon5)
+	{
+		MessageBox(NULL, L"Error create object weapon2",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	weapon5->setDamage(8);
+
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	this->weapon5->setBboxMaxWeaponRight(tempBboxMax);
+	this->weapon5->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	this->weapon5->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
+	this->weapon5->setBboxMinWeaponLeft(tempBboxMax);
+
+	//WEAPONS END
 
 	sound = new SoundClass;
 	if (!sound)
@@ -154,9 +231,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	result = sound->initialize(hwnd);
 	if (!result)
 	{
-		MessageBox(NULL, L"Error sound obj init",
+	/*	MessageBox(NULL, L"Error sound obj init",
 			L"Error", MB_OK | MB_ICONERROR);
-		return false;
+		return false;*/
+		soundAvailable = false;
 	}
 
 	setStartMat(0.0f, 5.0f);
@@ -178,11 +256,35 @@ void playerClass::shutdown()
 		delete input;
 		input = 0;
 	}
-	if (weapon)
+	if (weapon1)
 	{
-		weapon->shutdown();
-		delete weapon;
-		weapon = 0;
+		weapon1->shutdown();
+		delete weapon1;
+		weapon1 = 0;
+	}
+	if (weapon2)
+	{
+		weapon2->shutdown();
+		delete weapon2;
+		weapon2 = 0;
+	}
+	if (weapon3)
+	{
+		weapon3->shutdown();
+		delete weapon3;
+		weapon3 = 0;
+	}
+	if (weapon4)
+	{
+		weapon4->shutdown();
+		delete weapon4;
+		weapon4 = 0;
+	}
+	if (weapon5)
+	{
+		weapon5->shutdown();
+		delete weapon5;
+		weapon5 = 0;
 	}
 	if (sound)
 	{
@@ -260,7 +362,7 @@ XMVECTOR playerClass::getTriggerCheck()
 	return this->triggerCheck;
 }
 
-void playerClass::handleMovement(double dt)
+void playerClass::handleMovement(double dt, bool checkClimb)
 {
 	
 	oldMoveValX = moveValX;
@@ -271,9 +373,18 @@ void playerClass::handleMovement(double dt)
 
 	idle = true;
 
+	bool isCliming = false;
 
 	justJumped = false;
-	moveValY += upSpeed * dt;
+	if (this->input->isEnterPressed() && !fallBack && !isDodging && !checkClimb)
+	{
+		moveValY += 6 * dt;
+		isCliming = true;
+	}
+	else
+	{
+		moveValY += upSpeed * dt;
+	}
 
 
 	currentAnimation = 1;
@@ -395,6 +506,7 @@ void playerClass::handleMovement(double dt)
 			}
 		}
 	}
+
 	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
 		moveValX += -speedVal * dt;
@@ -440,7 +552,9 @@ void playerClass::handleMovement(double dt)
 	{
 		if (!isJumping)
 		{
-			sound->playSFX(1, 1);
+			if (soundAvailable)
+				sound->playSFX(1, 1);
+
 			upSpeed = 23.5f;
 			//OutputDebugString(L"upSpeed set");
 			justJumped = true;
@@ -459,7 +573,9 @@ void playerClass::handleMovement(double dt)
 		{
 			if (isJumping == true && !hasDoubleJumped && spaceReleased)
 			{
-				sound->playSFX(1, 1);
+				if (soundAvailable)
+					sound->playSFX(1, 1);
+
 				upSpeed = 23.5f;
 				if (attacking == false)
 				{
@@ -503,14 +619,12 @@ void playerClass::handleMovement(double dt)
 		timeBetweenFrames = 0.1f;
 	}
 	
-	if (upSpeed > -1.0f && !fallBack)
+	if (upSpeed > -1.0f && !fallBack && !isCliming)
 	{
 		upSpeed += (-50 * dt) - moveValY * dt;
 		isJumping = true;
 	}
-
-	else if (upSpeed < -1.0f && !fallBack && !isDodging) //upSpeed less than -1.0f;
-
+	else if (upSpeed < -1.0f && !fallBack && !isDodging && !isCliming) //upSpeed less than -1.0f;
 	{
 		if (falling == false && attacking == false)
 		{
@@ -532,7 +646,9 @@ void playerClass::handleMovement(double dt)
 	{
 		if (attacking == false)
 		{
-			sound->playSFX(1, 0);
+			if (soundAvailable)
+				sound->playSFX(1, 0);
+			
 			attacking = true;
 			currentTime = 0;
 			currentFrame = 1;
@@ -542,12 +658,24 @@ void playerClass::handleMovement(double dt)
 	}
 
 
-	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast)
+	if (this->input->isPPressed() && hasRing && ringType == 1 && !fireballCast && fireballCooldown == 0.0f)
 	{
-		sound->playSFX(1, 2);
+		if (soundAvailable)
+			sound->playSFX(1, 2);
+
 		fireballCast = true;
+		fireballWasCast = true;
 	}
 
+	if (fireballWasCast)
+	{
+		fireballCooldown += dt;
+		if (fireballCooldown > 6.0f)
+		{
+			fireballCooldown = 0.0f;
+			fireballWasCast = false;
+		}
+	}
 
 	if (!this->input->isOPressed())
 	{
@@ -602,7 +730,12 @@ void playerClass::handleMovement(double dt)
 		moveValY = oldMoveValY;
 		upSpeed = 0.0f;
 	}
-		
+	
+	if (HP <= 0) {
+		currentAnimation = 7;
+		frameCount = 9;
+		timeBetweenFrames = 0.1f;
+	}
 
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 }
@@ -704,6 +837,16 @@ void playerClass::setSpeedVal(float x)
 	this->speedVal = x;
 }
 
+void playerClass::setWeaponType(int type)
+{
+	this->weaponType = type;
+}
+
+int playerClass::getWeaponType()
+{
+	return this->weaponType;
+}
+
 void playerClass::setHasRing(bool check)
 {
 	this->hasRing = check;
@@ -797,6 +940,7 @@ void playerClass::resetPlayer()
 
 	fireballCast = false;
 	isHurt = false;
+
 }
 
 void playerClass::setPlayerHP(int x)
@@ -893,7 +1037,33 @@ float playerClass::getcurrentTime()
 	return this->currentTime;
 }
 
+void playerClass::setAnimation(int animation)
+{
+	this->currentAnimation = animation;
+}
+
 weaponClass * playerClass::getWeapon()
 {
-	return this->weapon;
+	switch (this->getWeaponType()) {
+		case 0:
+			/*OutputDebugString(L"\BASIC\n");*/
+			return this->weapon1;
+			break;
+		case 1:
+			/*OutputDebugString(L"\nGOLD\n");*/
+			return this->weapon2;
+			break;
+		case 2:
+			/*OutputDebugString(L"\nMAGIC\n");*/
+			return this->weapon3;
+			break;
+		case 3:
+			/*OutputDebugString(L"\nBLOOD\n");*/
+			return this->weapon4;
+			break;
+		case 4:
+			/*OutputDebugString(L"\nDARK\n");*/
+			return this->weapon5;
+			break;
+	}
 }
