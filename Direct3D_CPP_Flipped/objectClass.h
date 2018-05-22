@@ -44,6 +44,7 @@ class objectClass
 
 		void updatePosition(XMMATRIX mat);
 		XMVECTOR getPosition();
+		XMVECTOR getPositionWithIndex(int i);
 
 		void getWorldMatrix(XMMATRIX& other);
 		void setWorldMatrix(XMMATRIX& other);
