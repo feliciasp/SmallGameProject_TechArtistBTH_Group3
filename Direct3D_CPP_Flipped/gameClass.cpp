@@ -1885,7 +1885,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, pickupHolder[pickupTypeChecker].getFrameCount(), pickupHolder[pickupTypeChecker].getCurrentFrame());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -2452,7 +2452,9 @@ void gameClass::initializeRings()
 	addPickupToPickupHolder(*portalPlane, nrOfVisiblePickups);
 
 	pickupHolder[nrOfVisiblePickups - 1].setFrameCount(24);
+	pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(24);
 	pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+	pickupHolder[nrOfVisiblePickups - 1].getObj()->setAnimationCount(1);
 	pickupHolder[nrOfVisiblePickups - 1].setPickupType(7);
 	//pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 	pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(portalMat);
@@ -2464,7 +2466,7 @@ void gameClass::initializeRings()
 		ringTemp.clone(*ring);
 		nrOfVisiblePickups++;
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
-		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(i)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(i)), 0.1f));
+		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(i)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(i)) -20, 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
@@ -2477,6 +2479,7 @@ void gameClass::initializeRings()
 		}
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+		pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(8);
 		ringTemp.shutdown();
 	}
 }
@@ -3869,6 +3872,7 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 					pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(8);
 				}
 				player->setIfInObjHolder(false);
 			}
@@ -3928,6 +3932,7 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 					pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(8);
 				}
 				player->setIfInObjHolder(false);
 			}
@@ -3961,6 +3966,7 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(scale * tempEnemyTranslationMatrix * offset);
 					pickupHolder[nrOfVisiblePickups - 1].setPickupType(1);
 					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(8);
 				}
 				player->setIfInObjHolder(false);
 			}
@@ -4120,7 +4126,9 @@ void gameClass::updateCollision(double dt)
 				nrOfVisiblePickups++;
 				addPickupToPickupHolder(text2, nrOfVisiblePickups);
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+				pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(4);
 				pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+				pickupHolder[nrOfVisiblePickups - 1].getObj()->setAnimationCount(1);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(8);
 				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixIdentity());
 				text2.shutdown();
@@ -4173,7 +4181,9 @@ void gameClass::updateCollision(double dt)
 					addPickupToPickupHolder(text, nrOfVisiblePickups);
 					pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 					pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(4);
 					pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setAnimationCount(1);
 					pickupHolder[nrOfVisiblePickups - 1].setPickupType(5);
 					pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixTranslation(-1.9, -4.9f, 0.0) * XMMatrixScaling(2.6, 1.5, 0.0) * yOffset);
 					text.shutdown();
@@ -4283,7 +4293,9 @@ void gameClass::updateCollision(double dt)
 				if (player->getRingType() == 1)
 					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingRedSpriteSheet.png");
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
+				pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(9);
 				pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
+				pickupHolder[nrOfVisiblePickups - 1].getObj()->setAnimationCount(1);
 				pickupHolder[nrOfVisiblePickups - 1].setPickupType(6);
 				pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
 				effect.shutdown();
