@@ -2499,7 +2499,6 @@ void gameClass::initializeEnemies()
 			nrOfVisibleEnemies++;
 			addEnemyToEnemyHolder(enemyTemp, nrOfVisibleEnemies, spawnEnemys->getObj()->getPositionWithIndex(i), 1);
 		}
-		
 		enemyHolder[nrOfVisibleEnemies - 1].getTranslationMatStart(tempEnemyStartingPositionMatrix);
 		enemyHolder[nrOfVisibleEnemies - 1].setIsActive(true);
 

@@ -52,6 +52,7 @@ void enemyClass::clone(const enemyClass & other, XMVECTOR vector, int type)
 	enemyType = type;
 
 	setStartMat(XMVectorGetX(vector), XMVectorGetY(vector));
+	setStartPos(XMVectorGetX(vector), XMVectorGetY(vector), XMVectorGetZ(vector));
 }
 
 bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
@@ -73,9 +74,6 @@ bool enemyClass::initlialize(ID3D11Device* device, const char* filename)
 		return false;
 	}
 	obj->setType(3);
-
-	startPos = {5.0f, 0.0f, 0.0f};
-	setStartMat(5.0f, 0.0f);
 
 	return true;
 }
@@ -438,4 +436,9 @@ void enemyClass::setEnemyType(int x)
 int enemyClass::getEnemyType()
 {
 	return this->enemyType;
+}
+
+void enemyClass::setStartPos(float x, float y, float z)
+{
+	this->startPos = { x,y,z };
 }
