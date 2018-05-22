@@ -48,6 +48,9 @@ class enemyClass
 		bool hurtState();
 		void timeCountdown(float dt);
 
+		void setIsFrozen(bool check);
+		bool getIsFrozen();
+
 		bool attackCooldown();
 		void updateAttackCooldownTimer(float dt);
 		
@@ -120,6 +123,7 @@ class enemyClass
 		bool isHurt;
 		bool isAttack;
 		float attackTimer;
+		bool isFrozen;
 
 		float hurtTimer;
 
