@@ -1046,23 +1046,23 @@ weaponClass * playerClass::getWeapon()
 {
 	switch (this->getWeaponType()) {
 		case 0:
-			OutputDebugString(L"\BASIC\n");
+			/*OutputDebugString(L"\BASIC\n");*/
 			return this->weapon1;
 			break;
 		case 1:
-			OutputDebugString(L"\nGOLD\n");
+			/*OutputDebugString(L"\nGOLD\n");*/
 			return this->weapon2;
 			break;
 		case 2:
-			OutputDebugString(L"\nMAGIC\n");
+			/*OutputDebugString(L"\nMAGIC\n");*/
 			return this->weapon3;
 			break;
 		case 3:
-			OutputDebugString(L"\nBLOOD\n");
+			/*OutputDebugString(L"\nBLOOD\n");*/
 			return this->weapon4;
 			break;
 		case 4:
-			OutputDebugString(L"\nDARK\n");
+			/*OutputDebugString(L"\nDARK\n");*/
 			return this->weapon5;
 			break;
 	}

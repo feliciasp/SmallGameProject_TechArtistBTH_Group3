@@ -1197,7 +1197,6 @@ void gameClass::shutdown()
 		for (int i = 0; i < nrOfVisibleEnemies; i++)
 		{
 			enemyHolder[i].shutdown();
-			OutputDebugString(L"\nDeleteing enemy obj!\n");
 		}
 
 		delete[] enemyHolder;
@@ -2360,7 +2359,7 @@ void gameClass::addPickupToPickupHolder(pickupClass &pickup, int nrOfVisiblePick
 	{
 		tempArray[i] = pickupHolder[i];
 	}
-	OutputDebugString(L"\npickup created!\n");
+	/*OutputDebugString(L"\npickup created!\n");*/
 
 	delete[] pickupHolder;
 
@@ -2388,7 +2387,6 @@ void gameClass::removePickupFromPickupHolder(pickupClass & pickup, int nrOfVisib
 		{
 			if (i != index)
 			{
-				OutputDebugString(L"\nRemoving pickup\n");
 				tempArray[j] = pickupHolder[i];
 				j++;
 			}
@@ -2410,7 +2408,6 @@ void gameClass::addEnemyToEnemyHolder(enemyClass & enemy, int nrOfVisibleEnemies
 	}
 
 	delete[] enemyHolder;
-	OutputDebugString(L"\nEnemy Created\n");
 	enemyHolder = tempArray;
 	enemyHolder[nrOfVisibleEnemies - 1].clone(enemy, vector, type);
 }
@@ -2435,7 +2432,7 @@ void gameClass::removeEnemyFromEnemyHolder(enemyClass & enemy, int nrOfVisibleEn
 		{
 			if (i != index)
 			{
-				OutputDebugString(L"\nRemoving\n");
+				/*OutputDebugString(L"\nRemoving\n");*/
 				tempArray[j] = enemyHolder[i];
 				j++;
 			}
@@ -2471,11 +2468,11 @@ void gameClass::initializeRings()
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
 		{
-			OutputDebugString(L"\n1\n");
+			/*OutputDebugString(L"\n1\n");*/
 		}
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
 		{
-			OutputDebugString(L"\n0\n");
+			/*OutputDebugString(L"\n0\n");*/
 		}
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(8);
