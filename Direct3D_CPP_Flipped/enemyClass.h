@@ -50,7 +50,12 @@ class enemyClass
 
 		bool attackCooldown();
 		void updateAttackCooldownTimer(float dt);
-		
+
+		void setIsFrozen(bool check);
+		bool getIsFrozen();
+
+		void updateFrozenTimer(float dt);
+
 		void setFacing(bool other);
 		bool getFacing();
 
@@ -121,8 +126,10 @@ class enemyClass
 		bool isHurt;
 		bool isAttack;
 		float attackTimer;
-
 		float hurtTimer;
+		
+		bool isFrozen;
+		float frozenTimer;
 
 		void setEnemyHurt(bool check);
 		bool getEnemyHurt();

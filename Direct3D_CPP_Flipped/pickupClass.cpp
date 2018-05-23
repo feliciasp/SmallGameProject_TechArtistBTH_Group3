@@ -104,7 +104,7 @@ void pickupClass::resetPickup()
 {
 	isDestroy = true;
 	srand(time(NULL));
-	ringType = rand() % 2;
+	ringType = rand() % 3;
 
 }
 
@@ -126,14 +126,20 @@ void pickupClass::updateAnimation(double dt)
 		isAnimated = false;
 		if (ringType == 0)
 		{
-			currentFrame = 6;
-			obj->setCurrentFrame(6);
+			currentFrame = 9;
+			obj->setCurrentFrame(9);
 		}
 
 		if (ringType == 1)
 		{
 			currentFrame = 3;
 			obj->setCurrentFrame(3);
+		}
+
+		if (ringType == 2)
+		{
+			currentFrame = 6;
+			obj->setCurrentFrame(6);
 		}
 	}
 

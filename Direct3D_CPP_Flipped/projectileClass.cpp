@@ -142,15 +142,28 @@ XMVECTOR projectileClass::getBoundingBoxMinRight()
 
 void projectileClass::moveProjectile(double dt)
 {
-	if (goesRight)
+	if (projectileType == 0)
 	{
-		moveValX += 20.0f * dt;
+		if (goesRight)
+		{
+			moveValX += 20.0f * dt;
+		}
+		else
+		{
+			moveValX += -20.0f * dt;
+		}
 	}
-	else 
+	if (projectileType == 1)
 	{
-		moveValX += -20.0f * dt;
+		if (goesRight)
+		{
+			moveValX += 16.0f * dt;
+		}
+		else
+		{
+			moveValX += -16.0f * dt;
+		}
 	}
-
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
 }
 
@@ -163,6 +176,16 @@ void projectileClass::resetProjectile()
 	goesRight = true;
 	moveValX = 0.0f;
 	lifeTime = 0.0f;
+}
+
+void projectileClass::setProjectileType(int value)
+{
+	this->projectileType = value;
+}
+
+int projectileClass::getProjectileType()
+{
+	return this->projectileType;
 }
 
 void projectileClass::setCheckIfObjHolder(bool check)

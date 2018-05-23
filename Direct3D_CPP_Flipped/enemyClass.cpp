@@ -18,6 +18,8 @@ enemyClass::enemyClass()
 	isHurt = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
+	isFrozen = false;
+	frozenTimer = 3.0f;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -115,6 +117,8 @@ void enemyClass::resetEnemy()
 	isAttack = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
+	isFrozen = false;
+	frozenTimer = 3.0f;
 
 	isFacingRight = true;
 	useRotation = false;
@@ -196,6 +200,26 @@ void enemyClass::updateAttackCooldownTimer(float dt)
 	if (this->attackTimer <= 0)
 	{
 		this->isAttack = false;
+	}
+}
+
+void enemyClass::setIsFrozen(bool check)
+{
+	this->isFrozen = check;
+}
+
+bool enemyClass::getIsFrozen()
+{
+	return this->isFrozen;
+}
+
+void enemyClass::updateFrozenTimer(float dt)
+{
+	this->frozenTimer -= dt;
+	if (frozenTimer <= 0.0f)
+	{
+		this->isFrozen = false;
+		this->frozenTimer = 3.0f;
 	}
 }
 
