@@ -2456,33 +2456,66 @@ void gameClass::initializeRings()
 	pickupHolder[nrOfVisiblePickups - 1].setPickupType(7);
 	//pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 	pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(portalMat);
-	
-	for (int i = 0; i < 2; i++)
+
+	int index = 0;
+	int previousRing = -1;
+
+	while (index < 2)
 	{
 		srand(time(NULL));
 		pickupClass ringTemp;
 		ringTemp.clone(*ring);
 		nrOfVisiblePickups++;
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
-		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(i)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(i)) -20, 0.1f));
+		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(index)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(index)) - 20, 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 3);
+
+		if (previousRing == pickupHolder[nrOfVisiblePickups - 1].getRingType())
+		{
+			if (previousRing == 0)
+			{
+				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2 + 1);
+			}
+			else if (previousRing == 1)
+			{
+				previousRing = rand() % 2;
+				if (previousRing == 0)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(0);
+				}
+				if (previousRing == 1)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(2);
+				}
+			}
+			else if (previousRing == 2)
+			{
+				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
+			}
+
+		}
+
 		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
 		{
-			/*OutputDebugString(L"\n1\n");*/
-			projectile->getObj()->setMaterialName("MagicRedSpriteSheet.png");
-			projectile->setProjectileType(0);
+			OutputDebugString(L"\n1\n");
+			previousRing = 1;
+			index++;
 		}
-		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
+		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
 		{
-			/*OutputDebugString(L"\n0\n");*/
+			OutputDebugString(L"\n0\n");
+			previousRing = 0;
+			index++;
 		}
-		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 2)
+		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 2)
 		{
-			/*OutputDebugString(L"\n2\n");*/
-			projectile->getObj()->setMaterialName("MagicBlueSpriteSheet.png");
-			projectile->setProjectileType(1);
+			OutputDebugString(L"\n2\n");
+			previousRing = 2;
+			index++;
 		}
+
+		previousRing = pickupHolder[nrOfVisiblePickups - 1].getRingType();
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
 		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
 		pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(9);
@@ -3820,6 +3853,16 @@ void gameClass::updatePickup(double dt)
 
 void gameClass::updateProjectile(double dt)
 {
+	if (player->getRingType() == 1)
+	{
+		projectile->getObj()->setMaterialName("MagicRedSpriteSheet.png");
+		projectile->setProjectileType(0);
+	}
+	if (player->getRingType() == 2)
+	{
+		projectile->getObj()->setMaterialName("MagicBlueSpriteSheet.png");
+		projectile->setProjectileType(1);
+	}
 	//Move projectile
 	projectile->moveProjectile(dt);
 	projectile->getTransX(projectileMoveMat);
