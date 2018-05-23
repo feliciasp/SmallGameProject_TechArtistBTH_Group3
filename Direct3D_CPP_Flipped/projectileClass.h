@@ -14,6 +14,8 @@ public:
 	bool initlialize(ID3D11Device* device, const char* filename);
 	void shutdown();
 
+	void resetFireEnemy();
+
 	objectClass* getObj();
 
 	void setIsDestroyed(bool check);
@@ -35,6 +37,9 @@ public:
 	XMVECTOR getBoundingBoxMinRight();
 
 	void moveProjectile(double dt);
+	void moveRrojToCertainDestination(double dt);
+	void setDestinationPoint(XMVECTOR other);
+	void setDestinationStart(XMVECTOR other);
 
 	void resetProjectile();
 
@@ -63,11 +68,14 @@ private:
 	objectClass* obj;
 	bool isDestroyed;
 	XMMATRIX transStart;
+	XMVECTOR transDestination;
+	XMVECTOR transDestinationStart;
 	bool checkIfSetToObjHolder;
 	bool goesRight; //true if projectile goes to right of screen.
 	int projectileType; //0 = FIREBALL, 1 = FROSTBOLT
 
 	float moveValX;
+	float moveValY;
 	XMMATRIX transX;
 	double lifeTime;
 

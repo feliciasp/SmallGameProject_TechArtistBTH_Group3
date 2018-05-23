@@ -31,6 +31,15 @@ bool collisionClass::checkCollision(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECT
 	return false;
 }
 
+bool collisionClass::checkCollisionY(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max)
+{
+	if (XMVectorGetY(bbox1Max) >= XMVectorGetY(bbox2Min) && XMVectorGetY(bbox1Min) <= XMVectorGetY(bbox2Max))
+	{
+		return true;
+	}
+	return false;
+}
+
 bool collisionClass::checkCollisionTop(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max)
 {
 	bool check1 = false;

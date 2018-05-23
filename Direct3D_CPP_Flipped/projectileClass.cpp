@@ -9,6 +9,7 @@ projectileClass::projectileClass()
 	transX = XMMatrixIdentity();
 	goesRight = true;
 	moveValX = 0.0f;
+	moveValY = 0.0f;
 	lifeTime = 0.0f;
 
 	bboxMaxLeft = { 0.0f,0.0f };
@@ -63,6 +64,14 @@ void projectileClass::shutdown()
 		delete obj;
 		obj = 0;
 	}
+}
+
+void projectileClass::resetFireEnemy()
+{
+	transStart = XMMatrixIdentity();
+	transX = XMMatrixIdentity();
+	moveValX = 0.0f;
+	moveValY = 0.0f;
 }
 
 objectClass * projectileClass::getObj()
@@ -167,15 +176,52 @@ void projectileClass::moveProjectile(double dt)
 	transX = transStart * XMMatrixTranslation(moveValX, 0.0f, 0.0f);
 }
 
+void projectileClass::moveRrojToCertainDestination(double dt)
+{
+	float dirX = XMVectorGetX(transDestination) - XMVectorGetX(transDestinationStart);
+	float dirY = XMVectorGetY(transDestination) - XMVectorGetY(transDestinationStart);
+
+	XMVECTOR dir = { dirX, dirY };
+	XMVector2Normalize(dir);
+
+	float normDirX = fabs(XMVectorGetX(dir));
+	float normaDirY = XMVectorGetY(dir);
+
+	if (goesRight)
+	{
+		moveValX += normDirX * dt;
+		moveValY += normaDirY * dt;
+	}
+	else
+	{
+		moveValX += normDirX * dt * -1;
+		moveValY += normaDirY * dt;
+	}
+
+	transX = transStart * XMMatrixTranslation(moveValX, moveValY, 0.0f);
+}
+
+void projectileClass::setDestinationPoint(XMVECTOR other)
+{
+	this->transDestination = other;
+}
+
+void projectileClass::setDestinationStart(XMVECTOR other)
+{
+	this->transDestinationStart = other;
+}
+
+
 void projectileClass::resetProjectile()
 {
-	isDestroyed = false;
+	//isDestroyed = false;
 	checkIfSetToObjHolder = false;
 	transStart = XMMatrixIdentity();
 	transX = XMMatrixIdentity();
 	goesRight = true;
 	moveValX = 0.0f;
 	lifeTime = 0.0f;
+	moveValY = 0.0f;
 }
 
 void projectileClass::setProjectileType(int value)

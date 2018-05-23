@@ -17,11 +17,13 @@ class collisionClass
 		~collisionClass();
 
 		bool checkCollision(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
+		bool checkCollisionY(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
 
 		bool checkCollisionTop(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
 		bool checkCollisionLeft(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
 		bool checkCollisionRight(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
 		bool checkCollisionBot(XMVECTOR bbox1Min, XMVECTOR bbox1Max, XMVECTOR bbox2Min, XMVECTOR bbox2Max);
+
 };
 
 #endif
