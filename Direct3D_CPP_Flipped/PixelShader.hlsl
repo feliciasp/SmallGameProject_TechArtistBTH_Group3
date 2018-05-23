@@ -15,8 +15,8 @@ struct VS_OUT
 
 float4 PS_main(VS_OUT input) : SV_TARGET
 {
-	input.cameraPos.z = -4.0f;
-input.cameraPos.y -= 2.0f;
+	input.cameraPos.z = -10.0f;
+input.cameraPos.y -= 1.0f;
 
 float4 ambient = float4(0.0f, 0.0f, 0.1f, 1.0f);
 float4 lightColor = float4(1.0f, 0.7f, 0.4f, 1.0f);

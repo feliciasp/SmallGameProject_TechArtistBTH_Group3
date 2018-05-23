@@ -442,3 +442,13 @@ void enemyClass::setStartPos(float x, float y, float z)
 {
 	this->startPos = { x,y,z };
 }
+
+void enemyClass::setIsEnemyShootingFireball(bool check)
+{
+	this->isEnemyShootingFireball = check;
+}
+
+bool enemyClass::getISEnemyShootingFireball()
+{
+	return this->isEnemyShootingFireball;
+}

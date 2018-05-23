@@ -93,6 +93,10 @@ class enemyClass
 		int getEnemyType();
 
 		void setStartPos(float x, float y, float z);
+
+		void setIsEnemyShootingFireball(bool check);
+		bool getISEnemyShootingFireball();
+
 	private:
 		objectClass* obj;
 		bool isActive;
@@ -101,6 +105,7 @@ class enemyClass
 		float temptest;
 		float moveVal;
 
+		bool isEnemyShootingFireball;
 		
 		XMMATRIX translation;
 		XMMATRIX transStart;

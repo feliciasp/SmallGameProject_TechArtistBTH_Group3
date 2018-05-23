@@ -103,6 +103,7 @@ private:
 	playerClass* player;
 	platformClass* platform;
 	projectileClass* projectile;
+	projectileClass* enemyFire;
 	GUItestClass* GUItest;
 
 	GUItestClass* heartHolder;
@@ -131,13 +132,14 @@ private:
 	void staticBackground();
 	XMMATRIX pickupStartPosMoveMat;
 	void updatePickup(double dt);
-	void updateProjectile(double dt);
+	void updateProjectile(double dt, projectileClass* projectile, int type);
 	XMMATRIX projectileMoveMat;
 	float lengthBetween1;
 	float lengthBetween2;
 	void updateCollision(double dt);
 	XMMATRIX platformMat;
 
+	XMMATRIX enemyFireMat;
 	XMMATRIX enemyTrans;
 
 	float lengthBetweenEnemyStartAndEnemyCurrentPos1;
@@ -293,6 +295,7 @@ private:
 	//PORTAL
 	pickupClass *portalPlane;
 	XMMATRIX portalMat;
+	int canTakeDmg;
 };
 
 //func proto and globals needed so we can redirect the windows system messaging into our messageHandler func inside the game class
