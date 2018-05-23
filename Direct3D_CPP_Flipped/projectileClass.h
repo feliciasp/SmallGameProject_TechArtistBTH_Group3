@@ -43,6 +43,9 @@ public:
 
 	void resetProjectile();
 
+	void setProjectileType(int value);
+	int getProjectileType();
+
 	void setCheckIfObjHolder(bool check);
 	bool getCheckIfObjHolder();
 
@@ -69,6 +72,7 @@ private:
 	XMVECTOR transDestinationStart;
 	bool checkIfSetToObjHolder;
 	bool goesRight; //true if projectile goes to right of screen.
+	int projectileType; //0 = FIREBALL, 1 = FROSTBOLT
 
 	float moveValX;
 	float moveValY;

@@ -73,8 +73,8 @@ public:
 	void setRingType(int other);
 	int getRingType();
 
-	void setFireballCast(bool check);
-	bool getFireballCast();
+	void setMagicCast(bool check);
+	bool getMagicCast();
 
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
@@ -184,12 +184,12 @@ private:
 	void checkIfAttacking();
 	bool attackReleased;
 
-	bool fireballCast; //has player cast fireball?
-	bool fireballWasCast;
-	float fireballCooldown;
+	bool magicCast; //has player cast fireball?
+	bool magicWasCast;
+	float magicCooldown;
 
 	bool hasRing;
-	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = ???, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
+	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
 
