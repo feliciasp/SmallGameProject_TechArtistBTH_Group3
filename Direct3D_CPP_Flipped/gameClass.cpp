@@ -2679,52 +2679,51 @@ void gameClass::updateEnemy(double dt)
 {
 	for (int i = 0; i < nrOfVisibleEnemies; i++)
 	{
-		if (!enemyHolder[i].getIsFrozen())
-		{
-			enemyHolder[i].updateFalling(dt);
-			/*enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);*/
-			//jag vet att detta är förvirrande men denna tranlationmat func hämtar ut ett värde i x som gör att vår sak rör på oss
-			enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
-			enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
-			enemyHolder[i].getMasterMovementEnemy(tempMasterMovementEnemyMat);
-			//denna håller i alla värden så att vi inte flippar bounding boxen också
-			enemyHolder[i].getEnemyTranslationMatrix(tempEnemyTranslationMatrix);
-			enemyHolder[i].getTranslationMatStart(tempEnemyStartingPositionMatrix);
-			if (!enemyHolder[i].getRoationCheck())
-			{
-				tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-				tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-			}
-			else
-			{
-				tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-				tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-			}
-			enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
-			///////////////
-			enemyHolder[i].checkCollisionsY(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
-			enemyHolder[i].checkCollisionsX(checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
-			//enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
-			enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
-			enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
-			if (!enemyHolder[i].getRoationCheck())
-			{
-				tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-				tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-			}
-			else
-			{
-				tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-				tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
-			}
-			enemyHolder[i].setMasterMovementEnemy(tempMasterMovementEnemyMat);
-			enemyHolder[i].setEnemyTranslationMatrix(tempEnemyTranslationMatrix);
-			enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
-		}
-		else if (enemyHolder[i].getIsFrozen())
+		if (enemyHolder[i].getIsFrozen())
 		{
 			enemyHolder[i].updateFrozenTimer(dt);
 		}
+
+		enemyHolder[i].updateFalling(dt);
+		/*enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);*/
+		//jag vet att detta är förvirrande men denna tranlationmat func hämtar ut ett värde i x som gör att vår sak rör på oss
+		enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
+		enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
+		enemyHolder[i].getMasterMovementEnemy(tempMasterMovementEnemyMat);
+		//denna håller i alla värden så att vi inte flippar bounding boxen också
+		enemyHolder[i].getEnemyTranslationMatrix(tempEnemyTranslationMatrix);
+		enemyHolder[i].getTranslationMatStart(tempEnemyStartingPositionMatrix);
+		if (!enemyHolder[i].getRoationCheck())
+		{
+			tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+			tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		}
+		else
+		{
+			tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+			tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		}
+		enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
+		///////////////
+		enemyHolder[i].checkCollisionsY(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
+		enemyHolder[i].checkCollisionsX(checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
+		//enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
+		enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
+		enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
+		if (!enemyHolder[i].getRoationCheck())
+		{
+			tempMasterMovementEnemyMat = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+			tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		}
+		else
+		{
+			tempMasterMovementEnemyMat = XMMatrixRotationY(-3.1514f) * tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+			tempEnemyTranslationMatrix = tempEnemyIfAirThenFallMatrix * tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame * tempEnemyStartingPositionMatrix;
+		}
+		enemyHolder[i].setMasterMovementEnemy(tempMasterMovementEnemyMat);
+		enemyHolder[i].setEnemyTranslationMatrix(tempEnemyTranslationMatrix);
+		enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
+
 		boss->getObj()->setWorldMatrix(XMMatrixIdentity());
 		enemyHolder[i].setMasterMovementEnemy(tempMasterMovementEnemyMat);
 		enemyHolder[i].setEnemyTranslationMatrix(tempEnemyTranslationMatrix);
@@ -4021,11 +4020,6 @@ void gameClass::updateProjectile(double dt, projectileClass* projectile, int typ
 		//	projectile->setIsDestroyed(true);
 		//}
 	}
-	
-	
-
-	//Lifetime for fireballs
-	
 }
 
 void gameClass::updateCollision(double dt)
@@ -4196,8 +4190,8 @@ void gameClass::updateCollision(double dt)
 			player->setMagicCast(false);
 		}
 
-
 		enemyHolder[i].timeCountdown(dt);
+
 		if (!enemyHolder[i].getIsFrozen())
 		{
 			if (enemyHolder[i].getIsActive() && lengthBetween1 <= XMVectorGetX(enemyHolder[i].getTriggerCheck()) && lengthBetween1 >= 0.9f && player->getObj()->getCollisionClass()->checkCollisionY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
@@ -4270,7 +4264,7 @@ void gameClass::updateCollision(double dt)
 
 			if (enemyHolder[i].getIsActive() && lengthBetween2 <= XMVectorGetX(enemyHolder[i].getTriggerCheck()) && lengthBetween1 <= 0.9f && player->getObj()->getCollisionClass()->checkCollisionY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
 			{
-				//år höger
+				//går höger
 				if (enemyHolder[i].getEnemyType() == 0 && lengthBetween2 <= XMVectorGetX(enemyHolder[i].getRangeVector()) - 3)
 				{
 					enemyFire->setIsDestroyed(true);
@@ -4368,19 +4362,17 @@ void gameClass::updateCollision(double dt)
 					}
 				}
 			}
-
-			if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
-			{
-				updateProjectile(dt * 0.1, enemyFire, 1);
-			}
-			if (enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
-			{
-				removeObjFromObjHolder(enemyFire->getObj());
-				enemyFire->resetProjectile();
-			}
-
-			
 		}
+		if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
+		{
+			updateProjectile(dt * 0.1, enemyFire, 1);
+		}
+		if (enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
+		{
+			removeObjFromObjHolder(enemyFire->getObj());
+			enemyFire->resetProjectile();
+		}
+	
 		enemyHolder[i].updateAttackCooldownTimer(dt);
 	}
 
