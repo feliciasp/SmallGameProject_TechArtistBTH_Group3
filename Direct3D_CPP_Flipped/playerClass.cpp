@@ -528,7 +528,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		idle = false;
 		running = true;
 		//OutputDebugString(L"func move left called");
-		if (this->flipped == false)
+		if (this->flipped == false && !attacking)
 		{
 			flipped = true;
 
@@ -549,7 +549,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		idle = false;
 		running = true;
 		//OutputDebugString(L"func move right called");
-		if (this->flipped == true)
+		if (this->flipped == true && !attacking)
 		{
 			flipped = false;
 		}
@@ -803,6 +803,11 @@ void playerClass::checkIfAttacking()
 bool playerClass::getIfAttack()
 {
 	return isHit;
+}
+
+bool playerClass::getAttacking()
+{
+	return this->attacking;
 }
 
 bool playerClass::getIfInObjHolder()

@@ -61,6 +61,7 @@ public:
 
 	weaponClass* getWeapon();
 	bool getIfAttack();
+	bool getAttacking();
 
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
