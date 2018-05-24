@@ -3992,10 +3992,9 @@ void gameClass::updateProjectile(double dt, projectileClass* projectile, int typ
 		if (projectile->getLifeTime() > 1.5f)
 		{
 			removeObjFromObjHolder(projectile->getObj());
-			projectile->setCheckIfObjHolder(false);
-			projectile->setIsDestroyed(true);
 			projectile->resetProjectile();
 			player->setMagicCast(false);
+			OutputDebugString(L"\nProjectile Destroyed!\n");
 		}
 
 		//If collision with platforms -> remove projectile
