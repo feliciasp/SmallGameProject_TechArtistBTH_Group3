@@ -1926,6 +1926,8 @@ bool gameClass::frameLimbo(double dt)
 		gameStateLimbo = false;
 		gameStateMeny = true;
 		player->resetPlayer();
+		player->setMaxHP(1);
+		player->setPlayerHP(1);
 		upgradeGUI->setIsDestroy(true);
 
 		upgradeOverlay->setIsDestroy(true);
@@ -1994,6 +1996,15 @@ bool gameClass::frameGame(double dt)
 			nrOfVisibleEnemies--;
 			removeEnemyFromEnemyHolder(enemyHolder[i], nrOfVisibleEnemies);
 			i = 0;
+		}
+	}
+
+	for (int i = 0; i < 5; i++)
+	{
+		if (heartHolder[i].getIsDestry() && heartHolder[i].getCheckIfObjHolder())
+		{
+			removeObjFromObjHolder(heartHolder[i].getObj());
+			heartHolder[i].setCheckIfObjHolder(false);
 		}
 	}
 
@@ -2217,6 +2228,8 @@ bool gameClass::frameGame(double dt)
 	if (inputDirectOther->isEscapePressed() == true)
 	{
 		player->resetPlayer();
+		player->setMaxHP(1);
+		player->setPlayerHP(1);
 		if (pickupHolder)
 		{
 			for (int i = 0; i < nrOfVisiblePickups; i++)
@@ -2298,16 +2311,31 @@ bool gameClass::frameMeny(double dt)
 	}
 	graphics->endScene();
 
+	//NEW GAME
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 0)
 	{
 		gameStateLevel = true;
 		if (soundAvailable)
 			sound->playAmbient(1);
+		
+		for (int i = 4; i > 0; i--)
+		{
+			removeObjFromObjHolder(heartHolder[i].getObj());
+			heartHolder[i].setCheckIfObjHolder(false);
+			heartHolder[i].setIsDestroy(true);
+			heartHolder[i].setIsBought(false);
+		}
+
 		player->setPlayerHP(1);
 		player->setMaxHP(1);
+		healthCost = 1;
+		SpeedCost = 1;
+		
 		player->setSpeedVal(10);
 
 		player->setWeaponType(0);
+
+		player->setNrPixelFragments(40);
 
 		for (int i = 0; i < 4; i++) {
 			player->setNrWeaponBought(i, false);
@@ -2851,7 +2879,7 @@ void gameClass::updateEnemy(double dt)
 		}
 
 		enemyHolder[i].updateFalling(dt);
-		/*enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);*/§  q1
+		/*enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);*/
 		//jag vet att detta är förvirrande men denna tranlationmat func hämtar ut ett värde i x som gör att vår sak rör på oss
 		enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
 		enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
@@ -2906,9 +2934,9 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 
-	player->checkCollisions(checkCollisionPlatformTop(platform, player->getObj(), playerMove), checkCollisionPlatformLeft(platform, player->getObj(), playerMove), checkCollisionPlatformRight(platform, player->getObj(), playerMove), checkCollisionPlatformBot(platform, player->getObj(), playerMove));
+	player->checkCollisions(checkCollisionPlatformTop(platform, player->getObj(), playerMove), checkCollisionPlatformLeft(platform, player->getObj(), playerMove), checkCollisionPlatformRight(platform, player->getObj(), playerMove), checkCollisionPlatformBot(platform, player->getObj(), playerMove), dt);
 	if(bossDoorInObjHolder && !bossDoorDestoryed)
-		player->checkCollisions(checkCollisionPlatformTop(bossdoor, player->getObj(), playerMove), checkCollisionPlatformLeft(bossdoor, player->getObj(), playerMove), checkCollisionPlatformRight(bossdoor, player->getObj(), playerMove), checkCollisionPlatformBot(bossdoor, player->getObj(), playerMove));
+		player->checkCollisions(checkCollisionPlatformTop(bossdoor, player->getObj(), playerMove), checkCollisionPlatformLeft(bossdoor, player->getObj(), playerMove), checkCollisionPlatformRight(bossdoor, player->getObj(), playerMove), checkCollisionPlatformBot(bossdoor, player->getObj(), playerMove), dt);
 	
 
 	player->getMoveMat(playerMove);
@@ -2971,7 +2999,7 @@ void gameClass::updateCamera()
 	
 	if (useThisX > -55.15f && useThisY > 73.15f)
 	{
-		if (useThisX > -55.15 && useThisX < -4.0f)
+		if (useThisX > -56.15 && useThisX < -3.0f)
 		{
 			camera->updatePosition(-30.0f, 80.0f);
 			camera->updateTarget(-30.0f, 80.0f);
