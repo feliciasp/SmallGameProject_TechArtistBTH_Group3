@@ -8,6 +8,7 @@ cbuffer playerConstBuffer : register(b0)
 
 Texture2D texture1	: register(t0);
 Texture2D texture2 : register(t1);
+Texture2D texture3 : register(t2);
 SamplerState textureSample;
 struct VS_OUT
 {
@@ -29,16 +30,21 @@ float4 main(VS_OUT input) : SV_TARGET
 	float diffConstant = dot(lightDir.xyz, input.Normal.xyz);
 	
 	float frameSkipU = (1.0f / 10);
-	float frameSkipV = (1.0f / 7);
+	float frameSkipV = (1.0f / 8);
 	float initialUStep = input.TexCoord.x / 10;
-	float initialVStep = input.TexCoord.y / 7;
+	float initialVStep = input.TexCoord.y / 8;
 	input.TexCoord.x = input.TexCoord.x / 10 + (frameSkipU * (currentFrame - 1));
-	input.TexCoord.y = input.TexCoord.y / 7 + (frameSkipV * (currentAnimation - 1));
+	input.TexCoord.y = input.TexCoord.y / 8 + (frameSkipV * (currentAnimation - 1));
 	if (flipped == true)
 		input.TexCoord.x = (frameSkipU * currentFrame) - initialUStep;
 
 	float4 color = texture1.Sample(textureSample, input.TexCoord);
+	float4 hat = texture3.Sample(textureSample, input.TexCoord);
 	float4 weapon = texture2.Sample(textureSample, input.TexCoord);
+	if (hat.a == 1)
+	{
+		color = hat;
+	}
 	if (weapon.a == 1)
 	{
 		color = weapon;

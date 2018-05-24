@@ -685,6 +685,10 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
 		}
+		if (matNameHolder[i].nameMat == "StrawhatSpriteSheet.png")
+		{
+			devCon->PSSetShaderResources(2, 1, &textureRescourceView[i]);
+		}
 		switch (weaponType) {
 			case 0:
 				if (matNameHolder[i].nameMat == "ShovelSpriteSheet.png"){
@@ -697,7 +701,7 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 				}
 				break;
 			case 2:
-				if (matNameHolder[i].nameMat == "MagicShovelSpriteSheet.png") {
+				if (matNameHolder[i].nameMat == "SwordSpriteSheet.png") {
 					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
 				}
 				break;
@@ -712,6 +716,7 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 				}
 				break;
 		}
+		
 	}
 	devCon->PSSetSamplers(0, 1, &textureSample);
 
