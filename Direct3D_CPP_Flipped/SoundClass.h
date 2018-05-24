@@ -74,8 +74,16 @@ private:
 	//SFX buffers
 	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer1;
 	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer2;
+	IDirectSoundBuffer8* m_PlayerHitSoundBuffer;
+	IDirectSoundBuffer8* m_PlayerHurtSoundBuffer;
+	IDirectSoundBuffer8* m_PlayerStepSoundBuffer;
 	IDirectSoundBuffer8* m_FireballSoundBuffer;
+	IDirectSoundBuffer8* m_FrostboltSoundBuffer;
 	IDirectSoundBuffer8* m_JumpSoundBuffer;
+
+	IDirectSoundBuffer8* m_PickupRingSoundBuffer;
+	IDirectSoundBuffer8* m_PickupXpSoundBuffer;
+
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;
 };
 

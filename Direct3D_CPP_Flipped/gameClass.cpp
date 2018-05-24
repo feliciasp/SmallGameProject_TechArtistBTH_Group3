@@ -4269,6 +4269,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				enemyHolder[i].setEnemyHP(enemyHolder[i].getEnemyHP() - player->getWeapon()->getDamage());
 				OutputDebugString(L"\nenemy lost hP!\n");
 			}
@@ -4299,6 +4301,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				enemyHolder[i].setEnemyHP(enemyHolder[i].getEnemyHP() - player->getWeapon()->getDamage());
 				OutputDebugString(L"\nenemy lost hP!\n");
 			}
@@ -4329,6 +4333,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				enemyHolder[i].setEnemyHP(enemyHolder[i].getEnemyHP() - 1);
 				OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 			}
@@ -4363,6 +4369,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				enemyHolder[i].setEnemyHP(enemyHolder[i].getEnemyHP() - 1);
 				OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 			}
@@ -4397,6 +4405,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
 				enemyHolder[i].setIsFrozen(true);
 			}
@@ -4410,6 +4420,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (enemyHolder[i].hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 4);
 				OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
 				enemyHolder[i].setIsFrozen(true);
 			}
@@ -4438,13 +4450,14 @@ void gameClass::updateCollision(double dt)
 					{
 						if (enemyHolder[i].attackCooldown())
 						{
-
+							OutputDebugString(L"Attacking");
+							if (soundAvailable)
+								sound->playSFX(1, 5);
 							player->setPlayerHP(player->getPlayerHP() - 1);
 
 							player->setPlayerHurt(true);
 							player->setPlayerHurtFromRight(true);
 							if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
-
 							{
 
 								heartHolder[player->getPlayerHP()].setIsDestroy(true);
@@ -4568,6 +4581,8 @@ void gameClass::updateCollision(double dt)
 				if (!enemyFire->getIsDestroyed() && !enemyFire->getCheckIfObjHolder())
 				{
 					OutputDebugString(L"\nCreating Fireball enemy\n");
+					if (soundAvailable)
+						sound->playSFX(1, 2);
 					addObjectToObjHolder(enemyFire->getObj());
 					enemyFire->setCheckIfObjHolder(true);
 					player->setIfInObjHolder(false);
@@ -4617,6 +4632,8 @@ void gameClass::updateCollision(double dt)
 		if (!enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinLeft(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxLeft(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
 		{
 			OutputDebugString(L"\nFire damage!\n");
+			if (soundAvailable)
+				sound->playSFX(1, 5);
 			player->setPlayerHP(player->getPlayerHP() - 1);
 			player->setPlayerHurt(true);
 			player->setPlayerHurtFromLeft(true);
@@ -4632,6 +4649,8 @@ void gameClass::updateCollision(double dt)
 		if (enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinRight(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxRight(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
 		{
 			OutputDebugString(L"\nFire damage!\n");
+			if (soundAvailable)
+				sound->playSFX(1, 5);
 			player->setPlayerHP(player->getPlayerHP() - 1);
 			player->setPlayerHurt(true);
 			player->setPlayerHurtFromLeft(true);
@@ -4773,6 +4792,8 @@ void gameClass::updateCollision(double dt)
 		{
 			if (pickupHolder[i].getPickupType() == 1)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 8);
 				tempXP += 1;
 				if (tempXP == 4)
 				{
@@ -4823,7 +4844,8 @@ void gameClass::updateCollision(double dt)
 						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
 					}
 				}
-
+				if (soundAvailable)
+					sound->playSFX(1, 7);
 				OutputDebugString(L"\nRing was picked up so cool effect is spawning!\n");
 				pickupClass effect;
 				effect.clone(*ring);

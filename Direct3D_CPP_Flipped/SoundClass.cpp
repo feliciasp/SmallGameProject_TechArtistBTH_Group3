@@ -11,8 +11,14 @@ SoundClass::SoundClass()
 
 	m_PlayerAttackSoundBuffer1 = 0;
 	m_PlayerAttackSoundBuffer2 = 0;
+	m_PlayerHitSoundBuffer = 0;
+	m_PlayerHurtSoundBuffer = 0;
+	m_PlayerStepSoundBuffer = 0;
 	m_JumpSoundBuffer = 0;
 	m_FireballSoundBuffer = 0;
+	m_FrostboltSoundBuffer = 0;
+	m_PickupRingSoundBuffer = 0;
+
 	m_MenuButtonSoundBuffer = 0;
 
 	isAttackBuffer1Playing = false;
@@ -66,14 +72,35 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer1);
+		result = loadWaveFile("miss1.wav", &m_PlayerAttackSoundBuffer1);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error loading audio",
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		result = loadWaveFile("Punch1.wav", &m_PlayerAttackSoundBuffer2);
+		result = loadWaveFile("miss2.wav", &m_PlayerAttackSoundBuffer2);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("monsterHit.wav", &m_PlayerHitSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("hurtPlayer.wav", &m_PlayerHurtSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("step1.wav", &m_PlayerStepSoundBuffer);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error loading audio",
@@ -88,6 +115,27 @@ bool SoundClass::initialize(HWND hwnd)
 			return false;
 		}
 		result = loadWaveFile("fireball.wav", &m_FireballSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("frostbolt.wav", &m_FrostboltSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("ringPickup.wav", &m_PickupRingSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("xpPickup.wav", &m_PickupXpSoundBuffer);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error loading audio",
@@ -114,9 +162,16 @@ void SoundClass::shutdown()
 
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer1);
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer2);
+	shutdownWaveFile(&m_PlayerHitSoundBuffer);
+	shutdownWaveFile(&m_PlayerHurtSoundBuffer);
+	shutdownWaveFile(&m_PlayerStepSoundBuffer);
 	shutdownWaveFile(&m_JumpSoundBuffer);
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 	shutdownWaveFile(&m_FireballSoundBuffer);
+	shutdownWaveFile(&m_FrostboltSoundBuffer);
+
+	shutdownWaveFile(&m_PickupRingSoundBuffer);
+	shutdownWaveFile(&m_PickupXpSoundBuffer);
 
 	shutdownDirectSound();
 }
@@ -163,7 +218,7 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 	}
 	if (gameState == 1) //Game SFX
 	{
-		if (soundToPlay == 0) //Player attack!
+		if (soundToPlay == 0) //Player attack and miss!
 		{
 			if (!isAttackBuffer1Playing && isJumpBufferPlaying || !isAttackBuffer1Playing && !isJumpBufferPlaying)
 			{
@@ -184,6 +239,31 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 2) //Fireball
 		{
 			playSoundEffect(m_FireballSoundBuffer);
+		}
+		if (soundToPlay == 3) //Frostbolt
+		{
+			playSoundEffect(m_FrostboltSoundBuffer);
+		}
+		if (soundToPlay == 4) //Player attack and hit!
+		{
+			playSoundEffect(m_PlayerHitSoundBuffer);
+		}
+		if (soundToPlay == 5) //Player hurt!
+		{
+			playSoundEffect(m_PlayerHurtSoundBuffer);
+		}
+		if (soundToPlay == 6) //Player step
+		{
+			playSoundEffect(m_PlayerStepSoundBuffer);
+		}
+
+		if (soundToPlay == 7) //Pickup ring
+		{
+			playSoundEffect(m_PickupRingSoundBuffer);
+		}
+		if (soundToPlay == 8) //Pickup ring
+		{
+			playSoundEffect(m_PickupXpSoundBuffer);
 		}
 	}
 	return true;

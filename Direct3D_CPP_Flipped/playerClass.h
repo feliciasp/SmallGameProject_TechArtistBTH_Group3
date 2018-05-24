@@ -112,6 +112,8 @@ private:
 	float hurtFallbackValue;
 	int fakeTimer;
 
+	bool firstFrame;
+
 	objectClass* obj;
 	directInput* input;
 

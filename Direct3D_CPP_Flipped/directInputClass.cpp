@@ -8,6 +8,7 @@ directInput::directInput()
 	gamepadIndex = 0;
 	deadzoneX = 0.1f;
 	deadzoneY = 0.1f;
+  
 	leftStickX = 0.0f;
 	leftStickY = 0.0f;
 
