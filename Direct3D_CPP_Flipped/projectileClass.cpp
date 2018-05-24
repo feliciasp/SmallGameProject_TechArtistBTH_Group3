@@ -184,7 +184,7 @@ void projectileClass::moveRrojToCertainDestination(double dt)
 	XMVECTOR dir = { dirX, dirY };
 	XMVector2Normalize(dir);
 
-	float normDirX = fabs(XMVectorGetX(dir));
+	float normDirX = XMVectorGetX(dir);
 	float normaDirY = XMVectorGetY(dir);
 
 	if (goesRight)
@@ -194,7 +194,7 @@ void projectileClass::moveRrojToCertainDestination(double dt)
 	}
 	else
 	{
-		moveValX += normDirX * dt * -1;
+		moveValX += normDirX * dt;
 		moveValY += normaDirY * dt;
 	}
 
