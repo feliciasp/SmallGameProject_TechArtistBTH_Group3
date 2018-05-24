@@ -23,6 +23,7 @@ void GUItestClass::resetGUI()
 void GUItestClass::updateDestroy2(double dt)
 {
 	input->readKeyboard(dt);
+	input->readGamepad();
 	if (this->input->isEnterPressed() && fakeTimer2 <= 0)
 	{
 		fakeTimer2 = 200;
@@ -132,6 +133,7 @@ bool GUItestClass::updateDestroyState(double dt)
 {
 	bool check = false;
 	input->readKeyboard(dt);
+	input->readGamepad();
 
 	if (this->input->isEnterPressed() && fakeTimer <= 0)
 	{

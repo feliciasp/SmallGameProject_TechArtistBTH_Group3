@@ -4,9 +4,11 @@
 #define DIRECTINPUTCLASS_H
 #include <d3d11.h>
 #include <directxmath.h>
+#include <Xinput.h>
 
 #pragma comment(lib, "dinput8.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "xinput.lib")
 #include <dinput.h>
 
 using namespace DirectX;
@@ -42,10 +44,16 @@ class directInput
 		bool readMouse();
 		void processInput();
 
+		//Xbox
+		XINPUT_GAMEPAD* getState();
+		bool checkConnection();
+		bool readGamepad();
+
 	private:
 		IDirectInput8 * directInputOther;
 		IDirectInputDevice8* keyboard;
 		IDirectInputDevice8* mouse;
+
 		unsigned char keyboardState[256];
 		DIMOUSESTATE mouseState;
 
@@ -54,7 +62,20 @@ class directInput
 		int mouseX;
 		int mouseY;
 
+		//Xbox controller
+		XINPUT_STATE state;
+		float leftTrigger;
+		float rightTrigger;
+		int gamepadIndex;
 
+		float leftStickX;
+		float leftStickY;
+
+		float rightStickX;
+		float rightStickY;
+
+		float deadzoneX;
+		float deadzoneY;
 };
 
 #endif

@@ -399,6 +399,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	showShadow = true;
 
 	input->readKeyboard(dt);
+	input->readGamepad();
 
 	if (dodgeCooldownActive)
 	{
