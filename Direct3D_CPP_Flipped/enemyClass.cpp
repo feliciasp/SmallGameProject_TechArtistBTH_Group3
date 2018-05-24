@@ -53,6 +53,7 @@ void enemyClass::clone(const enemyClass & other, XMVECTOR vector, int type)
 	obj->setType(3);
 	enemyType = type;
 
+	
 	setStartMat(XMVectorGetX(vector), XMVectorGetY(vector));
 	setStartPos(XMVectorGetX(vector), XMVectorGetY(vector), XMVectorGetZ(vector));
 }

@@ -31,7 +31,7 @@ public:
 	XMVECTOR getTriggerCheck();
 
 	void handleMovement(double dt, bool check);
-	void checkCollisions(bool top, bool left, bool right, bool bot);
+	void checkCollisions(bool top, bool left, bool right, bool bot, double dt);
 	void getMoveMat(XMMATRIX& mat);
 
 	void resetPlayer();
@@ -61,6 +61,7 @@ public:
 
 	weaponClass* getWeapon();
 	bool getIfAttack();
+	bool getAttacking();
 
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
@@ -160,6 +161,9 @@ private:
 	float moveValY;
 	float moveValZ;
 
+	float animTimer;
+	bool animAllowSwap;
+
 	bool hasDoubleJumped;
 	bool spaceReleased;
 
@@ -196,6 +200,7 @@ private:
 	bool isInObjHolder;
 
 	float gravityTimer;
+	bool wReleased;
 
 	////PICKUP STATS!!!!!
 	int polygoner;

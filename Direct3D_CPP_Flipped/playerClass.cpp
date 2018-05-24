@@ -49,6 +49,9 @@ playerClass::playerClass()
 	currentAnimation = 1;
 	currentTime = 0;
 
+	animTimer = 0;
+	animAllowSwap = false;
+
 	idle = true;
 	running = false;
 	jumping = false;
@@ -83,6 +86,7 @@ playerClass::playerClass()
 	hasDoubleJumped = false;
 
 	spaceReleased = true;
+	wReleased = true;
 
 	magicCast = false;
 	magicWasCast = false;
@@ -152,10 +156,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon1->setDamage(1);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon1->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon1->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon1->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon1->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -168,10 +172,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon2->setDamage(2);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon2->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon2->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon2->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon2->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -184,10 +188,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon3->setDamage(4);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon3->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon3->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon3->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon3->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -200,10 +204,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon4->setDamage(6);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon4->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon4->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon4->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon4->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -216,10 +220,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon5->setDamage(8);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon5->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon5->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon5->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon5->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -368,7 +372,16 @@ XMVECTOR playerClass::getTriggerCheck()
 
 void playerClass::handleMovement(double dt, bool checkClimb)
 {
+	if (animTimer >= 0.1)
+	{
+		animAllowSwap = true;
+		animTimer = 0;
+	}
+
+	animTimer += dt;
 	
+		
+
 	gravityTimer += 1;
 
 	oldMoveValX = moveValX;
@@ -382,21 +395,35 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	bool isCliming = false;
 
 	justJumped = false;
+	currentAnimation = 1;
+	frameCount = 2;
+	if (!this->input->isWPressed())
+	{
+		wReleased = true;
+	}
 	if (this->input->isWPressed() && !fallBack && !isDodging && !checkClimb)
 	{
 		gravityTimer = 0;
 		moveValY += 6 * dt;
 		isCliming = true;
 		upSpeed = 0;
+		if (wReleased)
+		{
+			currentFrame = 1;
+			wReleased = false;
+
+		}
+		currentAnimation = 8;
+		frameCount = 2;	
+		idle = false;
+		running = false;
+		timeBetweenFrames = 0.05f;
 	}
 	else
 	{
 		moveValY += upSpeed * dt;
 	}
 
-
-	currentAnimation = 1;
-	frameCount = 2;
 	timeBetweenFrames = 0.25f;
 	showShadow = true;
 
@@ -519,42 +546,50 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	if (this->input->isAPressed() && !fallBack && !isDodging)
 	{
 		moveValX += -speedVal * dt;
-		if (running == false && attacking == false)
+		if (!isCliming)
 		{
-			currentTime = 0;
-			currentFrame = 1;
-		}
-		currentAnimation = 2;
-		frameCount = 8;
-		timeBetweenFrames = 0.1f;
-		idle = false;
-		running = true;
-		//OutputDebugString(L"func move left called");
-		if (this->flipped == false)
-		{
-			flipped = true;
+			if (!running && !attacking)
+			{
+				currentTime = 0;
+				currentFrame = 1;
+			}
+			currentAnimation = 2;
+			frameCount = 8;
+			timeBetweenFrames = 0.1f;
+			idle = false;
+			running = true;
+			//OutputDebugString(L"func move left called");
+			if (this->flipped == false && !attacking)
+			{
+				flipped = true;
 
+			}
 		}
+		
 	}
 	
 	if (this->input->isDPressed() && !fallBack && !isDodging)
 	{
 		moveValX += speedVal * dt;
-		if (running == false && attacking == false)
+		if (!isCliming)
 		{
-			currentTime = 0;
-			currentFrame = 1;
+			if (running == false && attacking == false)
+			{
+				currentTime = 0;
+				currentFrame = 1;
+			}
+			currentAnimation = 2;
+			frameCount = 8;
+			timeBetweenFrames = 0.1f;
+			idle = false;
+			running = true;
+			//OutputDebugString(L"func move right called");
+			if (this->flipped == true && !attacking)
+			{
+				flipped = false;
+			}
 		}
-		currentAnimation = 2;
-		frameCount = 8;
-		timeBetweenFrames = 0.1f;
-		idle = false;
-		running = true;
-		//OutputDebugString(L"func move right called");
-		if (this->flipped == true)
-		{
-			flipped = false;
-		}
+		
 	}
 
 	if (running && currentFrame % 4 == 0 && firstFrame ||
@@ -656,14 +691,17 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 			currentFrame = 1;
 		}
 		upSpeed += (-50 * dt) - -upSpeed * dt;
-		currentAnimation = 4;
-		timeBetweenFrames = 0.1f;
-		frameCount = 2;
-		idle = false;
-		running = false;
-		falling = true;
-		showShadow = false;
-		inAir = false;
+		if (animAllowSwap)
+		{
+			currentAnimation = 4;
+			timeBetweenFrames = 0.1f;
+			frameCount = 2;
+			idle = false;
+			running = false;
+			falling = true;
+			showShadow = false;
+			inAir = false;
+		}
 	}
 
 	if (this->input->isOPressed() && !fallBack && !isDodging && attackReleased)
@@ -772,7 +810,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	moveMat = XMMatrixTranslation(moveValX, moveValY+8, 0.0f);
 }
 
-void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
+void playerClass::checkCollisions(bool top, bool left, bool right, bool bot, double dt)
 {
 	if (top)
 	{
@@ -782,6 +820,9 @@ void playerClass::checkCollisions(bool top, bool left, bool right, bool bot)
 	}
 	if (bot)
 	{
+		animAllowSwap = false;
+		animTimer = 0;
+
 		gravityTimer = 0;
 		moveValY = oldMoveValY;
 		isJumping = false;
@@ -817,6 +858,11 @@ void playerClass::checkIfAttacking()
 bool playerClass::getIfAttack()
 {
 	return isHit;
+}
+
+bool playerClass::getAttacking()
+{
+	return this->attacking;
 }
 
 bool playerClass::getIfInObjHolder()
