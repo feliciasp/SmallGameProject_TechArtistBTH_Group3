@@ -39,6 +39,8 @@ playerClass::playerClass()
 	hurtFallbackValue = 0.0f;
 	fakeTimer = 0;
 
+	firstFrame = true;
+
 	gravityTimer = 0;
 
 	isAttacking = false;
@@ -554,6 +556,17 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 			flipped = false;
 		}
 	}
+
+	if (running && currentFrame % 4 == 0 && firstFrame ||
+		running && currentFrame == 9 && firstFrame)
+	{
+		sound->playSFX(1, 6);
+		firstFrame = false;
+	}
+	if (currentFrame % 4 != 0 && !firstFrame)
+	{
+		firstFrame = true;
+	}
 	
 	if (this->input->isSpacePressed() && !fallBack && !isDodging)
 	{
@@ -679,7 +692,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	if (this->input->isPPressed() && hasRing && ringType == 2 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
-			sound->playSFX(1, 2);
+			sound->playSFX(1, 3);
 
 		magicCast = true;
 		magicWasCast = true;
