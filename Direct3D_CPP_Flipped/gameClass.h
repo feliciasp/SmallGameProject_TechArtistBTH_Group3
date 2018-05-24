@@ -97,6 +97,7 @@ private:
 	backgroundClass* background;
 	backgroundClass* spawnEnemys;
 	backgroundClass* pickupSpawn;
+	backgroundClass* spawnBoss;
 	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
@@ -104,10 +105,19 @@ private:
 	platformClass* platform;
 	projectileClass* projectile;
 	projectileClass* enemyFire;
+	projectileClass* bossFire;
+	projectileClass* bossIce;
+	XMMATRIX bossProjectileMat;
 	GUItestClass* GUItest;
 	platformClass* bossdoor;
 	bool bossDoorInObjHolder;
+	bool bossIsInCombat;
 	bool bossDoorDestoryed;
+	void updateBossDoor();
+	void updateBoss(double dt);
+	XMMATRIX tempBossStartingPositionMatrix, tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame, tempBossIfAirThenFallMatrix;
+	XMMATRIX tempMasterMovementBossMat;
+	XMMATRIX tempBossTranslationMatrix;
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

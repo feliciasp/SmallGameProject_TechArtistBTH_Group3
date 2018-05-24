@@ -186,7 +186,7 @@ void projectileClass::moveRrojToCertainDestination(double dt)
 
 	float normDirX = XMVectorGetX(dir);
 	float normaDirY = XMVectorGetY(dir);
-
+  
 	moveValX += normDirX * dt;
 	moveValY += normaDirY * dt;
 
