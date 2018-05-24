@@ -108,6 +108,7 @@ private:
 	platformClass* bossdoor;
 	bool bossDoorInObjHolder;
 	bool bossDoorDestoryed;
+	void updateBossDoor();
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

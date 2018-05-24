@@ -249,7 +249,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane.bin", hInstance, hwnd, width, height);
+	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane2.bin", hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init player obj",
@@ -615,6 +615,7 @@ bool gameClass::initialize(int ShowWnd)
 	bossdoor->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossdoor->getObj()->getMaterialName());
 	bossdoor->getObj()->setWorldMatrix(XMMatrixIdentity());
+	addObjectToObjHolder(bossdoor->getObj());
 
 	//platform 
 	platform = new platformClass;
@@ -1919,6 +1920,10 @@ bool gameClass::frameGame(double dt)
 		addObjectToObjHolder(bossdoor->getObj());
 		bossDoorInObjHolder = true;
 	}
+	if (!bossDoorDestoryed && bossDoorInObjHolder)
+	{
+		updateBossDoor();
+	}
 	if (bossDoorDestoryed && bossDoorInObjHolder)
 	{
 		removeObjFromObjHolder(bossdoor->getObj());
@@ -2667,6 +2672,11 @@ void gameClass::checkReleasedKeys()
 		arrowRightReleased = true;
 }
 
+void gameClass::updateBossDoor()
+{
+	bossdoor->getObj()->setWorldMatrix(XMMatrixIdentity());
+}
+
 void gameClass::updateConstantMatrices()
 {
 	camera->createViewMatrix();
@@ -2789,23 +2799,23 @@ void gameClass::updateCamera()
 	{
 		camera->updatePosition(useThisX, useThisY);
 		camera->updateTarget(useThisX, useThisY);
-		camera->updatePositionZ(-20);
+		camera->updatePositionZ(-100);
 		camera->setTempX(useThisX);
 	}
 	else 
 	{
 		camera->updatePosition(camera->getTempX(), useThisY);
 		camera->updateTarget(camera->getTempX(), useThisY);
-		camera->updatePositionZ(-20);
+		camera->updatePositionZ(-100);
 	}
 	
 	if (useThisX > -64.15f && useThisY > 73.15f)
 	{
 		if (useThisX > -56.15 && useThisX < -4.0f)
 		{
-			camera->updatePosition(-28.0f, 80.0f);
-			camera->updateTarget(-28.0f, 80.0f);
-			camera->updatePositionZ(-35);
+			camera->updatePosition(-30.0f, 80.0f);
+			camera->updateTarget(-30.0f, 80.0f);
+			camera->updatePositionZ(-135);
 			bossDoorDestoryed = false;
 		}
 	}
