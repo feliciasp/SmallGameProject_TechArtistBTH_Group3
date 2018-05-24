@@ -193,6 +193,7 @@ private:
 
 	bool isInObjHolder;
 
+	float gravityTimer;
 
 	////PICKUP STATS!!!!!
 	int polygoner;

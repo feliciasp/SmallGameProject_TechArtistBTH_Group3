@@ -105,6 +105,9 @@ private:
 	projectileClass* projectile;
 	projectileClass* enemyFire;
 	GUItestClass* GUItest;
+	platformClass* bossdoor;
+	bool bossDoorInObjHolder;
+	bool bossDoorDestoryed;
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
@@ -264,6 +267,7 @@ private:
 	bool arrowDownReleased;
 	bool arrowLeftReleased;
 	bool arrowRightReleased;
+	bool WRealeased;
 
 	int shopOverlayCount;
 	int shopOverlayCountRow;

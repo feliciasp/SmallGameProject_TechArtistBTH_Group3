@@ -161,6 +161,10 @@ bool enemyClass::hurtState()
 	{
 		this->isHurt = true;
 		hurtTimer = 0.3f;
+		//if(player->getRingtype() == 0)
+			//hurt = 1;
+		//if(player->getRingType() == 1)
+			// hurt =2;
 		this->hurt = 1;
 		return true;
 	}
