@@ -560,7 +560,8 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	if (running && currentFrame % 4 == 0 && firstFrame ||
 		running && currentFrame == 9 && firstFrame)
 	{
-		sound->playSFX(1, 6);
+		if (soundAvailable)
+			sound->playSFX(1, 6);
 		firstFrame = false;
 	}
 	if (currentFrame % 4 != 0 && !firstFrame)
