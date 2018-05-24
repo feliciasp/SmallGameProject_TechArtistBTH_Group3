@@ -8,6 +8,11 @@ directInput::directInput()
 	gamepadIndex = 0;
 	deadzoneX = 0.1f;
 	deadzoneY = 0.1f;
+	leftStickX = 0.0f;
+	leftStickY = 0.0f;
+
+	rightStickX = 0.0f;
+	rightStickY = 0.0f;
 }
 
 directInput::directInput(const directInput & other)

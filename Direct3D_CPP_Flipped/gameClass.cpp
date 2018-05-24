@@ -4278,7 +4278,7 @@ void gameClass::updateCollision(double dt)
 				{
 					enemyFire->setIsDestroyed(true);
 					enemyHolder[i].setMove(0.0f);
-					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.2f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.2f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 					{
 						if (enemyHolder[i].attackCooldown())
 						{
