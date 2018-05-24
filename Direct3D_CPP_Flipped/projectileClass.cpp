@@ -186,17 +186,9 @@ void projectileClass::moveRrojToCertainDestination(double dt)
 
 	float normDirX = XMVectorGetX(dir);
 	float normaDirY = XMVectorGetY(dir);
-
-	if (goesRight)
-	{
-		moveValX += normDirX * dt;
-		moveValY += normaDirY * dt;
-	}
-	else
-	{
-		moveValX += normDirX * dt;
-		moveValY += normaDirY * dt;
-	}
+  
+	moveValX += normDirX * dt;
+	moveValY += normaDirY * dt;
 
 	transX = transStart * XMMatrixTranslation(moveValX, moveValY, 0.0f);
 }

@@ -5,6 +5,14 @@ directInput::directInput()
 	directInputOther = 0;
 	keyboard = 0;
 	mouse = 0;
+	gamepadIndex = 0;
+	deadzoneX = 0.1f;
+	deadzoneY = 0.1f;
+	leftStickX = 0.0f;
+	leftStickY = 0.0f;
+
+	rightStickX = 0.0f;
+	rightStickY = 0.0f;
 }
 
 directInput::directInput(const directInput & other)
@@ -149,13 +157,22 @@ bool directInput::frame(double dt)
 		return false;
 	}
 
+	result = readGamepad();
+	
+	/*if (!result)
+	{
+		MessageBox(NULL, L"Error reading gamePad",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}*/
+
 	return true;
 }
 
 bool directInput::isEscapePressed()
 {
 
-	if (keyboardState[DIK_ESCAPE] & 0x80)
+	if (keyboardState[DIK_ESCAPE] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0))
 	{
 		return true;
 	}
@@ -164,7 +181,7 @@ bool directInput::isEscapePressed()
 
 bool directInput::isSpacePressed()
 {
-	if (keyboardState[DIK_SPACE] & 0x80)
+	if (keyboardState[DIK_SPACE] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0))
 	{
 		return true;
 	}
@@ -173,7 +190,7 @@ bool directInput::isSpacePressed()
 
 bool directInput::isAPressed()
 {
-	if (keyboardState[DIK_A] & 0x80)
+	if (keyboardState[DIK_A] & 0x80 || (leftStickX < -0.5f))
 	{
 		return true;
 	}
@@ -182,7 +199,7 @@ bool directInput::isAPressed()
 
 bool directInput::isDPressed()
 {
-	if (keyboardState[DIK_D] & 0x80)
+	if (keyboardState[DIK_D] & 0x80 || (leftStickX > 0.5f))
 	{
 		return true;
 	}
@@ -200,7 +217,7 @@ bool directInput::isTPressed()
 
 bool directInput::isEnterPressed()
 {
-	if (keyboardState[DIK_RETURN] & 0x80)
+	if (keyboardState[DIK_RETURN] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0))
 	{
 		return true;
 	}
@@ -209,7 +226,7 @@ bool directInput::isEnterPressed()
 
 bool directInput::isOPressed()
 {
-	if (keyboardState[DIK_O] & 0x80)
+	if (keyboardState[DIK_O] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0))
 	{
 		return true;
 	}
@@ -218,7 +235,7 @@ bool directInput::isOPressed()
 
 bool directInput::isArrowRightPressed()
 {
-	if (keyboardState[DIK_RIGHTARROW] & 0x80)
+	if (keyboardState[DIK_RIGHTARROW] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0))
 	{
 		return true;
 	}
@@ -227,7 +244,7 @@ bool directInput::isArrowRightPressed()
 
 bool directInput::isArrowLeftPressed()
 {
-	if (keyboardState[DIK_LEFTARROW] & 0x80)
+	if (keyboardState[DIK_LEFTARROW] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0))
 	{
 		return true;
 	}
@@ -236,7 +253,7 @@ bool directInput::isArrowLeftPressed()
 
 bool directInput::isWPressed()
 {
-	if (keyboardState[DIK_W] & 0x80)
+	if (keyboardState[DIK_W] & 0x80 || (leftStickY > 0.5f))
 	{
 		return true;
 	}
@@ -245,7 +262,7 @@ bool directInput::isWPressed()
 
 bool directInput::isArrowUpPressed()
 {
-	if (keyboardState[DIK_UPARROW] & 0x80)
+	if (keyboardState[DIK_UPARROW] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0))
 	{
 		return true;
 	}
@@ -254,7 +271,7 @@ bool directInput::isArrowUpPressed()
 
 bool directInput::isArrowDownPressed()
 {
-	if (keyboardState[DIK_DOWNARROW] & 0x80)
+	if (keyboardState[DIK_DOWNARROW] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0))
 	{
 		return true;
 	}
@@ -263,7 +280,7 @@ bool directInput::isArrowDownPressed()
 
 bool directInput::isPPressed()
 {
-	if (keyboardState[DIK_P] & 0x80)
+	if (keyboardState[DIK_P] & 0x80 || ((state.Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0))
 	{
 		return true;
 	}
@@ -272,7 +289,7 @@ bool directInput::isPPressed()
 
 bool directInput::isEPressed()
 {
-	if (keyboardState[DIK_E] & 0x80)
+	if (keyboardState[DIK_E] & 0x80 || (leftTrigger > 0.8f) || (rightTrigger > 0.8f))
 	{
 		return true;
 	}
@@ -440,4 +457,71 @@ void directInput::processInput()
 		mouseY = height; 
 	}
 
+}
+
+XINPUT_GAMEPAD * directInput::getState()
+{
+	return &state.Gamepad;
+}
+
+bool directInput::checkConnection()
+{
+	XINPUT_STATE tState;
+	ZeroMemory(&tState, sizeof(XINPUT_STATE));
+	if (XInputGetState(0, &tState) == ERROR_SUCCESS)
+	{
+		return true;
+	}
+	
+	
+	return false;
+}
+
+bool directInput::readGamepad()
+{
+	
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+	if (XInputGetState(0, &state) != ERROR_SUCCESS)
+	{
+		return false;
+	}
+	leftTrigger = float(state.Gamepad.bLeftTrigger) / 255;
+	rightTrigger = float(state.Gamepad.bRightTrigger) / 255;
+
+	//Left Thumbstick
+	float normLX = fmaxf(-1, (float)state.Gamepad.sThumbLX / 32767);
+	float normLY = fmaxf(-1, (float)state.Gamepad.sThumbLY / 32767);
+
+	leftStickX = (fabs(normLX) < deadzoneX ? 0 : (fabs(normLX) - deadzoneX) * (normLX / fabs(normLX)));
+	leftStickY = (fabs(normLY) < deadzoneY ? 0 : (fabs(normLY) - deadzoneY) * (normLY / fabs(normLY)));
+
+	if (deadzoneX > 0)
+	{
+		leftStickX *= 1 / (1 - deadzoneX);
+	}
+
+	if (deadzoneY > 0)
+	{
+		leftStickY *= 1 / (1 - deadzoneY);
+	}
+
+	//Right ThumbStick
+
+	float normRX = fmaxf(-1, (float)state.Gamepad.sThumbRX / 32767);
+	float normRY = fmaxf(-1, (float)state.Gamepad.sThumbRY / 32767);
+
+	rightStickX = (fabs(normRX) < deadzoneX ? 0 : (fabs(normRX) - deadzoneX) * (normRX / fabs(normRX)));
+	rightStickY = (fabs(normRY) < deadzoneY ? 0 : (fabs(normRY) - deadzoneY) * (normRY / fabs(normRY)));
+
+	if (deadzoneX > 0)
+	{
+		rightStickX *= 1 / (1 - deadzoneX);
+	}
+
+	if (deadzoneY > 0)
+	{
+		rightStickY *= 1 / (1 - deadzoneY);
+	}
+
+	return true;
 }
