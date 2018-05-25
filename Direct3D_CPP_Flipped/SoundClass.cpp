@@ -18,6 +18,7 @@ SoundClass::SoundClass()
 	m_FireballSoundBuffer = 0;
 	m_FrostboltSoundBuffer = 0;
 	m_PickupRingSoundBuffer = 0;
+	m_PickupXpSoundBuffer = 0;
 
 	m_MenuButtonSoundBuffer = 0;
 
@@ -166,12 +167,13 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_PlayerHurtSoundBuffer);
 	shutdownWaveFile(&m_PlayerStepSoundBuffer);
 	shutdownWaveFile(&m_JumpSoundBuffer);
-	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 	shutdownWaveFile(&m_FireballSoundBuffer);
 	shutdownWaveFile(&m_FrostboltSoundBuffer);
 
 	shutdownWaveFile(&m_PickupRingSoundBuffer);
 	shutdownWaveFile(&m_PickupXpSoundBuffer);
+
+	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 
 	shutdownDirectSound();
 }
