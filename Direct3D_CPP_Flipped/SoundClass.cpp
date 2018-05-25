@@ -22,6 +22,11 @@ SoundClass::SoundClass()
 
 	m_MenuButtonSoundBuffer = 0;
 
+	m_LimboUpSoundBuffer = 0;
+	m_LimboDownSoundBuffer = 0;
+	m_LimboConfirmSoundBuffer = 0;
+	m_LimboWeaponBoughtSoundBuffer = 0;
+
 	isAttackBuffer1Playing = false;
 	isAttackBuffer2Playing = false;
 	isJumpBufferPlaying = false;
@@ -150,6 +155,34 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("limbo_move_up.wav", &m_LimboUpSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_move_down.wav", &m_LimboDownSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_confirm.wav", &m_LimboConfirmSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("weaponBought.wav", &m_LimboWeaponBoughtSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading weapon",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 	}
 
 	return soundAvailable;
@@ -174,6 +207,11 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_PickupXpSoundBuffer);
 
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
+
+	shutdownWaveFile(&m_LimboUpSoundBuffer);
+	shutdownWaveFile(&m_LimboDownSoundBuffer);
+	shutdownWaveFile(&m_LimboConfirmSoundBuffer);
+	shutdownWaveFile(&m_LimboWeaponBoughtSoundBuffer);
 
 	shutdownDirectSound();
 }
@@ -266,6 +304,25 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 8) //Pickup ring
 		{
 			playSoundEffect(m_PickupXpSoundBuffer);
+		}
+	}
+	if (gameState == 2) //Limbo SFX
+	{
+		if (soundToPlay == 0)
+		{
+			playSoundEffect(m_LimboUpSoundBuffer);
+		}
+		if (soundToPlay == 1)
+		{
+			playSoundEffect(m_LimboDownSoundBuffer);
+		}
+		if (soundToPlay == 2)
+		{
+			playSoundEffect(m_LimboConfirmSoundBuffer);
+		}
+		if (soundToPlay == 3)
+		{
+			playSoundEffect(m_LimboWeaponBoughtSoundBuffer);
 		}
 	}
 	return true;

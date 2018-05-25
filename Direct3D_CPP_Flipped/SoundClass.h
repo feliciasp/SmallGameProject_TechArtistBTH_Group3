@@ -85,6 +85,11 @@ private:
 	IDirectSoundBuffer8* m_PickupXpSoundBuffer;
 
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;
+
+	IDirectSoundBuffer8* m_LimboUpSoundBuffer;
+	IDirectSoundBuffer8* m_LimboDownSoundBuffer;
+	IDirectSoundBuffer8* m_LimboConfirmSoundBuffer;
+	IDirectSoundBuffer8* m_LimboWeaponBoughtSoundBuffer;
 };
 
 #endif

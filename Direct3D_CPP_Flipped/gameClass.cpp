@@ -3879,6 +3879,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					arrowRightReleased = false;
 					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost && nrHPtoBeUpgraded < 4 && player->getMaxHP() < 4)
 					{
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						totalPendingCost += healthCost;
 						/*player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);*/
 						nrHPtoBeUpgraded += 1;
@@ -3890,6 +3892,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 				{
+					if (soundAvailable)
+						sound->playSFX(2, 1);
 					arrowLeftReleased = false;
 					healthCost = healthCost / 2;
 					totalPendingCost -= healthCost;
@@ -3907,6 +3911,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					arrowRightReleased = false;
 					if ((player->getNrPixelFramgent() - totalPendingCost) >= SpeedCost)
 					{
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						totalPendingCost += SpeedCost;
 						//player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
 						nrSpeedToBeUpgraded += 1;
@@ -3918,6 +3924,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 				{
+					if (soundAvailable)
+						sound->playSFX(2, 1);
 					arrowLeftReleased = false;
 					SpeedCost = SpeedCost / 2;
 					totalPendingCost -= SpeedCost;
@@ -3942,6 +3950,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrWeaponBought(0, true);
             
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 3);
 						player->setWeaponType(1);
 					}
 				}
@@ -3958,6 +3968,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(1));
 						player->setNrWeaponBought(1, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 3);
 						player->setWeaponType(2);
 					}
 				}
@@ -3974,6 +3986,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(2));
 						player->setNrWeaponBought(2, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 3);
 						player->setWeaponType(3);
 					}
 				}
@@ -3990,6 +4004,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(3));
 						player->setNrWeaponBought(3, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 3);
 						player->setWeaponType(4);
 					}
 				}
@@ -4005,6 +4021,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
 				enterReleased = false;
+				if (soundAvailable)
+					sound->playSFX(2, 2);
 				if (nrHPtoBeUpgraded > 0)
 				{
 						for (int i = 0; i < nrHPtoBeUpgraded; i++)
@@ -4059,6 +4077,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		{
 			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
+				if (soundAvailable)
+					sound->playSFX(2, 2);
 				if (nrHPtoBeUpgraded > 0)
 				{
 					healthCost = costHPBeginning;
