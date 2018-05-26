@@ -124,6 +124,8 @@ void enemyClass::resetEnemy()
 	isFacingRight = true;
 	useRotation = false;
 
+	hurt = 0;
+
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -205,12 +207,17 @@ void enemyClass::updateAttackCooldownTimer(float dt)
 	if (this->attackTimer <= 0)
 	{
 		this->isAttack = false;
+		this->hurt = 0;
 	}
 }
 
 void enemyClass::setIsFrozen(bool check)
 {
 	this->isFrozen = check;
+	if (check == true)
+	{
+		this->hurt = 3;
+	}
 }
 
 bool enemyClass::getIsFrozen()
@@ -225,6 +232,7 @@ void enemyClass::updateFrozenTimer(float dt)
 	{
 		this->isFrozen = false;
 		this->frozenTimer = 3.0f;
+		this->hurt = 0;
 	}
 }
 
