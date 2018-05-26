@@ -321,7 +321,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonBoi.bin");
+	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonBoiTest.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy1 obj",
@@ -1737,11 +1737,11 @@ bool gameClass::frameWin(double dt)
 
 	//constant MATRICES
 	updateConstantMatrices();
-
+	XMMATRIX tJoints[30];
 	graphics->beginScene();
 	for (int i = 0; i < objHolderWin.size(); i++)
 	{
-		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
+		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 		if (!result)
 		{
 			return false;
@@ -1842,12 +1842,13 @@ bool gameClass::frameLimbo(double dt)
 
 	graphics->beginScene();
 
+	XMMATRIX tJoints[30];
 	int pickupCheck = 0;
 	for (int i = 0; i < objHolderLimbo.size(); i++)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -1857,7 +1858,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
 			pickupCheck++;
 			if (!result)
 			{
@@ -1866,7 +1867,7 @@ bool gameClass::frameLimbo(double dt)
 		}
 
 		else if (objHolderLimbo[i]->getType() == 3) {
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 2);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 2);
 			if (!result)
 			{
 				return false;
@@ -1876,7 +1877,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -2121,11 +2122,12 @@ bool gameClass::frameGame(double dt)
 	int pickupTypeChecker = 0;
 	int enemyTypeChecker = 0;
 	graphics->beginScene();
+	XMMATRIX tJoints[30];
 	for (int i = 0; i < objHolder.size(); i++)
 	{
 		if (objHolder[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -2135,7 +2137,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -2144,7 +2146,11 @@ bool gameClass::frameGame(double dt)
 		}
 		else if (objHolder[i]->getType() == 3) 
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), enemyHolder[enemyTypeChecker - 1].getHurt());
+			for (int j = 0; j < objHolder[i]->getJointCount(); j++)
+			{
+				objHolder[i]->getTransformMatrix(tJoints[j], j);
+			}
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, objHolder[i]->getJointCount(), enemyHolder[enemyTypeChecker - 1].getHurt());
 			if (!result)
 			{
 				return false;
@@ -2156,13 +2162,13 @@ bool gameClass::frameGame(double dt)
 		else if (objHolder[i]->getType() == 5)
 		{
 			if (!projectile->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
 			if (!enemyFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, enemyFire->getFrameCount(), enemyFire->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, enemyFire->getFrameCount(), enemyFire->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
 			if (!bossFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, bossFire->getFrameCount(), bossFire->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossFire->getFrameCount(), bossFire->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
 			if (!bossIce->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0, bossIce->getFrameCount(), bossIce->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossIce->getFrameCount(), bossIce->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
 			if (!result)
 			{
 				return false;
@@ -2171,7 +2177,7 @@ bool gameClass::frameGame(double dt)
 		
 		else
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -2300,9 +2306,10 @@ bool gameClass::frameMeny(double dt)
 	updateOverlay();
 
 	graphics->beginScene();
+	XMMATRIX tJoints[30];
 	for (int i = 0; i < objHolderMeny.size(); i++)
 	{
-		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), player->getWeaponType(), 0);
+		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 		if (!result)
 
 		{
@@ -2876,6 +2883,17 @@ void gameClass::updateEnemy(double dt)
 		if (enemyHolder[i].getIsFrozen())
 		{
 			enemyHolder[i].updateFrozenTimer(dt);
+		}
+
+		if (enemyHolder[i].getEnemyType() == 0)
+		{
+			enemyHolder[i].getObj()->setStartFrame(1);
+			enemyHolder[i].getObj()->setEndFrame(33);
+		}
+		else if (enemyHolder[i].getEnemyType() == 1)
+		{
+			enemyHolder[i].getObj()->setStartFrame(1);
+			enemyHolder[i].getObj()->setEndFrame(39);
 		}
 
 		enemyHolder[i].updateFalling(dt);
@@ -4611,7 +4629,8 @@ void gameClass::updateCollision(double dt)
 						enemyFire->setGoesRight(false);
 					}
 				}
-			} //MÅSVINGE
+			} 
+			enemyHolder[i].getObj()->playAnimation(dt, false);
 		}
 		if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
 		{
@@ -4623,7 +4642,7 @@ void gameClass::updateCollision(double dt)
 			enemyFire->resetProjectile();
 		}
 	
-		enemyHolder[i].updateAttackCooldownTimer(dt);
+		enemyHolder[i].updateAttackCooldownTimer(dt);	
 	}
 
 	if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder() && player->getCurrentAnimation() != 7)

@@ -6,11 +6,14 @@ cbuffer constBuffer : register(b0)
 };
 struct VS_IN
 {
-	float3 Pos : POSITION;
-	float3 Normal : NORMAL;
-	float3 Color : COLOR;
-	float2 TexCoord : TEXCOORD;
-	float3 Tangent : TANGENT;
+	float3 Pos			: POSITION;
+	float3 Normal		: NORMAL;
+	float3 Color		: COLOR;
+	float2 TexCoord		: TEXCOORD;
+	float4 Weights		: WEIGHT;
+	int4 Joints			: JOINT;
+	float3 Tangent		: TANGENT;
+	float3 Binormal		: BINORMAL;
 };
 
 struct VS_OUT

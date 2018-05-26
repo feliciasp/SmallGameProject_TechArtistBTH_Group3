@@ -8,19 +8,37 @@
 #include <vector>
 #include <iostream>
 
-struct BlendShapeFrame
+struct animationKeyFrame
 {
-	BlendShape blendShapeHeader;
-	Vertex* blendShapesVertices;
+	animatedJoint* animatedSkeleton;
+};
+
+struct Animation
+{
+	AnimationHeader animationInfo;
+	animationKeyFrame* keyFrames;
+};
+
+struct BlendShape
+{
+	BlendShapeHeader blendShapeInfo;
+	Vertex* vertices;
 };
 
 struct LoadedMesh
 {
-	Mesh meshHeader;
+	Mesh mHeader;
+	Material material;
 	Vertex* vertices;
-	////For animations
-	//BlendShapesHeader blendShapesHeader;
-	//BlendShapeFrame* blendShapeTimeline;
+	Joint* skeleton;
+	Animation animation;
+	BlendShape* blendShapes;
+};
+
+struct Group
+{
+	GroupHeader header;
+	GroupChildren* children;
 };
 
 class Importer {
@@ -28,7 +46,9 @@ private:
 
 	MyFormat header;
 	LoadedMesh* loadedMeshes;
-	Material* loadedMaterials;
+	Camera* loadedCameras;
+	Light* loadedLights;
+	Group* loadedGroups;
 
 public:
 
@@ -37,16 +57,24 @@ public:
 
 	void clone(const Importer& other);
 
-	//bool loadMesh(const char* filename, const char* meshName);
+	//load functions
 	bool loadMesh(const char* filename);
+	bool loadLights(const char* filename);
+	bool loadCameras(const char* filename);
+	bool loadGroups(const char* filename);
+	bool loadScene(const char* filename);
 
-	bool loadMaterial(const char* filename);
+	//Meshes
+	int getMeshCount() const;
+	LoadedMesh getMesh() const;
 
 	int getVertexCount() const;
 	int getVertexCount(const char* meshName) const;
 	int getVertexCount(int meshID) const;
-	char* getMaterialID(const char * meshName) const;
-	int getMeshCount() const;
+
+	Vertex* getVertices() const;
+	Vertex* getVertices(const char* meshName) const;
+	Vertex* getVertices(int meshID) const;
 
 	void getMinBBox(float &minX, float &minY, float &minZ);
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ);
@@ -55,11 +83,76 @@ public:
 	void getMaxBBox(float &maxX, float &maxY, float &maxZ, int meshID);
 
 
-	LoadedMesh getMesh() const;
+	//Material
+	char* getMaterialName();
+	char* getMaterialName(int meshID);
 
-	Vertex* getVertices() const;
-	Vertex* getVertices(const char* meshName) const;
-	Vertex* getVertices(int meshID) const;
+	char* getTextureName();
+	char* getTextureName(int meshID);
+
+	char* getNormalMapName();
+	char* getNormalMapName(int meshID);
+
+	char* getSpecularMapName();
+	char* getSpecularMapName(int meshID);
+
+	void getDiffuseColor(float &r, float &g, float &b);
+	void getDiffuseColor(float &r, float &g, float &b, int meshID);
+
+	void getAmbientColor(float &r, float &g, float &b);
+	void getAmbientColor(float &r, float &g, float &b, int meshID);
+
+	void getEmissiveColor(float &r, float &g, float &b);
+	void getEmissiveColor(float &r, float &g, float &b, int meshID);
+
+	void getTransparencyColor(float &r, float &g, float &b);
+	void getTransparencyColor(float &r, float &g, float &b, int meshID);
+
+	//Phong Values
+	void getSpecularColor(float &r, float &g, float &b);
+	void getSpecularColor(float &r, float &g, float &b, int meshID);
+
+	void getReflectionColor(float &r, float &g, float &b);
+	void getReflectionColor(float &r, float &g, float &b, int meshID);
+
+
+
+	//Skeletal Animations
+	Joint* getJoints() const;
+	animatedJoint* getAnimatedJointsAtKey(int keyFrame);
+	int getJointCount() const;
+	int getAnimationLength();
+	int getNrOfAnimations();
+
+	//BlendShapes
+	int getBlendShapeCount();
+
+	//Cameras
+	int getCameraCount();
+
+	void getCameraPosition(float &x, float &y, float &z);
+	void getCameraPosition(float &x, float &y, float &z, int cameraID);
+
+	void getCameraLookAt(float &x, float &y, float &z);
+	void getCameraLookAt(float &x, float &y, float &z, int cameraID);
+
+	void getCameraUP(float &x, float &y, float &z);
+	void getCameraUP(float &x, float &y, float &z, int cameraID);
+
+	//Lights
+	int getLightCount();
+
+	char* getLightType();
+
+	void getLightPosition(float &x, float &y, float &z);
+	void getLightPosition(float &x, float &y, float &z, int lightID);
+
+	void getLightColor(float &r, float &g, float &b);
+	void getLightColor(float &r, float &g, float &b, int lightID);
+
+	float getLightIntensity();
+	float getLightIntensity(int lightID);
+	//Groups
 
 	void destroyMesh();
 };

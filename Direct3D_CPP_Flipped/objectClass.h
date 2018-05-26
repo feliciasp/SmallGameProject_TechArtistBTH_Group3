@@ -52,6 +52,13 @@ class objectClass
 		int getType();
 		void setType(int type);
 
+		void playAnimation(float dt, bool inverse);
+		int getJointCount();
+
+		void setStartFrame(int startFrame);
+		void setEndFrame(int endFrame);
+		int getEndFrame();
+
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
@@ -66,6 +73,8 @@ class objectClass
 
 		int getAnimationCount();
 		void setAnimationCount(int animationCount);
+
+		void getTransformMatrix(XMMATRIX& other, int jointIndex);
 
 	private:
 
@@ -86,6 +95,11 @@ class objectClass
 		int currentFrame;
 		int currentAnimation;
 		int animationCount;
+
+		int startFrame;
+		int endFrame;
+		XMMATRIX* transforms;
+		float skeletalAnimTimer;
 };
 
 #endif

@@ -10,6 +10,10 @@ objectClass::objectClass()
 	frameCount = 1;
 	animationCount = 1;
 	currentAnimation = 1;
+
+	startFrame = 1;
+	endFrame = 1;
+	skeletalAnimTimer = 0.0f;
 }
 
 objectClass::objectClass(const objectClass & other)
@@ -30,6 +34,10 @@ void objectClass::clone(const objectClass & other)
 	collision = new collisionClass;
 	memcpy(collision, other.collision, sizeof(other.collision));
 	matName = other.matName;
+	if (mesh.getJointCount() > 0)
+	{
+		transforms = new XMMATRIX[mesh.getJointCount()];
+	}
 }
 
 bool objectClass::initlialize(ID3D11Device * device, const char* filename)
@@ -54,6 +62,10 @@ bool objectClass::initlialize(ID3D11Device * device, const char* filename)
 	//init vertex and index buffer
 	
 	collision = new collisionClass;
+	if (mesh.getJointCount() > 0)
+	{
+		transforms = new XMMATRIX[mesh.getJointCount()];
+	}
 
 	return true;
 	
@@ -178,6 +190,10 @@ void objectClass::shutdownBuffer()
 		collision = 0;
 		
 	}
+	if (mesh.getJointCount() > 0)
+	{
+		delete[] transforms;
+	}
 	
 	this->mesh.destroyMesh();
 }
@@ -240,6 +256,56 @@ void objectClass::setType(int type)
 	this->type = type;
 }
 
+void objectClass::playAnimation(float dt, bool inverse)
+{
+	float fps = 1.0f / 24.0f;
+
+	if (skeletalAnimTimer > fps)
+	{
+		frameCount++;
+		skeletalAnimTimer = 0.0f;
+		if (frameCount >= endFrame || frameCount < startFrame)
+		{
+			frameCount = startFrame;
+		}
+	}
+
+
+	animatedJoint* animatedJoint = mesh.getAnimatedJointsAtKey(frameCount);
+
+	for (int i = 0; i < mesh.getJointCount(); i++)
+	{
+		XMVECTOR vec1 = XMVectorSet(animatedJoint[i].keyFrameTransform[0][0], animatedJoint[i].keyFrameTransform[0][1], animatedJoint[i].keyFrameTransform[0][2], animatedJoint[i].keyFrameTransform[0][3]);
+		XMVECTOR vec2 = XMVectorSet(animatedJoint[i].keyFrameTransform[1][0], animatedJoint[i].keyFrameTransform[1][1], animatedJoint[i].keyFrameTransform[1][2], animatedJoint[i].keyFrameTransform[1][3]);
+		XMVECTOR vec3 = XMVectorSet(animatedJoint[i].keyFrameTransform[2][0], animatedJoint[i].keyFrameTransform[2][1], animatedJoint[i].keyFrameTransform[2][2], animatedJoint[i].keyFrameTransform[2][3]);
+		XMVECTOR vec4 = XMVectorSet(animatedJoint[i].keyFrameTransform[3][0], animatedJoint[i].keyFrameTransform[3][1], animatedJoint[i].keyFrameTransform[3][2], animatedJoint[i].keyFrameTransform[3][3]);
+
+		this->transforms[i] = XMMATRIX(vec1, vec2, vec3, vec4);
+	}
+
+	skeletalAnimTimer += dt;
+}
+
+int objectClass::getJointCount()
+{
+	return this->mesh.getJointCount();
+}
+
+void objectClass::setStartFrame(int startFrame)
+{
+	this->startFrame = startFrame;
+}
+
+void objectClass::setEndFrame(int endFrame)
+{
+	this->endFrame = endFrame;
+}
+
+int objectClass::getEndFrame()
+{
+	return this->endFrame;
+}
+
 void objectClass::setMaterialName(std::string name)
 {
 	this->matName = name;
@@ -288,4 +354,9 @@ void objectClass::setMaterialName(std::string name)
  void objectClass::setAnimationCount(int animationCount)
  {
 	 this->animationCount = animationCount;
+ }
+
+ void objectClass::getTransformMatrix(XMMATRIX & other, int jointIndex)
+ {
+	 other = this->transforms[jointIndex];
  }

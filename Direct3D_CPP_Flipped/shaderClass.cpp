@@ -24,7 +24,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, XMMATRIX joints[30], int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -64,6 +64,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 
 	else if (type == 3)
 	{
+		result = setEnemyShaderParameters(devCon, world, view, proj, camPos, joints, weaponType, hurt);
 		renderEnemy(devCon, indexCount, name);
 	}
 
@@ -348,7 +349,10 @@ bool shaderClass::createShaders(ID3D11Device* device)
 		{ "NORMAL",     0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "WEIGHT",	0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "JOINT", 0, DXGI_FORMAT_R32G32B32A32_SINT, 0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 76, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 88, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	result = device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &this->vertexLayout);
 	if (FAILED(result))
@@ -628,6 +632,54 @@ bool shaderClass::setPlayerShaderParameters(ID3D11DeviceContext * devCon, bool f
 	devCon->PSSetConstantBuffers(bufferNumber, 1, &playerConstBuffer);
 
 	return true;
+}
+
+bool shaderClass::setEnemyShaderParameters(ID3D11DeviceContext * devCon, XMMATRIX world, XMMATRIX view, XMMATRIX proj, XMVECTOR camPos, XMMATRIX joints[30], int jointCount, int hurt)
+{
+	//used to set global variables in the shader easier and more accessble
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResources;
+	cBuffer* dataPtr;
+	unsigned int bufferNumber;
+
+	//transpose matrices
+	world = XMMatrixTranspose(world);
+	view = XMMatrixTranspose(view);
+	proj = XMMatrixTranspose(proj);
+
+	//LOCK cosntantbufffer, set new matrtices, unlock it
+	//map new values
+	result = devCon->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResources);
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error mapping to cosnt buffer",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	//ptr to data in the constant buffer
+	dataPtr = (cBuffer*)mappedResources.pData;
+	//copy matrices into the c buffer
+	dataPtr->world = world;
+	dataPtr->view = view;
+	dataPtr->proj = proj;
+	for (int i = 0; i < jointCount; i++)
+	{
+		joints[i] = XMMatrixTranspose(joints[i]);
+		dataPtr->joints[i] = joints[i];
+	}
+	dataPtr->camPos = camPos;
+	dataPtr->hurtColor = hurt;
+	//unlock it
+	devCon->Unmap(constBuffer, 0);
+
+	//set updated constant buffer in the HLSL vertexshader
+	//set pos of constant buffer in vertex shader
+	bufferNumber = 0;
+	//set conatnbuffer in hte vtx shader wioth the updated values
+	devCon->VSSetConstantBuffers(bufferNumber, 1, &constBuffer);
+
+	return true;
+
 }
 
 //secound func called in rander func. setShaderParam is before to ensure everything is setup correctly
