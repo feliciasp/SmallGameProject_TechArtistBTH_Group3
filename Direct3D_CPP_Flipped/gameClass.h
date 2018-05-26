@@ -109,6 +109,11 @@ private:
 	projectileClass* projectile;
 	projectileClass* enemyFire;
 	projectileClass* bossFire;
+	projectileClass* bossFire2;
+	projectileClass* bossFire3;
+	projectileClass* bossFire4;
+	projectileClass* bossFire5;
+	projectileClass* bossFire6;
 	projectileClass* bossIce;
 	XMMATRIX bossProjectileMat;
 	GUItestClass* GUItest;
@@ -126,7 +131,10 @@ private:
 	int nrOfEnemysBossHasSpawned;
 	bool canSpawnEnemys;
 	bool canSpawnEnemys2;
+	XMMATRIX fireBoss2Mat;
 	void updateBossTimer(float dt);
+	float bossTimerForRainingFire;
+	void updateBossTimerForRainingFire(float dt);
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

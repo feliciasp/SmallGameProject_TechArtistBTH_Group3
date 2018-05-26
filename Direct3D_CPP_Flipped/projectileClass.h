@@ -36,6 +36,7 @@ public:
 	XMVECTOR getBoundingBoxMaxRight();
 	XMVECTOR getBoundingBoxMinRight();
 
+	void moveProjY(double dt);
 	void moveProjectile(double dt);
 	void moveRrojToCertainDestination(double dt);
 	void setDestinationPoint(XMVECTOR other);

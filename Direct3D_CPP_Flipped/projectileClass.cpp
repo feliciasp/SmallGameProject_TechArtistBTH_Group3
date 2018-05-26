@@ -149,6 +149,14 @@ XMVECTOR projectileClass::getBoundingBoxMinRight()
 	return this->bboxMinRight;
 }
 
+void projectileClass::moveProjY(double dt)
+{
+
+	moveValY += -20.0f * dt;
+	
+	transX = transStart * XMMatrixTranslation(0.0f, moveValY, 0.0f);
+}
+
 void projectileClass::moveProjectile(double dt)
 {
 	if (projectileType == 0)
