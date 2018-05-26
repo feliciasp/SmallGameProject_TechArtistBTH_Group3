@@ -18,6 +18,7 @@ enemyClass::enemyClass()
 	isHurt = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
+	attackAnimationPlaying = false;
 	isFrozen = false;
 	frozenTimer = 3.0f;
 
@@ -304,6 +305,16 @@ void enemyClass::checkCollisionsX(bool left, bool right)
 //	return this->collidingX;
 //}
 
+
+void enemyClass::setAttackAnimationPlaying(bool attackAnim)
+{
+	this->attackAnimationPlaying = attackAnim;
+}
+
+bool enemyClass::getAttackAnimationPlaying()
+{
+	return this->attackAnimationPlaying;
+}
 
 void enemyClass::setEnemyHurt(bool check)
 {

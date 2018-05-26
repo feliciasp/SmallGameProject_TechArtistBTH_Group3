@@ -380,7 +380,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 
 	animTimer += dt;
 	
-		
+	invulnurable = false;
 
 	gravityTimer += 1;
 
@@ -517,6 +517,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	{
 		frameCount = 1;
 		currentAnimation = 5;
+		invulnurable = true;
 
 		if (hurtFromLeft)
 		{

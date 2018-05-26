@@ -262,12 +262,26 @@ void objectClass::playAnimation(float dt, bool inverse)
 
 	if (skeletalAnimTimer > fps)
 	{
-		frameCount++;
-		skeletalAnimTimer = 0.0f;
-		if (frameCount >= endFrame || frameCount < startFrame)
+		if (inverse)
 		{
-			frameCount = startFrame;
+			frameCount--;
+			skeletalAnimTimer = 0.0f;
+			if (frameCount >= endFrame || frameCount < startFrame)
+			{
+				frameCount = endFrame - 1;
+			}
 		}
+		else
+		{
+			frameCount++;
+			skeletalAnimTimer = 0.0f;
+
+			if (frameCount >= endFrame || frameCount < startFrame)
+			{
+				frameCount = startFrame;
+			}
+		}
+
 	}
 
 

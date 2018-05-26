@@ -325,7 +325,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonBoiTest.bin");
+	result = enemy->initlialize(graphics->getD3D()->GetDevice(), "skeletonAnimated.bin");
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init enemy1 obj",
@@ -2843,13 +2843,13 @@ void gameClass::initializeEnemies()
 
 		XMVECTOR tBboxMax;
 		XMVECTOR tBboxMin;
-		tBboxMax = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()) };
+		tBboxMax = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()) };
 		tBboxMin = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()), XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()) };
 		enemyHolder[nrOfVisibleEnemies - 1].setBboxMaxWeaponRight(tBboxMax);
 		enemyHolder[nrOfVisibleEnemies - 1].setBboxMinWeaponRight(tBboxMin);
 
 		tBboxMax = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()), XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMax()) };
-		tBboxMin = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()) - 1, XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()) };
+		tBboxMin = { XMVectorGetX(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(enemyHolder[nrOfVisibleEnemies - 1].getObj()->getBoundingBoxMin()) };
 		enemyHolder[nrOfVisibleEnemies - 1].setBboxMaxWeaponLeft(tBboxMax);
 		enemyHolder[nrOfVisibleEnemies - 1].setBboxMinWeaponLeft(tBboxMin);
 
@@ -2894,10 +2894,10 @@ void gameClass::updateEnemy(double dt)
 			enemyHolder[i].updateFrozenTimer(dt);
 		}
 
-		if (enemyHolder[i].getEnemyType() == 0)
+		if (enemyHolder[i].getEnemyType() == 0 && !enemyHolder[i].getAttackAnimationPlaying())
 		{
-			enemyHolder[i].getObj()->setStartFrame(1);
-			enemyHolder[i].getObj()->setEndFrame(33);
+			enemyHolder[i].getObj()->setStartFrame(61);
+			enemyHolder[i].getObj()->setEndFrame(84);
 		}
 
 		if (enemyHolder[i].getEnemyType() == 1)
@@ -2927,9 +2927,18 @@ void gameClass::updateEnemy(double dt)
 		}
 		enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
 		///////////////
-		enemyHolder[i].checkCollisionsY(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
-		enemyHolder[i].checkCollisionsX(checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
-		//enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
+		if (enemyHolder[i].getEnemyType() == 0)
+		{
+			enemyHolder[i].checkCollisionsY(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, 0.5f, 0.0f)), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix  * XMMatrixTranslation(0.0f, 0.5f, 0.0f)));
+			enemyHolder[i].checkCollisionsX(checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix  * XMMatrixTranslation(0.0f, 0.5f, 0.0f)), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix  * XMMatrixTranslation(0.0f, 0.5f, 0.0f)));
+		}
+		else
+		{
+			enemyHolder[i].checkCollisionsY(checkCollisionPlatformTop(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformBot(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
+			enemyHolder[i].checkCollisionsX(checkCollisionPlatformLeft(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix), checkCollisionPlatformRight(platform, enemyHolder[i].getObj(), tempEnemyTranslationMatrix));
+			//enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);
+		}
+		
 		enemyHolder[i].getTranslationMat(tempMatrixThatMakesOurSkeletonMove_HoldsOurXValueFrame);
 		enemyHolder[i].getFallingMat(tempEnemyIfAirThenFallMatrix);
 		if (!enemyHolder[i].getRoationCheck())
@@ -2950,6 +2959,11 @@ void gameClass::updateEnemy(double dt)
 		enemyHolder[i].setMasterMovementEnemy(tempMasterMovementEnemyMat);
 		enemyHolder[i].setEnemyTranslationMatrix(tempEnemyTranslationMatrix);
 		enemyHolder[i].getObj()->setWorldMatrix(tempMasterMovementEnemyMat);
+
+		if (enemyHolder[i].getAttackAnimationPlaying() && enemyHolder[i].getObj()->getFrameCount() >= enemyHolder[i].getObj()->getEndFrame() - 1 && enemyHolder[i].getEnemyType() == 0)
+		{
+			enemyHolder[i].setAttackAnimationPlaying(false);
+		}
 	}
 }
 
@@ -4287,13 +4301,14 @@ void gameClass::updateCollision(double dt)
 		float enemyMove = enemyHolder[i].getMove();
 
 		enemyHolder[i].getEnemyTranslationMatrix(tempEnemyTranslationMatrix);
+		bool inverse = false;
 
 		lengthBetween1 = XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove));
 		lengthBetween2 = XMVectorGetX(XMVector3Transform(player->getObj()->getPosition(), playerMove)) - XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix));
 		lengthBetweenEnemyStartAndEnemyCurrentPos1 = XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[i].getStartPos(), tempEnemyTranslationMatrix));
 		lengthBetweenEnemyStartAndEnemyCurrentPos2 = XMVectorGetX(XMVector3Transform(enemyHolder[i].getStartPos(), tempEnemyTranslationMatrix)) - XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix));
 
-		if (enemyHolder[i].getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+		if (enemyHolder[i].getIsActive() && player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponLeft(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponLeft(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -4325,7 +4340,7 @@ void gameClass::updateCollision(double dt)
 				player->setIfInObjHolder(false);
 			}
 		}
-		else if (enemyHolder[i].getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+		else if (enemyHolder[i].getIsActive() && !player->getFlipped() && player->getIfAttack() && player->getWeapon()->getCollisionClass()->checkCollision(XMVector3Transform(player->getWeapon()->getBboxMinWeaponRight(), playerMove), XMVector3Transform(player->getWeapon()->getBboxMaxWeaponRight(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -4357,7 +4372,7 @@ void gameClass::updateCollision(double dt)
 			}
 		}
 
-		if (player->getRingType() == 1 && enemyHolder[i].getIsActive() && player->getMagicCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
+		if (player->getRingType() == 1 && enemyHolder[i].getIsActive() && player->getMagicCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -4393,7 +4408,7 @@ void gameClass::updateCollision(double dt)
 			player->setMagicCast(false);
 		}
 
-		else if (player->getRingType() == 1 && enemyHolder[i].getIsActive() && player->getMagicCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
+		else if (player->getRingType() == 1 && enemyHolder[i].getIsActive() && player->getMagicCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
 		{
 			if (enemyHolder[i].hurtState())
 			{
@@ -4474,13 +4489,20 @@ void gameClass::updateCollision(double dt)
 				{
 					enemyFire->setIsDestroyed(true);
 					enemyHolder[i].setMove(0.0f);
-					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.2f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponRight(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.2f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponRight(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponRight(), tempEnemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 					{
 						if (enemyHolder[i].attackCooldown())
 						{
 							//OutputDebugString(L"Attacking");
 							if (soundAvailable)
 								sound->playSFX(1, 5);
+
+							enemyHolder[i].setAttackAnimationPlaying(true);
+							enemyHolder[i].getObj()->setStartFrame(34);
+							enemyHolder[i].getObj()->setEndFrame(60);
+						}
+						if (enemyHolder[i].getAttackAnimationPlaying() && enemyHolder[i].getObj()->getFrameCount() > 46 && enemyHolder[i].getAttackAnimationPlaying() && enemyHolder[i].getObj()->getFrameCount() < 60)
+						{
 							player->setPlayerHP(player->getPlayerHP() - 1);
 
 							player->setPlayerHurt(true);
@@ -4525,12 +4547,23 @@ void gameClass::updateCollision(double dt)
 					}
 					enemyHolder[i].setTranslation(enemyHolder[i].getMove());
 					enemyHolder[i].setMove(-2.5f * dt);
+					if (enemyHolder[i].getEnemyType() == 0 && !enemyHolder[i].getAttackAnimationPlaying())
+					{
+						enemyHolder[i].getObj()->setStartFrame(1);
+						enemyHolder[i].getObj()->setEndFrame(33);
+					}
 				}
 			}
-			else if (enemyHolder[i].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) > XMVectorGetX(enemyHolder[i].getStartPos()))
+			else if (enemyHolder[i].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix)) > XMVectorGetX(enemyHolder[i].getStartPos()) + 0.1f)
 			{
 				enemyHolder[i].setMove(1.5f * dt);
 				enemyHolder[i].setTranslation(enemyHolder[i].getMove());
+				if(!enemyHolder[i].getAttackAnimationPlaying())
+				{
+					enemyHolder[i].getObj()->setStartFrame(1);
+					enemyHolder[i].getObj()->setEndFrame(33);
+					inverse = true;
+				}
 			}
 
 			if (enemyHolder[i].getIsActive() && lengthBetween1 <= XMVectorGetX(enemyHolder[i].getTriggerCheck()) && lengthBetween1 >= 0.9f && player->getObj()->getCollisionClass()->checkCollisionY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix)))
@@ -4539,17 +4572,24 @@ void gameClass::updateCollision(double dt)
 				{
 					enemyFire->setIsDestroyed(true);
 					enemyHolder[i].setMove(0.0f);
-					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponLeft(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
+					if (enemyHolder[i].getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyHolder[i].getBboxMinWeaponLeft(), tempEnemyTranslationMatrix), XMVector3Transform(enemyHolder[i].getBboxMaxWeaponLeft(), tempEnemyTranslationMatrix), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 					{
 						if (enemyHolder[i].attackCooldown())
 						{
-							//OutputDebugString(L"Attacking");
+							if (soundAvailable)
+								sound->playSFX(1, 5);
 
+							enemyHolder[i].setAttackAnimationPlaying(true);
+							enemyHolder[i].getObj()->setStartFrame(34);
+							enemyHolder[i].getObj()->setEndFrame(60);
+
+						}
+						if (enemyHolder[i].getAttackAnimationPlaying() && enemyHolder[i].getObj()->getFrameCount() > 46 && enemyHolder[i].getAttackAnimationPlaying() && enemyHolder[i].getObj()->getFrameCount() < 50)
+						{
 							player->setPlayerHP(player->getPlayerHP() - 1);
 							player->setPlayerHurt(true);
 							player->setPlayerHurtFromLeft(true);
 							if (!heartHolder[player->getPlayerHP()].getIsDestry() && heartHolder[player->getPlayerHP()].getCheckIfObjHolder())
-
 							{
 
 								heartHolder[player->getPlayerHP()].setIsDestroy(true);
@@ -4591,13 +4631,24 @@ void gameClass::updateCollision(double dt)
 
 					enemyHolder[i].setMove(2.5f * dt);
 					enemyHolder[i].setTranslation(enemyHolder[i].getMove());
+					if (enemyHolder[i].getEnemyType() == 0 && !enemyHolder[i].getAttackAnimationPlaying())
+					{
+						enemyHolder[i].getObj()->setStartFrame(1);
+						enemyHolder[i].getObj()->setEndFrame(33);
+					}
 				}
 			}
-			else if (enemyHolder[i].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))) < XMVectorGetX(enemyHolder[i].getStartPos()))
+			else if (enemyHolder[i].getIsActive() && XMVectorGetX(XMVector3Transform(enemyHolder[i].getObj()->getPosition(), tempEnemyTranslationMatrix)) < XMVectorGetX(enemyHolder[i].getStartPos()) - 0.1f)
 			{
 				enemyHolder[i].setMove(-1.5f * dt);
 				enemyHolder[i].setTranslation(enemyHolder[i].getMove());
 				//OutputDebugString(L"MOVING TO SPAWN");
+				if (enemyHolder[i].getEnemyType() == 0 && !enemyHolder[i].getAttackAnimationPlaying())
+				{
+					enemyHolder[i].getObj()->setStartFrame(1);
+					enemyHolder[i].getObj()->setEndFrame(33);
+					inverse = true;
+				}
 			}
 
 
@@ -4642,7 +4693,7 @@ void gameClass::updateCollision(double dt)
 
 			}
 
-			enemyHolder[i].getObj()->playAnimation(dt, false);
+			enemyHolder[i].getObj()->playAnimation(dt, inverse);
 		}
 		if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder())
 		{

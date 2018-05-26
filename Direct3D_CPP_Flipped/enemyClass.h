@@ -72,6 +72,9 @@ class enemyClass
 		
 		int getAttackCooldown();
 
+		void setAttackAnimationPlaying(bool attackAnim);
+		bool getAttackAnimationPlaying();
+
 		//VAPEN
 		void setBboxMaxWeaponRight(XMVECTOR vector);
 		void setBboxMinWeaponRight(XMVECTOR vector);
@@ -132,6 +135,7 @@ class enemyClass
 		bool isAttack;
 		float attackTimer;
 		float hurtTimer;
+		bool attackAnimationPlaying;
 		
 		bool isFrozen;
 		float frozenTimer;
