@@ -156,10 +156,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon1->setDamage(1);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon1->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon1->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon1->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon1->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -172,10 +172,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon2->setDamage(2);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon2->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon2->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon2->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon2->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -188,10 +188,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon3->setDamage(4);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon3->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon3->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon3->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon3->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -204,10 +204,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon4->setDamage(6);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon4->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon4->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon4->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon4->setBboxMinWeaponLeft(tempBboxMax);
 
@@ -220,10 +220,10 @@ bool playerClass::initialize(ID3D11Device* device, const char* filename, HINSTAN
 	}
 	weapon5->setDamage(8);
 
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 2, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(this->getObj()->getBoundingBoxMax()) };
 	this->weapon5->setBboxMaxWeaponRight(tempBboxMax);
 	this->weapon5->setBboxMinWeaponRight(this->getObj()->getBoundingBoxMax());
-	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 2, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(this->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(this->getObj()->getBoundingBoxMin()) };
 	this->weapon5->setBboxMaxWeaponLeft(this->getObj()->getBoundingBoxMin());
 	this->weapon5->setBboxMinWeaponLeft(tempBboxMax);
 

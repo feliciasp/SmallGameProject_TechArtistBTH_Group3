@@ -6,7 +6,7 @@
 #include "shaderClass.h"
 #include "objectClass.h"
 
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 const bool VSYNC_ENABLED = true;	//render according to user monitor or as fast as possible
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
