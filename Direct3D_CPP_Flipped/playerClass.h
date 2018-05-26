@@ -140,7 +140,6 @@ private:
 	bool attacking;
 	bool isHit;
 
-
 	bool inAir;
 
 	bool dodge;

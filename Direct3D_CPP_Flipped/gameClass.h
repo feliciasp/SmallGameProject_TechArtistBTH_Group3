@@ -68,6 +68,8 @@ public:
 
 	void checkReleasedKeys();
 
+
+
 private:
 	bool frameLimbo(double dt);
 	bool frameGame(double dt);
@@ -118,6 +120,12 @@ private:
 	XMMATRIX tempBossStartingPositionMatrix, tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame, tempBossIfAirThenFallMatrix;
 	XMMATRIX tempMasterMovementBossMat;
 	XMMATRIX tempBossTranslationMatrix;
+	bool ifBossIsSpawning;
+	float bossTimer;
+	int nrOfEnemysBossHasSpawned;
+	bool canSpawnEnemys;
+	bool canSpawnEnemys2;
+	void updateBossTimer(float dt);
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
