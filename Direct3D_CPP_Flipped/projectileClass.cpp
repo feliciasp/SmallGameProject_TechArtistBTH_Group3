@@ -276,6 +276,7 @@ void projectileClass::updateAnimation(double dt)
 		}
 	}
 	currentTime += 1 * dt;
+	obj->setCurrentFrame(currentFrame);
 }
 
 int projectileClass::getCurrentFrame()
@@ -286,6 +287,7 @@ int projectileClass::getCurrentFrame()
 void projectileClass::setFrameCount(int other)
 {
 	this->frameCount = other;
+	obj->setFrameCount(other);
 }
 
 int projectileClass::getFrameCount()
@@ -296,6 +298,7 @@ int projectileClass::getFrameCount()
 void projectileClass::setCurrentAnimation(int other)
 {
 	this->currentAnimation = other;
+	obj->setCurrentAnimation(other);
 }
 
 int projectileClass::getCurrentAnimation()
@@ -306,6 +309,7 @@ int projectileClass::getCurrentAnimation()
 void projectileClass::setAnimationCount(int other)
 {
 	this->animationCount = other;
+	obj->setAnimationCount(other);
 }
 
 int projectileClass::getAnimationCount()

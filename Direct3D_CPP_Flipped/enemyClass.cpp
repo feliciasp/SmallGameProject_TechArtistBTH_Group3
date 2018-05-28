@@ -16,6 +16,7 @@ enemyClass::enemyClass()
 	HP = 4;
 	isAttack = false;
 	isHurt = false;
+	attackAnimation = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
 	isFrozen = false;
@@ -220,6 +221,16 @@ void enemyClass::updateAttackCooldownTimer(float dt)
 	{
 		this->isAttack = false;
 	}
+}
+
+void enemyClass::setAttackAnimation(bool attack)
+{
+	this->attackAnimation = attack;
+}
+
+bool enemyClass::getAttackAnimation()
+{
+	return this->attackAnimation;
 }
 
 void enemyClass::setIsFrozen(bool check)

@@ -136,6 +136,8 @@ private:
 	float bossTimerForRainingFire;
 	void updateBossTimerForRainingFire(float dt);
 
+	void updatePortal(double dt);
+
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;
 	enemyClass* enemyHolder;
