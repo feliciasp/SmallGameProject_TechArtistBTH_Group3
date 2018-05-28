@@ -4701,7 +4701,7 @@ void gameClass::updateCollision(double dt)
 
 		if (player->getRingType() == 2 && enemyHolder[i].getIsActive() && player->getMagicCast() && !projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinLeft(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxLeft(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -1.0f, 0.0f))))
 		{
-			if (enemyHolder[i].hurtState())
+			if (!enemyHolder[i].getIsFrozen())
 			{
 				if (soundAvailable)
 					sound->playSFX(1, 4);
@@ -4716,7 +4716,7 @@ void gameClass::updateCollision(double dt)
 
 		else if (player->getRingType() == 2 && enemyHolder[i].getIsActive() && player->getMagicCast() && projectile->getGoesRight() && !projectile->getIsDestroyed() && projectile->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(projectile->getBoundingBoxMinRight(), projectileMoveMat), XMVector3Transform(projectile->getBoundingBoxMaxRight(), projectileMoveMat), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMin(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f)), XMVector3Transform(enemyHolder[i].getObj()->getBoundingBoxMax(), tempEnemyTranslationMatrix * XMMatrixTranslation(0.0f, -0.5f, 0.0f))))
 		{
-			if (enemyHolder[i].hurtState())
+			if (!enemyHolder[i].getIsFrozen())
 			{
 				if (soundAvailable)
 					sound->playSFX(1, 4);

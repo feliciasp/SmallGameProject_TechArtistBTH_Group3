@@ -42,7 +42,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		}
 		else if (input.hurtColor == 3)
 		{
-			colorShaded = colorShaded * float4(0.0f, 0.0f, 1.0f, 1.0f);
+			colorShaded = colorShaded * float4(0.0f, 0.8f, 1.0f, 1.0f);
 		}
 
 		//color += colorShaded;
