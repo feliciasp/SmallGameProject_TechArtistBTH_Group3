@@ -131,7 +131,7 @@ private:
 	int nrOfEnemysBossHasSpawned;
 	bool canSpawnEnemys;
 	bool canSpawnEnemys2;
-	XMMATRIX fireBoss2Mat;
+	XMMATRIX fireBoss2Mat, fireBoss3Mat, fireBoss4Mat, fireBoss5Mat, fireBoss6Mat;
 	void updateBossTimer(float dt);
 	float bossTimerForRainingFire;
 	void updateBossTimerForRainingFire(float dt);

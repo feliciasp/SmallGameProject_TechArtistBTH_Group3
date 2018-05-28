@@ -605,7 +605,6 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	enemyFire->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemyFire->getObj()->getMaterialName());
-	enemyFire->getObj()->setType(5);
 	enemyFire->setIsDestroyed(false);
 	enemyFire->setCheckIfObjHolder(false);
 	enemyFire->getTranslationMatStart(tempEnemyTranslationMatrix);
@@ -635,7 +634,6 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire->getObj()->getMaterialName());
-	bossFire->getObj()->setType(5);
 	bossFire->setProjectileType(1);
 	bossFire->setIsDestroyed(false);
 	bossFire->setCheckIfObjHolder(false);
@@ -667,17 +665,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire2->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire2->getObj()->getMaterialName());
-	bossFire2->getObj()->setType(5);
-	bossFire2->setProjectileType(1);
+	bossFire2->setProjectileType(2);
 	bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire2->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire2->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire2->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire2->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire3 = new projectileClass;
 	if (!bossFire3)
@@ -695,17 +684,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire3->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire3->getObj()->getMaterialName());
-	bossFire3->getObj()->setType(5);
-	bossFire3->setProjectileType(1);
+	bossFire3->setProjectileType(2);
 	bossFire3->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-40.0f, 102.0f, 0.0f));
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire3->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire3->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire3->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire3->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire4 = new projectileClass;
 	if (!bossFire4)
@@ -723,17 +703,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire4->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire4->getObj()->getMaterialName());
-	bossFire4->getObj()->setType(5);
-	bossFire4->setProjectileType(1);
+	bossFire4->setProjectileType(2);
 	bossFire4->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-30.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire4->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire4->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire4->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire4->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire5= new projectileClass;
 	if (!bossFire5)
@@ -751,17 +723,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire5->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire5->getObj()->getMaterialName());
-	bossFire5->getObj()->setType(5);
-	bossFire5->setProjectileType(1);
+	bossFire5->setProjectileType(2);
 	bossFire5->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-20.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire5->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire5->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire5->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire5->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire6 = new projectileClass;
 	if (!bossFire6)
@@ -779,17 +743,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire6->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire6->getObj()->getMaterialName());
-	bossFire6->getObj()->setType(5);
-	bossFire6->setProjectileType(1);
+	bossFire6->setProjectileType(2);
 	bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire6->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire6->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire6->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire6->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	/////////////////////////////////////////////
 
@@ -816,11 +772,11 @@ bool gameClass::initialize(int ShowWnd)
 	bossIce->setCheckIfObjHolder(false);
 	bossIce->getTranslationMatStart(tempEnemyTranslationMatrix);
 
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 6, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
 	bossIce->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
 	bossIce->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax() * 0.3f);
 
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 6, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	bossFire->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	bossFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
@@ -2084,6 +2040,7 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+		boss->setEnemyHP(100);
 
 		if (soundAvailable)
 			sound->playAmbient(1);
@@ -2117,6 +2074,7 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
 
 		if (soundAvailable)
 			sound->playAmbient(0);
@@ -2181,15 +2139,6 @@ bool gameClass::frameGame(double dt)
 			i = 0;
 		}
 	}
-
-	/*for (int i = 0; i < 5; i++)
-	{
-		if (heartHolder[i].getIsDestry() && heartHolder[i].getCheckIfObjHolder())
-		{
-			removeObjFromObjHolder(heartHolder[i].getObj());
-			heartHolder[i].setCheckIfObjHolder(false);
-		}
-	}*/
 
 	////background stff
 	staticBackground();
@@ -2350,6 +2299,7 @@ bool gameClass::frameGame(double dt)
 				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossFire->getFrameCount(), bossFire->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
 			if (!bossIce->getIsDestroyed())
 				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossIce->getFrameCount(), bossIce->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+			
 			if (!result)
 			{
 				return false;
@@ -2517,12 +2467,14 @@ bool gameClass::frameMeny(double dt)
 		player->setMaxHP(1);
 		healthCost = 1;
 		SpeedCost = 1;
+		boss->setEnemyHP(100);
+		boss->setIsActive(true);
 
 		player->setSpeedVal(10);
 
 		player->setWeaponType(0);
 
-		player->setNrPixelFragments(40);
+		player->setNrPixelFragments(0);
 
 		for (int i = 0; i < 4; i++) {
 			player->setNrWeaponBought(i, false);
@@ -2555,6 +2507,8 @@ bool gameClass::frameMeny(double dt)
 		player->setNrPolysgons(arr[5]);
 		tempXP = arr[6];
 		player->setWeaponType(arr[7]);
+		boss->setEnemyHP(100);
+		boss->setIsActive(true);
 
 		for (int i = player->getMaxHP() - 1; i > 0; i--)
 		{
@@ -5402,7 +5356,7 @@ void gameClass::updateBoss(double dt)
 			else if (randValue > 4 && bossIsInCombat == true && bossTimerForRainingFire <= 0)
 			{
 				OutputDebugString(L"\nrand > 4\n");
-				bossTimerForRainingFire = 30;
+				bossTimerForRainingFire = 10;
 				bossFire->setIsDestroyed(true);
 
 				bossFire2->setIsDestroyed(false);
@@ -5458,8 +5412,8 @@ void gameClass::updateBoss(double dt)
 			bossFire->resetProjectile();
 		}
 
-				/////////////////////////////////////////////////// FIRE 1
-				//projectile enemy stuff
+		/////////////////////////////////////////////////// FIRE 1
+		//projectile enemy stuff
 		if (!bossFire2->getIsDestroyed() && !bossFire2->getCheckIfObjHolder())
 		{
 			OutputDebugString(L"spawn 2 projectile");
@@ -5467,6 +5421,7 @@ void gameClass::updateBoss(double dt)
 			bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
 			bossFire2->setCheckIfObjHolder(true);
 			bossFire2->setIsDestroyed(false);
+			player->setIfInObjHolder(false);
 		}
 
 		if (!bossFire2->getIsDestroyed() && bossFire2->getCheckIfObjHolder())
@@ -5543,7 +5498,6 @@ void gameClass::updateBoss(double dt)
 		//projectile enemy stuff
 		if (!bossFire6->getIsDestroyed() && !bossFire6->getCheckIfObjHolder())
 		{
-			OutputDebugString(L"spawning 5 projectile");
 			addObjectToObjHolder(bossFire6->getObj());
 			bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
 			bossFire6->setCheckIfObjHolder(true);
@@ -5563,7 +5517,6 @@ void gameClass::updateBoss(double dt)
 		if (!bossFire->getIsDestroyed() && bossFire->getCheckIfObjHolder() && player->getCurrentAnimation() != 7)
 		{
 			bossFire->getObj()->getWorldMatrix(bossProjectileMat);
-			enemyFire->getObj()->getWorldMatrix(enemyFireMat);
 			if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(bossFire->getBoundingBoxMinLeft(), bossProjectileMat), XMVector3Transform(bossFire->getBoundingBoxMaxLeft(), bossProjectileMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
 			{
 				//OutputDebugString(L"\nFire damage!\n");
@@ -5717,7 +5670,7 @@ void gameClass::updateBoss(double dt)
 				if (randValue == 1)
 				{
 					nrOfVisibleEnemies++;
-					addEnemyToEnemyHolder(*enemy2, nrOfVisibleEnemies, spawnBoss->getObj()->getPosition(), 1);
+					addEnemyToEnemyHolder(*enemy, nrOfVisibleEnemies, spawnBoss->getObj()->getPosition(), 0);
 				}
 				enemyHolder[nrOfVisibleEnemies - 1].setIsActive(true);
 				enemyHolder[nrOfVisibleEnemies - 1].setEnemyHP(30);
