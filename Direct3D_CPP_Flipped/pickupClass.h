@@ -64,7 +64,7 @@ private:
 	int pickupType; // 0 = 3D PIXEL(health), 1 = PIXEL ESSENCE(exp), 2 = POLYGON(currency), 3 = RING, 4 = LIMBO PLANES, 5 = BLACKSMITH
 
 	bool isRing;
-	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.                                            profit.
+	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = SHIELD BUBBLE, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.                                            profit.
 };
 
 

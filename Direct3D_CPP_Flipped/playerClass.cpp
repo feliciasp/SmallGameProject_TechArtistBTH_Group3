@@ -91,6 +91,8 @@ playerClass::playerClass()
 	magicCast = false;
 	magicWasCast = false;
 	magicCooldown = 0.0f;
+	shieldBubbleCooldown = 0.0f;
+	shieldBubbleCast = false;
 
 	polygoner = 0;
 	fargments = 20;
@@ -719,7 +721,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		attackReleased = false;
 	}
 
-
+	//Fireball cast
 	if (this->input->isPPressed() && hasRing && ringType == 1 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
@@ -728,6 +730,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		magicCast = true;
 		magicWasCast = true;
 	}
+	//Frostbolt cast
 	if (this->input->isPPressed() && hasRing && ringType == 2 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
@@ -736,16 +739,42 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		magicCast = true;
 		magicWasCast = true;
 	}
+	//Shield bubble cast
+	if (this->input->isPPressed() && hasRing && ringType == 3 && !shieldBubbleCast && shieldBubbleCooldown == 0.0f && !magicWasCast)
+	{
+		if (soundAvailable)
+			sound->playSFX(1, 9);
+
+		shieldBubbleCast = true;
+		invulnurable = true;
+	}
+
+	if (shieldBubbleCast)
+	{
+
+		shieldBubbleCooldown += dt;
+
+		if (shieldBubbleCooldown > 1.0f)
+		{
+			invulnurable = false;
+			shieldBubbleCooldown = 0.0f;
+			shieldBubbleCast = false;
+			magicWasCast = true;
+		}
+	}
 
 	if (magicWasCast)
 	{
 		magicCooldown += dt;
+
 		if (magicCooldown > 6.0f)
 		{
 			magicCooldown = 0.0f;
 			magicWasCast = false;
 		}
 	}
+
+
 
 	if (!this->input->isOPressed())
 	{
@@ -955,6 +984,11 @@ void playerClass::setMagicCast(bool check)
 bool playerClass::getMagicCast()
 {
 	return this->magicCast;
+}
+
+bool playerClass::getShieldBubbleCast()
+{
+	return this->shieldBubbleCast;
 }
 
 int playerClass::getNrPixelFramgent()
