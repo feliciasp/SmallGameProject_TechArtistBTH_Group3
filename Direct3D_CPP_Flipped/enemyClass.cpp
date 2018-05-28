@@ -169,6 +169,11 @@ bool enemyClass::hurtState()
 		//if(player->getRingType() == 1)
 			// hurt =2;
 		this->hurt = 1;
+		if (this->isFrozen)
+		{
+			this->isFrozen = false;
+			attackTimer = 1.0f;
+		}
 		return true;
 	}
 	else
@@ -183,7 +188,14 @@ void enemyClass::timeCountdown(float dt)
 	if (this->hurtTimer <= 0)
 	{
 		this->isHurt = false;
-		this->hurt = 0;
+		if (this->isFrozen)
+		{
+			this->hurt = 3;
+		}
+		else
+		{
+			this->hurt = 0;
+		}	
 	}
 }
 
@@ -207,7 +219,6 @@ void enemyClass::updateAttackCooldownTimer(float dt)
 	if (this->attackTimer <= 0)
 	{
 		this->isAttack = false;
-		this->hurt = 0;
 	}
 }
 
@@ -232,7 +243,15 @@ void enemyClass::updateFrozenTimer(float dt)
 	{
 		this->isFrozen = false;
 		this->frozenTimer = 3.0f;
-		this->hurt = 0;
+		if (this->isAttack)
+		{
+			this->hurt = 1;
+		}
+		else
+		{
+			this->hurt = 0;
+		}
+		
 	}
 }
 
