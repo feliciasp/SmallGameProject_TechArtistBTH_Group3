@@ -151,9 +151,7 @@ XMVECTOR projectileClass::getBoundingBoxMinRight()
 
 void projectileClass::moveProjY(double dt)
 {
-
 	moveValY += -20.0f * dt;
-	
 	transX = transStart * XMMatrixTranslation(0.0f, moveValY, 0.0f);
 }
 
@@ -276,7 +274,8 @@ void projectileClass::updateAnimation(double dt)
 		}
 	}
 	currentTime += 1 * dt;
-	obj->setCurrentFrame(currentFrame);
+	this->obj->setCurrentFrame(currentFrame);
+
 }
 
 int projectileClass::getCurrentFrame()
@@ -287,7 +286,8 @@ int projectileClass::getCurrentFrame()
 void projectileClass::setFrameCount(int other)
 {
 	this->frameCount = other;
-	obj->setFrameCount(other);
+	this->obj->setFrameCount(other);
+
 }
 
 int projectileClass::getFrameCount()
@@ -298,7 +298,7 @@ int projectileClass::getFrameCount()
 void projectileClass::setCurrentAnimation(int other)
 {
 	this->currentAnimation = other;
-	obj->setCurrentAnimation(other);
+	this->obj->setCurrentAnimation(other);
 }
 
 int projectileClass::getCurrentAnimation()

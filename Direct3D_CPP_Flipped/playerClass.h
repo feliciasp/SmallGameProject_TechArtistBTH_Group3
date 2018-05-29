@@ -77,6 +77,8 @@ public:
 	void setMagicCast(bool check);
 	bool getMagicCast();
 
+	bool getShieldBubbleCast();
+
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
 
@@ -102,6 +104,14 @@ public:
 	void setWeaponType(int type);
 	int getWeaponType();
 
+	bool getPlayAnimation();
+	void setPlayAnimation(bool other);
+
+	float getCDDisplay();
+	bool getMagicWasCast();
+	void setNrRun(int x);
+
+	bool getCanCast();
 
 private:
 	bool isHurt;
@@ -112,6 +122,7 @@ private:
 	float hurtFallbackValue;
 	int fakeTimer;
 
+	bool canCast;
 	bool firstFrame;
 
 	objectClass* obj;
@@ -123,6 +134,10 @@ private:
 	weaponClass* weapon4;
 	weaponClass* weapon5;
 	int weaponType;
+
+	int nrRun;
+
+	bool playAnimation; 
 
 	SoundClass* sound;
 	bool soundAvailable;
@@ -190,12 +205,15 @@ private:
 	void checkIfAttacking();
 	bool attackReleased;
 
-	bool magicCast; //has player cast fireball?
+	bool magicCast; //has player cast magic (ringpower)?
 	bool magicWasCast;
 	float magicCooldown;
+	bool shieldBubbleCast;
+
+	float shieldBubbleCooldown;
 
 	bool hasRing;
-	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
+	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = SHIELD BUBBLE, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
 

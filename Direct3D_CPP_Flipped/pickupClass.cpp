@@ -126,20 +126,26 @@ void pickupClass::updateAnimation(double dt)
 		isAnimated = false;
 		if (ringType == 0)
 		{
-			currentFrame = 9;
-			obj->setCurrentFrame(9);
+			currentFrame = 2;
+			obj->setCurrentFrame(2);
 		}
 
 		if (ringType == 1)
 		{
-			currentFrame = 3;
-			obj->setCurrentFrame(3);
+			currentFrame = 1;
+			obj->setCurrentFrame(1);
 		}
 
 		if (ringType == 2)
 		{
-			currentFrame = 6;
-			obj->setCurrentFrame(6);
+			currentFrame = 3;
+			obj->setCurrentFrame(3);
+		}
+		
+		if (ringType == 3)
+		{
+			currentFrame = 0;
+			obj->setCurrentFrame(0);
 		}
 	}
 
@@ -159,6 +165,10 @@ void pickupClass::updateAnimation(double dt)
 		{
 			animationSpeed = 0.08;
 		}
+		if (pickupType == 9)
+		{
+			animationSpeed = 0.8;
+		}
 		if (currentTime > animationSpeed)
 		{
 			currentTime = 0;
@@ -172,6 +182,7 @@ void pickupClass::updateAnimation(double dt)
 		}
 		currentTime += 1 * dt;
 	}
+
 }
 
 void pickupClass::setFrameCount(int frameCount)

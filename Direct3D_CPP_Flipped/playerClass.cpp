@@ -17,6 +17,8 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
+	nrRun = 0;
+
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -91,6 +93,8 @@ playerClass::playerClass()
 	magicCast = false;
 	magicWasCast = false;
 	magicCooldown = 0.0f;
+	shieldBubbleCooldown = 0.0f;
+	shieldBubbleCast = false;
 
 	polygoner = 0;
 	fargments = 20;
@@ -721,15 +725,16 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		attackReleased = false;
 	}
 
-
+	//Fireball cast
 	if (this->input->isPPressed() && hasRing && ringType == 1 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
 			sound->playSFX(1, 2);
-
+		
 		magicCast = true;
 		magicWasCast = true;
 	}
+	//Frostbolt cast
 	if (this->input->isPPressed() && hasRing && ringType == 2 && !magicCast && magicCooldown == 0.0f)
 	{
 		if (soundAvailable)
@@ -738,16 +743,47 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		magicCast = true;
 		magicWasCast = true;
 	}
+	//Shield bubble cast
+	if (this->input->isPPressed() && hasRing && ringType == 3 && !shieldBubbleCast && shieldBubbleCooldown == 0.0f && !magicWasCast)
+	{
+		if (soundAvailable)
+			sound->playSFX(1, 9);
+
+		shieldBubbleCast = true;
+		invulnurable = true;
+	}
+
+	if (shieldBubbleCast)
+	{
+
+		shieldBubbleCooldown += dt;
+
+		if (shieldBubbleCooldown > 1.0f)
+		{
+			invulnurable = false;
+			shieldBubbleCooldown = 0.0f;
+			shieldBubbleCast = false;
+			magicWasCast = true;
+		}
+	}
 
 	if (magicWasCast)
 	{
 		magicCooldown += dt;
+
 		if (magicCooldown > 6.0f)
 		{
 			magicCooldown = 0.0f;
 			magicWasCast = false;
+			canCast = true;
+		}
+		else
+		{
+			canCast = false;
 		}
 	}
+
+
 
 	if (!this->input->isOPressed())
 	{
@@ -928,6 +964,36 @@ int playerClass::getWeaponType()
 	return this->weaponType;
 }
 
+bool playerClass::getPlayAnimation()
+{
+	return this->playAnimation;
+}
+
+void playerClass::setPlayAnimation(bool other)
+{
+	this->playAnimation = other;
+}
+
+float playerClass::getCDDisplay()
+{
+	return this->magicCooldown;
+}
+
+bool playerClass::getMagicWasCast()
+{
+	return this->magicWasCast;
+}
+
+void playerClass::setNrRun(int x)
+{
+	this->nrRun = x;
+}
+
+bool playerClass::getCanCast()
+{
+	return canCast;
+}
+
 void playerClass::setHasRing(bool check)
 {
 	this->hasRing = check;
@@ -957,6 +1023,11 @@ void playerClass::setMagicCast(bool check)
 bool playerClass::getMagicCast()
 {
 	return this->magicCast;
+}
+
+bool playerClass::getShieldBubbleCast()
+{
+	return this->shieldBubbleCast;
 }
 
 int playerClass::getNrPixelFramgent()
