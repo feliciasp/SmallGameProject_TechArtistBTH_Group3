@@ -2639,8 +2639,10 @@ bool gameClass::frameMeny(double dt)
 	{
 		gameStateLevel = true;
 		if (soundAvailable)
+		{
+			sound->playSFX(0, 1);
 			sound->playAmbient(1);
-
+		}
 		for (int i = 4; i > 0; i--)
 		{
 			removeObjFromObjHolder(heartHolder[i].getObj());
@@ -2669,6 +2671,9 @@ bool gameClass::frameMeny(double dt)
 
 	if (inputDirectOther->isEnterPressed() && counterOverlay == 1)
 	{
+		if (soundAvailable)
+			sound->playSFX(0, 1);
+
 		gameStateLevel = true;
 		std::string line;
 		int arr[8] = { 0 };
