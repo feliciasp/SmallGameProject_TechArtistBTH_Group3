@@ -97,6 +97,10 @@ private:
 	enemyClass* enemy2;
 	enemyClass* boss;
 	backgroundClass* background;
+	backgroundClass* floor;
+	backgroundClass* walls;
+	backgroundClass* pillars;
+	backgroundClass* foregroundWalls;
 	backgroundClass* spawnEnemys;
 	backgroundClass* pickupSpawn;
 	backgroundClass* spawnBoss;
@@ -140,6 +144,8 @@ private:
 
 	void updateColdownDisplay(float dt);
 	bool canPLayCDDisplay;
+
+	void updatePortal(double dt);
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

@@ -16,6 +16,7 @@ enemyClass::enemyClass()
 	HP = 4;
 	isAttack = false;
 	isHurt = false;
+	attackAnimation = false;
 	attackTimer = 1.0f;
 	hurtTimer = 0.3f;
 	isFrozen = false;
@@ -124,6 +125,8 @@ void enemyClass::resetEnemy()
 	isFacingRight = true;
 	useRotation = false;
 
+	hurt = 0;
+
 }
 
 bool enemyClass::getCheckIfObjHolder()
@@ -167,6 +170,11 @@ bool enemyClass::hurtState()
 		//if(player->getRingType() == 1)
 			// hurt =2;
 		this->hurt = 1;
+		if (this->isFrozen)
+		{
+			this->isFrozen = false;
+			attackTimer = 1.0f;
+		}
 		return true;
 	}
 	else
@@ -181,7 +189,14 @@ void enemyClass::timeCountdown(float dt)
 	if (this->hurtTimer <= 0)
 	{
 		this->isHurt = false;
-		this->hurt = 0;
+		if (this->isFrozen)
+		{
+			this->hurt = 3;
+		}
+		else
+		{
+			this->hurt = 0;
+		}	
 	}
 }
 
@@ -208,9 +223,23 @@ void enemyClass::updateAttackCooldownTimer(float dt)
 	}
 }
 
+void enemyClass::setAttackAnimation(bool attack)
+{
+	this->attackAnimation = attack;
+}
+
+bool enemyClass::getAttackAnimation()
+{
+	return this->attackAnimation;
+}
+
 void enemyClass::setIsFrozen(bool check)
 {
 	this->isFrozen = check;
+	if (check == true)
+	{
+		this->hurt = 3;
+	}
 }
 
 bool enemyClass::getIsFrozen()
@@ -225,6 +254,15 @@ void enemyClass::updateFrozenTimer(float dt)
 	{
 		this->isFrozen = false;
 		this->frozenTimer = 3.0f;
+		if (this->isAttack)
+		{
+			this->hurt = 1;
+		}
+		else
+		{
+			this->hurt = 0;
+		}
+		
 	}
 }
 
