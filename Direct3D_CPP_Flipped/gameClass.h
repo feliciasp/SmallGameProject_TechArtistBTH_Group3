@@ -70,7 +70,6 @@ public:
 	void checkReleasedKeys();
 
 
-
 private:
 	bool frameLimbo(double dt);
 	bool frameGame(double dt);
@@ -116,6 +115,7 @@ private:
 	projectileClass* bossFire5;
 	projectileClass* bossFire6;
 	projectileClass* bossIce;
+	pickupClass* coldownDisplay;
 	XMMATRIX bossProjectileMat;
 	GUItestClass* GUItest;
 	platformClass* bossdoor;
@@ -132,11 +132,14 @@ private:
 	int nrOfEnemysBossHasSpawned;
 	bool canSpawnEnemys;
 	bool canSpawnEnemys2;
-	XMMATRIX fireBoss2Mat;
+	XMMATRIX fireBoss2Mat, fireBoss3Mat, fireBoss4Mat, fireBoss5Mat, fireBoss6Mat;
 	void updateBossTimer(float dt);
 	float bossTimerForRainingFire;
 	void updateBossTimerForRainingFire(float dt);
 	bool bossBattleEntered;
+
+	void updateColdownDisplay(float dt);
+	bool canPLayCDDisplay;
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

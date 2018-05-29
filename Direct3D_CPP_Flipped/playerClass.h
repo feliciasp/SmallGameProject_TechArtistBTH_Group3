@@ -104,6 +104,14 @@ public:
 	void setWeaponType(int type);
 	int getWeaponType();
 
+	bool getPlayAnimation();
+	void setPlayAnimation(bool other);
+
+	float getCDDisplay();
+	bool getMagicWasCast();
+	void setNrRun(int x);
+
+	bool getCanCast();
 
 private:
 	bool isHurt;
@@ -114,6 +122,7 @@ private:
 	float hurtFallbackValue;
 	int fakeTimer;
 
+	bool canCast;
 	bool firstFrame;
 
 	objectClass* obj;
@@ -125,6 +134,10 @@ private:
 	weaponClass* weapon4;
 	weaponClass* weapon5;
 	int weaponType;
+
+	int nrRun;
+
+	bool playAnimation; 
 
 	SoundClass* sound;
 	bool soundAvailable;

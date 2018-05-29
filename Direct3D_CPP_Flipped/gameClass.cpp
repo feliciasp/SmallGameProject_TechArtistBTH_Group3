@@ -80,6 +80,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	projectileMoveMat = XMMatrixIdentity();
 
+	canPLayCDDisplay = false;
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -300,7 +301,7 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
-
+	player->setPlayAnimation(false);
 	//Player Shadow Plane
 	playerShadowPlane = new backgroundClass;
 	if (!playerShadowPlane)
@@ -561,6 +562,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ring->getObj()->getMaterialName());
 	ring->getTranslationMatStart(pickupStartPosMoveMat);
 
+
 	//shieldBubble
 	shieldBubble = new pickupClass;
 	if (!shieldBubble)
@@ -584,6 +586,33 @@ bool gameClass::initialize(int ShowWnd)
 	shieldBubble->getObj()->setAnimationCount(1);
 	shieldBubble->setPickupType(6);
 
+	///////////////////////////
+	coldownDisplay = new pickupClass;
+	if (!coldownDisplay)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = coldownDisplay->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	coldownDisplay->getObj()->setMaterialName("MagicFireFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicBlueFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicFireFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShieldFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Transparent.png");
+	coldownDisplay->setIsDestroy(false);
+	coldownDisplay->setCheckIfObjHolder(false);
+	coldownDisplay->setFrameCount(5);
+	coldownDisplay->getObj()->setFrameCount(5);
+	coldownDisplay->setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+
+
 	//projectile test
 	projectile = new projectileClass;
 	if (!projectile)
@@ -603,6 +632,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingGreenSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicBlueSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "CancelSelectedWeapons.png");
+	
 	projectile->getTranslationMatStart(playerMove);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
@@ -612,6 +643,7 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	projectile->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
+	projectile->setFrameCount(4);
 
 	//projectile test
 	enemyFire = new projectileClass;
@@ -628,12 +660,12 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	enemyFire->getObj()->setMaterialName("MagicRedSpriteSheet.png");
+	enemyFire->getObj()->setMaterialName("Fireball_real_spritesheet_smaller.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemyFire->getObj()->getMaterialName());
-	enemyFire->getObj()->setType(5);
 	enemyFire->setIsDestroyed(false);
 	enemyFire->setCheckIfObjHolder(false);
 	enemyFire->getTranslationMatStart(tempEnemyTranslationMatrix);
+	enemyFire->setFrameCount(20);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
 	enemyFire->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
@@ -660,7 +692,6 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire->getObj()->getMaterialName());
-	bossFire->getObj()->setType(5);
 	bossFire->setProjectileType(1);
 	bossFire->setIsDestroyed(false);
 	bossFire->setCheckIfObjHolder(false);
@@ -692,17 +723,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire2->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire2->getObj()->getMaterialName());
-	bossFire2->getObj()->setType(5);
-	bossFire2->setProjectileType(1);
+	bossFire2->setProjectileType(2);
 	bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire2->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire2->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire2->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire2->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire3 = new projectileClass;
 	if (!bossFire3)
@@ -720,17 +742,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire3->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire3->getObj()->getMaterialName());
-	bossFire3->getObj()->setType(5);
-	bossFire3->setProjectileType(1);
+	bossFire3->setProjectileType(2);
 	bossFire3->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-40.0f, 102.0f, 0.0f));
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire3->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire3->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire3->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire3->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire4 = new projectileClass;
 	if (!bossFire4)
@@ -748,17 +761,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire4->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire4->getObj()->getMaterialName());
-	bossFire4->getObj()->setType(5);
-	bossFire4->setProjectileType(1);
+	bossFire4->setProjectileType(2);
 	bossFire4->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-30.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire4->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire4->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire4->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire4->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire5= new projectileClass;
 	if (!bossFire5)
@@ -776,17 +781,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire5->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire5->getObj()->getMaterialName());
-	bossFire5->getObj()->setType(5);
-	bossFire5->setProjectileType(1);
+	bossFire5->setProjectileType(2);
 	bossFire5->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-20.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire5->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire5->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire5->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire5->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	bossFire6 = new projectileClass;
 	if (!bossFire6)
@@ -804,17 +801,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	bossFire6->getObj()->setMaterialName("MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire6->getObj()->getMaterialName());
-	bossFire6->getObj()->setType(5);
-	bossFire6->setProjectileType(1);
+	bossFire6->setProjectileType(2);
 	bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	bossFire6->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
-	bossFire6->setBoundingBoxMinRight(boss->getObj()->getBoundingBoxMax() * 0.3f);
-
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
-	bossFire6->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire6->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
 	/////////////////////////////////////////////
 
@@ -841,11 +830,11 @@ bool gameClass::initialize(int ShowWnd)
 	bossIce->setCheckIfObjHolder(false);
 	bossIce->getTranslationMatStart(tempEnemyTranslationMatrix);
 
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 6, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
 	bossIce->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
 	bossIce->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax() * 0.3f);
 
-	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 6, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	bossFire->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	bossFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
@@ -1610,6 +1599,12 @@ void gameClass::shutdown()
 		delete healthUpgradeCount;
 		healthUpgradeCount = 0;
 	}
+	if (coldownDisplay)
+	{
+		coldownDisplay->shutdown();
+		delete coldownDisplay;
+		coldownDisplay = 0;
+	}
 	if (ring)
 	{
 		ring->shutdown();
@@ -2118,6 +2113,7 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+		boss->setEnemyHP(100);
 
 		if (soundAvailable)
 			sound->playAmbient(1);
@@ -2151,6 +2147,7 @@ bool gameClass::frameLimbo(double dt)
 		setShopOverlayCounter(0);
 		setShopOverlayCounterRow(0);
 		activeShopState = 0;
+
 
 		if (soundAvailable)
 			sound->playAmbient(0);
@@ -2216,15 +2213,20 @@ bool gameClass::frameGame(double dt)
 		}
 	}
 
-	/*for (int i = 0; i < 5; i++)
-	{
-		if (heartHolder[i].getIsDestry() && heartHolder[i].getCheckIfObjHolder())
-		{
-			removeObjFromObjHolder(heartHolder[i].getObj());
-			heartHolder[i].setCheckIfObjHolder(false);
-		}
-	}*/
 
+	//if (!coldownDisplay->getIsDestry() && !coldownDisplay->getCheckIfObjHolder())
+	//{
+	//	addObjectToObjHolder(coldownDisplay->getObj());
+	//	coldownDisplay->setCheckIfObjHolder(true);
+	//	coldownDisplay->setIsDestroy(false);
+	//}
+	//updateColdownDisplay(dt);
+	//if (coldownDisplay->getIsDestry() && coldownDisplay->getCheckIfObjHolder())
+	//{
+	//	removeObjFromObjHolder(coldownDisplay->getObj());
+	//	coldownDisplay->setCheckIfObjHolder(false);
+	//	coldownDisplay->setIsDestroy(true);
+	//}
 	////background stff
 	staticBackground();
 
@@ -2392,13 +2394,14 @@ bool gameClass::frameGame(double dt)
 		else if (objHolder[i]->getType() == 5)
 		{
 			if (!projectile->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
 			if (!enemyFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, enemyFire->getFrameCount(), enemyFire->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
 			if (!bossFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossFire->getFrameCount(), bossFire->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
 			if (!bossIce->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossIce->getFrameCount(), bossIce->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+			
 			if (!result)
 			{
 				return false;
@@ -2568,12 +2571,14 @@ bool gameClass::frameMeny(double dt)
 		player->setMaxHP(1);
 		healthCost = 1;
 		SpeedCost = 1;
+		boss->setEnemyHP(100);
+		boss->setIsActive(true);
 
 		player->setSpeedVal(10);
 
 		player->setWeaponType(0);
 
-		player->setNrPixelFragments(40);
+		player->setNrPixelFragments(0);
 
 		for (int i = 0; i < 4; i++) {
 			player->setNrWeaponBought(i, false);
@@ -2606,6 +2611,8 @@ bool gameClass::frameMeny(double dt)
 		player->setNrPolysgons(arr[5]);
 		tempXP = arr[6];
 		player->setWeaponType(arr[7]);
+		boss->setEnemyHP(100);
+		boss->setIsActive(true);
 
 		for (int i = player->getMaxHP() - 1; i > 0; i--)
 		{
@@ -3131,6 +3138,7 @@ void gameClass::checkReleasedKeys()
 	if (!inputDirectOther->isArrowRightPressed())
 		arrowRightReleased = true;
 }
+
 
 void gameClass::updateBossDoor()
 {
@@ -4037,11 +4045,11 @@ void gameClass::updateShopWorldMat()
 		}
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
 		{
-			upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+			upgradeOverlay->getObj()->setMaterialName("CancelSelectedWeapons.png");
 		}
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
 		{
-			upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
+			upgradeOverlay->getObj()->setMaterialName("CancelSelectedWeapons.png");
 		}
 	}
 
@@ -5237,11 +5245,6 @@ void gameClass::updateCollision(double dt)
 				gameStateLimbo = false;
 				gameStateWin = true;
 				gameStateMeny = false;
-				/*if (tempXP == 4)
-				{
-
-				}*/
-				//pickupHolder[i].setIsDestroy(true);
 			}
 		}
 	}
@@ -5529,7 +5532,7 @@ void gameClass::updateBoss(double dt)
 					sound->playSFX(1, 10);
 
 				OutputDebugString(L"\nrand > 4\n");
-				bossTimerForRainingFire = 30;
+				bossTimerForRainingFire = 10;
 				bossFire->setIsDestroyed(true);
 
 				bossFire2->setIsDestroyed(false);
@@ -5585,8 +5588,8 @@ void gameClass::updateBoss(double dt)
 			bossFire->resetProjectile();
 		}
 
-				/////////////////////////////////////////////////// FIRE 1
-				//projectile enemy stuff
+		/////////////////////////////////////////////////// FIRE 1
+		//projectile enemy stuff
 		if (!bossFire2->getIsDestroyed() && !bossFire2->getCheckIfObjHolder())
 		{
 			OutputDebugString(L"spawn 2 projectile");
@@ -5594,6 +5597,7 @@ void gameClass::updateBoss(double dt)
 			bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
 			bossFire2->setCheckIfObjHolder(true);
 			bossFire2->setIsDestroyed(false);
+			player->setIfInObjHolder(false);
 		}
 
 		if (!bossFire2->getIsDestroyed() && bossFire2->getCheckIfObjHolder())
@@ -5670,7 +5674,6 @@ void gameClass::updateBoss(double dt)
 		//projectile enemy stuff
 		if (!bossFire6->getIsDestroyed() && !bossFire6->getCheckIfObjHolder())
 		{
-			OutputDebugString(L"spawning 5 projectile");
 			addObjectToObjHolder(bossFire6->getObj());
 			bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
 			bossFire6->setCheckIfObjHolder(true);
@@ -5690,7 +5693,6 @@ void gameClass::updateBoss(double dt)
 		if (!bossFire->getIsDestroyed() && bossFire->getCheckIfObjHolder() && player->getCurrentAnimation() != 7)
 		{
 			bossFire->getObj()->getWorldMatrix(bossProjectileMat);
-			enemyFire->getObj()->getWorldMatrix(enemyFireMat);
 			if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(bossFire->getBoundingBoxMinLeft(), bossProjectileMat), XMVector3Transform(bossFire->getBoundingBoxMaxLeft(), bossProjectileMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
 			{
 				//OutputDebugString(L"\nFire damage!\n");
@@ -5844,7 +5846,7 @@ void gameClass::updateBoss(double dt)
 				if (randValue == 1)
 				{
 					nrOfVisibleEnemies++;
-					addEnemyToEnemyHolder(*enemy2, nrOfVisibleEnemies, spawnBoss->getObj()->getPosition(), 1);
+					addEnemyToEnemyHolder(*enemy, nrOfVisibleEnemies, spawnBoss->getObj()->getPosition(), 0);
 				}
 				enemyHolder[nrOfVisibleEnemies - 1].setIsActive(true);
 				enemyHolder[nrOfVisibleEnemies - 1].setEnemyHP(30);
@@ -5902,6 +5904,58 @@ void gameClass::updateBossTimerForRainingFire(float dt)
 	{
 		bossTimerForRainingFire -= 2 * dt;
 	}
+}
+
+void gameClass::updateColdownDisplay(float dt)
+{
+	/*coldownDisplay->getObj()->setMaterialName("Transparent.png");
+	coldownDisplay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	if (player->getCanCast())
+	{
+		OutputDebugString(L"\nCD < 0.0f!\n");
+		coldownDisplay->setIsDestroy(false);
+	}
+	if (!player->getCanCast())
+	{
+		coldownDisplay->setIsDestroy(true);
+	}
+	if (player->getRingType() == 0 && player->getPlayAnimation())
+	{
+		coldownDisplay->getObj()->setMaterialName("Transparent.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	}
+	else if (player->getRingType() == 1 && !coldownDisplay->getIsDestry())
+	{
+		OutputDebugString(L"\nFADE!\n");
+		coldownDisplay->getObj()->setMaterialName("MagicFireFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}
+	else if (player->getRingType() == 2 && !coldownDisplay->getIsDestry())
+	{
+		OutputDebugString(L"\nFADE!\n");
+		coldownDisplay->getObj()->setMaterialName("MagicBlueFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}
+	else if (player->getRingType() == 3 && !coldownDisplay->getIsDestry())
+	{
+		coldownDisplay->getObj()->setMaterialName("ShieldFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}*/
 }
 
 bool gameClass::checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
@@ -5985,10 +6039,3 @@ void gameClass::setGameStateLimbo(bool other)
 {
 	this->gameStateLimbo = other;
 }
-
-
-
-
-
-
-
