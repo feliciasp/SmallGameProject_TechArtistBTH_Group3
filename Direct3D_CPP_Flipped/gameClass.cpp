@@ -5525,6 +5525,9 @@ void gameClass::updateBoss(double dt)
 			}
 			else if (randValue > 4 && bossIsInCombat == true && bossTimerForRainingFire <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 10);
+
 				OutputDebugString(L"\nrand > 4\n");
 				bossTimerForRainingFire = 30;
 				bossFire->setIsDestroyed(true);
