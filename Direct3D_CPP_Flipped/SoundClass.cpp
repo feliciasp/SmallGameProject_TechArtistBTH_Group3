@@ -8,6 +8,7 @@ SoundClass::SoundClass()
 	m_GameAmbientSoundBuffer = 0;
 	m_MenuAmbientSoundBuffer = 0;
 	m_LimboAmbientSoundBuffer = 0;
+	m_BossBattleSoundBuffer = 0;
 
 	m_PlayerAttackSoundBuffer1 = 0;
 	m_PlayerAttackSoundBuffer2 = 0;
@@ -19,8 +20,16 @@ SoundClass::SoundClass()
 	m_FrostboltSoundBuffer = 0;
 	m_PickupRingSoundBuffer = 0;
 	m_PickupXpSoundBuffer = 0;
+	m_ShieldBubbleSoundBuffer = 0;
+	m_BossLaughSoundBuffer = 0;
 
 	m_MenuButtonSoundBuffer = 0;
+
+	m_LimboWeaponBuySoundBuffer = 0;
+	m_LimboUpSoundBuffer = 0;
+	m_LimboDownSoundBuffer = 0;
+	m_LimboConfirmSoundBuffer = 0;
+	m_LimboCancelSoundBuffer = 0;
 
 	isAttackBuffer1Playing = false;
 	isAttackBuffer2Playing = false;
@@ -67,6 +76,13 @@ bool SoundClass::initialize(HWND hwnd)
 			return false;
 		}
 		result = loadWaveFile("limbo_ambiance_loop.wav", &m_LimboAmbientSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("boss_battle_loop.wav", &m_BossBattleSoundBuffer);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error loading audio",
@@ -143,10 +159,59 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("shieldBubble.wav", &m_ShieldBubbleSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading SB",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("bossLaugh.wav", &m_BossLaughSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading BossLaugh",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 		result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
 		if (!result)
 		{
 			MessageBox(NULL, L"Error loading audio",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("weaponBought.wav", &m_LimboWeaponBuySoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading WB",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_move_up.wav", &m_LimboUpSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading MU",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_move_down.wav", &m_LimboDownSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading MD",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_confirm.wav", &m_LimboConfirmSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading CON",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("limbo_cancel.wav", &m_LimboCancelSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading CAN",
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
@@ -160,6 +225,7 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_GameAmbientSoundBuffer);
 	shutdownWaveFile(&m_MenuAmbientSoundBuffer);
 	shutdownWaveFile(&m_LimboAmbientSoundBuffer);
+	shutdownWaveFile(&m_BossBattleSoundBuffer);
 
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer1);
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer2);
@@ -169,11 +235,18 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_JumpSoundBuffer);
 	shutdownWaveFile(&m_FireballSoundBuffer);
 	shutdownWaveFile(&m_FrostboltSoundBuffer);
-
 	shutdownWaveFile(&m_PickupRingSoundBuffer);
 	shutdownWaveFile(&m_PickupXpSoundBuffer);
+	shutdownWaveFile(&m_ShieldBubbleSoundBuffer);
+	shutdownWaveFile(&m_BossLaughSoundBuffer);
 
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
+
+	shutdownWaveFile(&m_LimboWeaponBuySoundBuffer);
+	shutdownWaveFile(&m_LimboUpSoundBuffer);
+	shutdownWaveFile(&m_LimboDownSoundBuffer);
+	shutdownWaveFile(&m_LimboConfirmSoundBuffer);
+	shutdownWaveFile(&m_LimboCancelSoundBuffer);
 
 	shutdownDirectSound();
 }
@@ -185,18 +258,21 @@ bool SoundClass::playAmbient(int gameState)
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
+		m_BossBattleSoundBuffer->Stop();
 		playBackgroundSounds(m_MenuAmbientSoundBuffer);
 	}
 	else if (gameState == 1)
 	{
 		m_MenuAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
+		m_BossBattleSoundBuffer->Stop();
 		playBackgroundSounds(m_GameAmbientSoundBuffer);
 	}
 	else if (gameState == 2)
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_MenuAmbientSoundBuffer->Stop();
+		m_BossBattleSoundBuffer->Stop();
 		playBackgroundSounds(m_LimboAmbientSoundBuffer);
 	}
 	else if (gameState == 3)
@@ -204,6 +280,14 @@ bool SoundClass::playAmbient(int gameState)
 		m_GameAmbientSoundBuffer->Stop();
 		m_MenuAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
+		m_BossBattleSoundBuffer->Stop();
+	}
+	else if (gameState == 4)
+	{
+		m_GameAmbientSoundBuffer->Stop();
+		m_MenuAmbientSoundBuffer->Stop();
+		m_LimboAmbientSoundBuffer->Stop();
+		playBackgroundSounds(m_BossBattleSoundBuffer);
 	}
 
 	return true;
@@ -258,7 +342,6 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		{
 			playSoundEffect(m_PlayerStepSoundBuffer);
 		}
-
 		if (soundToPlay == 7) //Pickup ring
 		{
 			playSoundEffect(m_PickupRingSoundBuffer);
@@ -266,6 +349,38 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 8) //Pickup ring
 		{
 			playSoundEffect(m_PickupXpSoundBuffer);
+		}
+		if (soundToPlay == 9)
+		{
+			playSoundEffect(m_ShieldBubbleSoundBuffer);
+		}
+		if (soundToPlay == 10)
+		{
+			playSoundEffect(m_BossLaughSoundBuffer);
+		}
+	}
+
+	if (gameState == 2) //Limbo SFX
+	{
+		if (soundToPlay == 0) //Weapon buying
+		{
+			playSoundEffect(m_LimboWeaponBuySoundBuffer);
+		}
+		if (soundToPlay == 1) //Add HP / speed
+		{
+			playSoundEffect(m_LimboUpSoundBuffer);
+		}
+		if (soundToPlay == 2) //Decrease HP / speed
+		{
+			playSoundEffect(m_LimboDownSoundBuffer);
+		}
+		if (soundToPlay == 3) //Confirm
+		{
+			playSoundEffect(m_LimboConfirmSoundBuffer);
+		}
+		if (soundToPlay == 4) //Cancel
+		{
+			playSoundEffect(m_LimboCancelSoundBuffer);
 		}
 	}
 	return true;
@@ -609,7 +724,7 @@ bool SoundClass::playSoundEffect(IDirectSoundBuffer8* secondaryBuffer)
 	}
 
 	//Set volume of sound buffer to 100%
-	result = secondaryBuffer->SetVolume(DSBVOLUME_MAX);
+	result = secondaryBuffer->SetVolume(-500);
 	if (FAILED(result))
 	{
 		//MessageBox(NULL, L"Error setting volume of secondary sound buffer",

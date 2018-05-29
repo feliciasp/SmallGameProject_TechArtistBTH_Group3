@@ -103,6 +103,7 @@ private:
 	backgroundClass* ladders;
 	pickupClass* expFragment;
 	pickupClass* ring;
+	pickupClass* shieldBubble;
 	playerClass* player;
 	platformClass* platform;
 	projectileClass* projectile;
@@ -135,6 +136,7 @@ private:
 	void updateBossTimer(float dt);
 	float bossTimerForRainingFire;
 	void updateBossTimerForRainingFire(float dt);
+	bool bossBattleEntered;
 
 	void updateColdownDisplay(float dt);
 	bool canPLayCDDisplay;
@@ -160,6 +162,7 @@ private:
 	XMMATRIX playerMove;
 	void updatePlayer(platformClass* platform, double dt);
 	void updatePlayerShadow();
+	void updateShield(double dt);
 	void updateCamera();
 	XMMATRIX backgroundMat;
 	void staticBackground();

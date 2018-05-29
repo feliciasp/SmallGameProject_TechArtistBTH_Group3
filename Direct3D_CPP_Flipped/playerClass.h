@@ -77,6 +77,8 @@ public:
 	void setMagicCast(bool check);
 	bool getMagicCast();
 
+	bool getShieldBubbleCast();
+
 	int getNrPixelFramgent();
 	void setNrPixelFragments(int other);
 
@@ -203,12 +205,15 @@ private:
 	void checkIfAttacking();
 	bool attackReleased;
 
-	bool magicCast; //has player cast fireball?
+	bool magicCast; //has player cast magic (ringpower)?
 	bool magicWasCast;
 	float magicCooldown;
+	bool shieldBubbleCast;
+
+	float shieldBubbleCooldown;
 
 	bool hasRing;
-	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = ???, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
+	int ringType; // 0 = DOUBLEJUMP, 1 = FIREBALL, 2 = FROSTBOLT, 3 = SHIELD BUBBLE, 4 = ???, 5 = ???, 6 = ???, 7 = ???, 8 = ???.
 
 	bool isInObjHolder;
 

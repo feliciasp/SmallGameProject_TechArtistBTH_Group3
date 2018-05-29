@@ -57,6 +57,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	movementInput = 0;
 	projectile = 0;
 	enemyFire = 0;
+	shieldBubble = 0;
 	moveTest = 2.0f;
 	tempEnemyIfAirThenFallMatrix = XMMatrixIdentity();
 	tempBossIfAirThenFallMatrix = XMMatrixIdentity();
@@ -147,6 +148,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	bossDoorDestoryed = true;
 	bossIsInCombat = false;
 	ifBossIsSpawning = false;
+	bossBattleEntered = false;
 
 
 }
@@ -560,6 +562,30 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ring->getObj()->getMaterialName());
 	ring->getTranslationMatStart(pickupStartPosMoveMat);
 
+
+	//shieldBubble
+	shieldBubble = new pickupClass;
+	if (!shieldBubble)
+	{
+		MessageBox(NULL, L"Error create shieldBubble obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = shieldBubble->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init shieldBubble obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	shieldBubble->getObj()->setMaterialName("ShieldSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShieldSpriteSheet.png");
+	shieldBubble->setFrameCount(6);
+	shieldBubble->getObj()->setFrameCount(6);
+	shieldBubble->setAnimationCount(1);
+	shieldBubble->getObj()->setAnimationCount(1);
+	shieldBubble->setPickupType(6);
+
 	///////////////////////////
 	coldownDisplay = new pickupClass;
 	if (!coldownDisplay)
@@ -585,6 +611,7 @@ bool gameClass::initialize(int ShowWnd)
 	coldownDisplay->setFrameCount(5);
 	coldownDisplay->getObj()->setFrameCount(5);
 	coldownDisplay->setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+
 
 	//projectile test
 	projectile = new projectileClass;
@@ -913,6 +940,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "9.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingBlueSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingWhiteSpriteSheet.png");
 	slot1->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot1->getObj());
 
@@ -972,8 +1000,10 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	ringDisplay->getObj()->setWorldMatrix(ringDisplayMat);
 	//ringDisplay->getObj()->setMaterialName("sampleRing.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing.png");
-	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "sampleRing2.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingGreen3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingRed3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingBlue3.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingWhite3.png");
 	ringDisplay->setIsDestroy(true);
 	ringDisplay->setCheckIfObjHolder(false);
 
@@ -1580,6 +1610,12 @@ void gameClass::shutdown()
 		ring->shutdown();
 		delete ring;
 		ring = 0;
+	}
+	if (shieldBubble)
+	{
+		shieldBubble->shutdown();
+		delete shieldBubble;
+		shieldBubble = 0;
 	}
 	if (pickupHolder)
 	{
@@ -2250,6 +2286,9 @@ bool gameClass::frameGame(double dt)
 	//update player shadow
 	updatePlayerShadow();
 
+	//update shield
+	updateShield(dt);
+
 	//update plygonscout GUI
 	updateRingDisplay();
 	updateXpDisplayMat();
@@ -2261,6 +2300,12 @@ bool gameClass::frameGame(double dt)
 	{
 		addObjectToObjHolder(bossdoor->getObj());
 		bossDoorInObjHolder = true;
+		
+		if (!bossBattleEntered && soundAvailable)
+		{
+			sound->playAmbient(4);
+			bossBattleEntered = true;
+		}
 	}
 	if (!bossDoorDestoryed && bossDoorInObjHolder)
 	{
@@ -2270,6 +2315,12 @@ bool gameClass::frameGame(double dt)
 	{
 		removeObjFromObjHolder(bossdoor->getObj());
 		bossDoorInObjHolder = false;
+
+		if (bossBattleEntered && soundAvailable)
+		{
+			sound->playAmbient(1);
+			bossBattleEntered = false;
+		}
 	}
 
 
@@ -2392,6 +2443,7 @@ bool gameClass::frameGame(double dt)
 		enemyFire->resetFireEnemy();
 		bossIce->resetFireEnemy();
 		bossFire->resetFireEnemy();
+		bossBattleEntered = false;
 
 		for (int i = 0; i < 5; i++)
 		{
@@ -2441,6 +2493,7 @@ bool gameClass::frameGame(double dt)
 		enemyFire->resetFireEnemy();
 		bossIce->resetFireEnemy();
 		bossFire->resetFireEnemy();
+		bossBattleEntered = false;
 
 		camera->reset();
 
@@ -2954,17 +3007,17 @@ void gameClass::initializeRings()
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
 		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(index)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(index)) - 20, 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
-		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 3);
+		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 4);
 
 		if (previousRing == pickupHolder[nrOfVisiblePickups - 1].getRingType())
 		{
 			if (previousRing == 0)
 			{
-				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2 + 1);
+				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 3 + 1);
 			}
 			else if (previousRing == 1)
 			{
-				previousRing = rand() % 2;
+				previousRing = rand() % 3;
 				if (previousRing == 0)
 				{
 					pickupHolder[nrOfVisiblePickups - 1].setRingType(0);
@@ -2973,37 +3026,63 @@ void gameClass::initializeRings()
 				{
 					pickupHolder[nrOfVisiblePickups - 1].setRingType(2);
 				}
+				if (previousRing == 2)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(3);
+				}
 			}
 			else if (previousRing == 2)
 			{
-				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 2);
+				previousRing = rand() % 3;
+				if (previousRing == 0)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(0);
+				}
+				if (previousRing == 1)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(1);
+				}
+				if (previousRing == 2)
+				{
+					pickupHolder[nrOfVisiblePickups - 1].setRingType(3);
+				}
+			}
+			else if (previousRing == 3)
+			{
+				pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 3);
 			}
 
 		}
 
-		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
+		if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
 		{
-			OutputDebugString(L"\n1\n");
-			previousRing = 1;
+			OutputDebugString(L"\n0. Doublejump\n");
+			previousRing = 0;
 			index++;
 		}
-		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 0)
+		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 1)
 		{
-			OutputDebugString(L"\n0\n");
-			previousRing = 0;
+			OutputDebugString(L"\n1. Fireball\n");
+			previousRing = 1;
 			index++;
 		}
 		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 2)
 		{
-			OutputDebugString(L"\n2\n");
+			OutputDebugString(L"\n2. Frostbolt\n");
 			previousRing = 2;
+			index++;
+		}
+		else if (pickupHolder[nrOfVisiblePickups - 1].getRingType() == 3)
+		{
+			OutputDebugString(L"\n3. Shield Bubble\n");
+			previousRing = 3;
 			index++;
 		}
 
 		previousRing = pickupHolder[nrOfVisiblePickups - 1].getRingType();
 		pickupHolder[nrOfVisiblePickups - 1].setIsDestroy(false);
-		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
-		pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(9);
+		pickupHolder[nrOfVisiblePickups - 1].setFrameCount(4);
+		pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(4);
 		ringTemp.shutdown();
 	}
 }
@@ -3156,7 +3235,6 @@ void gameClass::updatePlayer(platformClass* platform, double dt)
 	if (bossDoorInObjHolder && !bossDoorDestoryed)
 		player->checkCollisions(checkCollisionPlatformTop(bossdoor, player->getObj(), playerMove), checkCollisionPlatformLeft(bossdoor, player->getObj(), playerMove), checkCollisionPlatformRight(bossdoor, player->getObj(), playerMove), checkCollisionPlatformBot(bossdoor, player->getObj(), playerMove), dt);
 
-
 	player->getMoveMat(playerMove);
 	player->getObj()->setWorldMatrix(playerMove);
 }
@@ -3189,6 +3267,28 @@ void gameClass::updatePlayerShadow()
 
 		playerShadowPlane->setIsInObjHolder(false);
 		removeObjFromObjHolder(playerShadowPlane->getObj());
+	}
+}
+
+void gameClass::updateShield(double dt)
+{
+	if (player->getShieldBubbleCast())
+	{
+		if (!shieldBubble->getCheckIfObjHolder())
+		{
+			addObjectToObjHolder(shieldBubble->getObj());
+			shieldBubble->setCheckIfObjHolder(true);
+
+			//player->setIfInObjHolder(false);
+			//removeObjFromObjHolder(player->getObj());
+		}
+		shieldBubble->updateAnimation(dt);
+		shieldBubble->getObj()->setWorldMatrix(playerMove);
+	}
+	else
+	{
+		shieldBubble->setCheckIfObjHolder(false);
+		removeObjFromObjHolder(shieldBubble->getObj());
 	}
 }
 
@@ -4097,6 +4197,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					arrowRightReleased = false;
 					if ((player->getNrPixelFramgent() - totalPendingCost) >= healthCost && nrHPtoBeUpgraded < 4 && player->getMaxHP() < 4)
 					{
+						if (soundAvailable)
+							sound->playSFX(2, 1);
 						totalPendingCost += healthCost;
 						/*player->setNrPixelFragments(player->getNrPixelFramgent() - healthCost);*/
 						nrHPtoBeUpgraded += 1;
@@ -4108,6 +4210,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrHPtoBeUpgraded > 0 && arrowLeftReleased)
 				{
+					if (soundAvailable)
+						sound->playSFX(2, 2);
 					arrowLeftReleased = false;
 					healthCost = healthCost / 2;
 					totalPendingCost -= healthCost;
@@ -4125,6 +4229,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 					arrowRightReleased = false;
 					if ((player->getNrPixelFramgent() - totalPendingCost) >= SpeedCost)
 					{
+						if (soundAvailable)
+							sound->playSFX(2, 1);
 						totalPendingCost += SpeedCost;
 						//player->setNrPixelFragments(player->getNrPixelFramgent() - SpeedCost);
 						nrSpeedToBeUpgraded += 1;
@@ -4136,6 +4242,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 				inputDirectOther->readGamepad();
 				if (inputDirectOther->isArrowLeftPressed() && nrSpeedToBeUpgraded > 0 && arrowLeftReleased)
 				{
+					if (soundAvailable)
+						sound->playSFX(2, 2);
 					arrowLeftReleased = false;
 					SpeedCost = SpeedCost / 2;
 					totalPendingCost -= SpeedCost;
@@ -4160,6 +4268,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrWeaponBought(0, true);
 
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						player->setWeaponType(1);
 					}
 				}
@@ -4176,6 +4286,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(1));
 						player->setNrWeaponBought(1, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						player->setWeaponType(2);
 					}
 				}
@@ -4192,6 +4304,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(2));
 						player->setNrWeaponBought(2, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						player->setWeaponType(3);
 					}
 				}
@@ -4208,6 +4322,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 						player->setNrPolysgons(player->getNrPolygons() - player->getNrWeaponCost(3));
 						player->setNrWeaponBought(3, true);
 						//Change weapon
+						if (soundAvailable)
+							sound->playSFX(2, 0);
 						player->setWeaponType(4);
 					}
 				}
@@ -4222,6 +4338,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 			inputDirectOther->readGamepad();
 			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
+				if (soundAvailable)
+					sound->playSFX(2, 3);
 				enterReleased = false;
 				if (nrHPtoBeUpgraded > 0)
 				{
@@ -4277,6 +4395,8 @@ void gameClass::updateShop(double dt, GUItestClass* obj, GUItestClass* obj2)
 		{
 			if (inputDirectOther->isEnterPressed() && enterReleased)
 			{
+				if (soundAvailable)
+					sound->playSFX(2, 4);
 				if (nrHPtoBeUpgraded > 0)
 				{
 					healthCost = costHPBeginning;
@@ -4872,7 +4992,7 @@ void gameClass::updateCollision(double dt)
 	if (!enemyFire->getIsDestroyed() && enemyFire->getCheckIfObjHolder() && player->getCurrentAnimation() != 7)
 	{
 		enemyFire->getObj()->getWorldMatrix(enemyFireMat);
-		if (!enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinLeft(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxLeft(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+		if (!enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinLeft(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxLeft(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 		{
 			//OutputDebugString(L"\nFire damage!\n");
 			if (soundAvailable)
@@ -4889,7 +5009,7 @@ void gameClass::updateCollision(double dt)
 			}
 			enemyFire->resetProjectile();
 		}
-		if (enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinRight(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxRight(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)))
+		if (enemyFire->getGoesRight() && player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(enemyFire->getBoundingBoxMinRight(), enemyFireMat), XMVector3Transform(enemyFire->getBoundingBoxMaxRight(), enemyFireMat), XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) && !player->getInvulnurable())
 		{
 			//OutputDebugString(L"\nFire damage!\n");
 			if (soundAvailable)
@@ -5076,15 +5196,19 @@ void gameClass::updateCollision(double dt)
 					//OutputDebugString(L"\ENTRED IN THIS2!\n");
 					if (pickupHolder[i].getRingType() == 0)
 					{
-						ringDisplay->getObj()->setMaterialName("sampleRing.png");
+						ringDisplay->getObj()->setMaterialName("RingGreen3.png");
 					}
 					if (pickupHolder[i].getRingType() == 1)
 					{
-						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
+						ringDisplay->getObj()->setMaterialName("RingRed3.png");
 					}
 					if (pickupHolder[i].getRingType() == 2)
 					{
-						ringDisplay->getObj()->setMaterialName("sampleRing2.png");
+						ringDisplay->getObj()->setMaterialName("RingBlue3.png");
+					}
+					if (pickupHolder[i].getRingType() == 3)
+					{
+						ringDisplay->getObj()->setMaterialName("RingWhite3.png");
 					}
 				}
 				if (soundAvailable)
@@ -5100,6 +5224,8 @@ void gameClass::updateCollision(double dt)
 					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingRedSpriteSheet.png");
 				if (player->getRingType() == 2)
 					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingBlueSpriteSheet.png");
+				if (player->getRingType() == 3)
+					pickupHolder[nrOfVisiblePickups - 1].getObj()->setMaterialName("RingWhiteSpriteSheet.png");
 				pickupHolder[nrOfVisiblePickups - 1].setFrameCount(9);
 				pickupHolder[nrOfVisiblePickups - 1].getObj()->setFrameCount(9);
 				pickupHolder[nrOfVisiblePickups - 1].setAnimationCount(1);
@@ -5402,6 +5528,9 @@ void gameClass::updateBoss(double dt)
 			}
 			else if (randValue > 4 && bossIsInCombat == true && bossTimerForRainingFire <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 10);
+
 				OutputDebugString(L"\nrand > 4\n");
 				bossTimerForRainingFire = 10;
 				bossFire->setIsDestroyed(true);
