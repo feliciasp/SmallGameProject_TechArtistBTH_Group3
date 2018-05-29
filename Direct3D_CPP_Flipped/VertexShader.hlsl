@@ -28,7 +28,7 @@ struct VS_OUT
 	float2 TexCoord : TEXCOORD;
 	float4 cameraPos : POSITION2;
 	int hurtColor : HURT;
-	//float4 Tangent : TANGENT;
+	float3 Tangent : TANGENT;
 };
 
 VS_OUT VS_main(VS_IN input)
@@ -82,7 +82,7 @@ VS_OUT VS_main(VS_IN input)
 	output.pointOnSurface = mul(input.Pos, world);
 	output.cameraPos = cameraPos;
 	output.hurtColor = hurtColor;
-	//output.Tangent = float4(input.Tangent, 1.0f);
+	output.Tangent = input.Tangent;
 
 	return output;
 }

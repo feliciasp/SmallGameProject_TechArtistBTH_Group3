@@ -131,6 +131,7 @@ bool shaderClass::createShaderClass(ID3D11Device * device)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	createNormalMapInfo(device);
 	/*result = createTextureReasourceAndTextureView(device, "texture1.jpg");
 	if (FAILED(result))
 	{
@@ -696,6 +697,7 @@ void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std
 		if (matNameHolder[i].nameMat == name)
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
+			devCon->PSSetShaderResources(1, 1, &textureViewNorm);
 		}
 	}
 	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
@@ -789,6 +791,7 @@ void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std:
 		if (matNameHolder[i].nameMat == name)
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
+			devCon->PSSetShaderResources(1, 1, &textureViewNorm);
 		}
 	}
 	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
@@ -872,9 +875,9 @@ void shaderClass::shutdown()
 void shaderClass::createNormalMapInfo(ID3D11Device * device)
 {
 	HRESULT result;
-	normalMap.texHeight = 1024;
-	normalMap.texWidth = 1024;
-	normalMap.texPixels = stbi_load("normal_3.jpg", &normalMap.texHeight, &normalMap.texWidth, &normalMap.texBBP, 4);
+	normalMap.texHeight = 256;
+	normalMap.texWidth = 256;
+	normalMap.texPixels = stbi_load("WallTexture_NORMAL.png", &normalMap.texHeight, &normalMap.texWidth, &normalMap.texBBP, 4);
 
 	// -------------DESCRIBE TEXTURE--------------
 	D3D11_TEXTURE2D_DESC normalMapInfo;

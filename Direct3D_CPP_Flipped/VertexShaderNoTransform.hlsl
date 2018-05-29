@@ -38,7 +38,7 @@ VS_OUT VS2_main(VS_IN input)
 	output.TexCoord = input.TexCoord;
 	output.Color = input.Color;
 	//output.pointOnSurface = mul(input.Pos, world);
-	//output.Tangent = float4(input.Tanget, 1.0f);
+	output.Tangent = float4(input.Tangent, 1.0f);
 	
 	return output;
 }
