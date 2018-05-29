@@ -54,6 +54,10 @@ gameClass::gameClass(HINSTANCE hInstance)
 	expFragment = 0;
 	ring = 0;
 	background = 0;
+	floor = 0;
+	walls = 0;
+	pillars = 0;
+	foregroundWalls = 0;
 	movementInput = 0;
 	projectile = 0;
 	enemyFire = 0;
@@ -67,7 +71,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	tempBossStartingPositionMatrix = XMMatrixIdentity();
 	tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame = XMMatrixIdentity();
 	tempMasterMovementBossMat = XMMatrixIdentity();
-
+	
 
 	heartHolder = 0;
 	pickupHolder = 0;
@@ -458,6 +462,48 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	background->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
+
+	floor = new backgroundClass;
+	result = floor->initlialize(graphics->getD3D()->GetDevice(), "BackgroundFloors.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init floor obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	floor->getObj()->setMaterialName("Floor_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), floor->getObj()->getMaterialName());
+
+	walls = new backgroundClass;
+	result = walls->initlialize(graphics->getD3D()->GetDevice(), "BackgroundWalls.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init wall obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	walls->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+
+	pillars = new backgroundClass;
+	result = pillars->initlialize(graphics->getD3D()->GetDevice(), "DungeonPillars.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pillar obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	pillars->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+
+	foregroundWalls = new backgroundClass;
+	result = foregroundWalls->initlialize(graphics->getD3D()->GetDevice(), "ForegroundWalls.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init foreground walls obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	foregroundWalls->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+
 
 	//spawnEnemys
 
@@ -896,7 +942,12 @@ bool gameClass::initialize(int ShowWnd)
 
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
+	addObjectToObjHolder(floor->getObj());
+	addObjectToObjHolder(walls->getObj());
+	addObjectToObjHolder(pillars->getObj());
+	addObjectToObjHolder(foregroundWalls->getObj());
 	addObjectToObjHolder(ladders->getObj());
+
 
 	//GUI POLYGON COUNT
 	slot1 = new GUItestClass;
@@ -3275,6 +3326,10 @@ void gameClass::staticBackground()
 	background->getObj()->setWorldMatrix(backgroundMat);
 
 	ladders->getObj()->setWorldMatrix(backgroundMat);
+	floor->getObj()->setWorldMatrix(backgroundMat);
+	walls->getObj()->setWorldMatrix(backgroundMat);
+	pillars->getObj()->setWorldMatrix(backgroundMat);
+	foregroundWalls->getObj()->setWorldMatrix(backgroundMat);
 }
 
 void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
