@@ -17,6 +17,8 @@ playerClass::playerClass()
 
 	isInObjHolder = false;
 
+	nrRun = 0;
+
 	//movement
 	moveValX = 0.0f;
 	moveValY = 0.0f;
@@ -724,7 +726,7 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	{
 		if (soundAvailable)
 			sound->playSFX(1, 2);
-
+		
 		magicCast = true;
 		magicWasCast = true;
 	}
@@ -744,6 +746,11 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		{
 			magicCooldown = 0.0f;
 			magicWasCast = false;
+			canCast = true;
+		}
+		else
+		{
+			canCast = false;
 		}
 	}
 
@@ -924,6 +931,36 @@ void playerClass::setWeaponType(int type)
 int playerClass::getWeaponType()
 {
 	return this->weaponType;
+}
+
+bool playerClass::getPlayAnimation()
+{
+	return this->playAnimation;
+}
+
+void playerClass::setPlayAnimation(bool other)
+{
+	this->playAnimation = other;
+}
+
+float playerClass::getCDDisplay()
+{
+	return this->magicCooldown;
+}
+
+bool playerClass::getMagicWasCast()
+{
+	return this->magicWasCast;
+}
+
+void playerClass::setNrRun(int x)
+{
+	this->nrRun = x;
+}
+
+bool playerClass::getCanCast()
+{
+	return canCast;
 }
 
 void playerClass::setHasRing(bool check)

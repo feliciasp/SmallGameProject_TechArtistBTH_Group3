@@ -70,7 +70,6 @@ public:
 	void checkReleasedKeys();
 
 
-
 private:
 	bool frameLimbo(double dt);
 	bool frameGame(double dt);
@@ -115,6 +114,7 @@ private:
 	projectileClass* bossFire5;
 	projectileClass* bossFire6;
 	projectileClass* bossIce;
+	pickupClass* coldownDisplay;
 	XMMATRIX bossProjectileMat;
 	GUItestClass* GUItest;
 	platformClass* bossdoor;
@@ -135,6 +135,9 @@ private:
 	void updateBossTimer(float dt);
 	float bossTimerForRainingFire;
 	void updateBossTimerForRainingFire(float dt);
+
+	void updateColdownDisplay(float dt);
+	bool canPLayCDDisplay;
 
 	GUItestClass* heartHolder;
 	pickupClass* pickupHolder;

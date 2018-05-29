@@ -79,6 +79,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 
 	projectileMoveMat = XMMatrixIdentity();
 
+	canPLayCDDisplay = false;
 
 	gameStateMeny = true;
 	gameStateLevel = false;
@@ -298,7 +299,7 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	player->getWeapon()->setBboxMaxWeaponLeft(player->getObj()->getBoundingBoxMin());
 	player->getWeapon()->setBboxMinWeaponLeft(tempBboxMax);
-
+	player->setPlayAnimation(false);
 	//Player Shadow Plane
 	playerShadowPlane = new backgroundClass;
 	if (!playerShadowPlane)
@@ -559,6 +560,32 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ring->getObj()->getMaterialName());
 	ring->getTranslationMatStart(pickupStartPosMoveMat);
 
+	///////////////////////////
+	coldownDisplay = new pickupClass;
+	if (!coldownDisplay)
+	{
+		MessageBox(NULL, L"Error create pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	result = coldownDisplay->initlialize(graphics->getD3D()->GetDevice(), "playerPlane.bin");
+	if (!result)
+	{
+		MessageBox(NULL, L"Error init pickup obj",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	coldownDisplay->getObj()->setMaterialName("MagicFireFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicBlueFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicFireFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShieldFadeSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Transparent.png");
+	coldownDisplay->setIsDestroy(false);
+	coldownDisplay->setCheckIfObjHolder(false);
+	coldownDisplay->setFrameCount(5);
+	coldownDisplay->getObj()->setFrameCount(5);
+	coldownDisplay->setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+
 	//projectile test
 	projectile = new projectileClass;
 	if (!projectile)
@@ -578,6 +605,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicRedSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingGreenSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "MagicBlueSpriteSheet.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "CancelSelectedWeapons.png");
+	
 	projectile->getTranslationMatStart(playerMove);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
@@ -587,6 +616,7 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
 	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	projectile->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
+	projectile->setFrameCount(4);
 
 	//projectile test
 	enemyFire = new projectileClass;
@@ -603,11 +633,12 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	enemyFire->getObj()->setMaterialName("MagicRedSpriteSheet.png");
+	enemyFire->getObj()->setMaterialName("Fireball_real_spritesheet_smaller.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemyFire->getObj()->getMaterialName());
 	enemyFire->setIsDestroyed(false);
 	enemyFire->setCheckIfObjHolder(false);
 	enemyFire->getTranslationMatStart(tempEnemyTranslationMatrix);
+	enemyFire->setFrameCount(20);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
 	enemyFire->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
@@ -1538,6 +1569,12 @@ void gameClass::shutdown()
 		delete healthUpgradeCount;
 		healthUpgradeCount = 0;
 	}
+	if (coldownDisplay)
+	{
+		coldownDisplay->shutdown();
+		delete coldownDisplay;
+		coldownDisplay = 0;
+	}
 	if (ring)
 	{
 		ring->shutdown();
@@ -2140,6 +2177,20 @@ bool gameClass::frameGame(double dt)
 		}
 	}
 
+
+	//if (!coldownDisplay->getIsDestry() && !coldownDisplay->getCheckIfObjHolder())
+	//{
+	//	addObjectToObjHolder(coldownDisplay->getObj());
+	//	coldownDisplay->setCheckIfObjHolder(true);
+	//	coldownDisplay->setIsDestroy(false);
+	//}
+	//updateColdownDisplay(dt);
+	//if (coldownDisplay->getIsDestry() && coldownDisplay->getCheckIfObjHolder())
+	//{
+	//	removeObjFromObjHolder(coldownDisplay->getObj());
+	//	coldownDisplay->setCheckIfObjHolder(false);
+	//	coldownDisplay->setIsDestroy(true);
+	//}
 	////background stff
 	staticBackground();
 
@@ -2292,13 +2343,13 @@ bool gameClass::frameGame(double dt)
 		else if (objHolder[i]->getType() == 5)
 		{
 			if (!projectile->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, projectile->getFrameCount(), projectile->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
 			if (!enemyFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, enemyFire->getFrameCount(), enemyFire->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
 			if (!bossFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossFire->getFrameCount(), bossFire->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
 			if (!bossIce->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, bossIce->getFrameCount(), bossIce->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
 			
 			if (!result)
 			{
@@ -3008,6 +3059,7 @@ void gameClass::checkReleasedKeys()
 	if (!inputDirectOther->isArrowRightPressed())
 		arrowRightReleased = true;
 }
+
 
 void gameClass::updateBossDoor()
 {
@@ -3893,11 +3945,11 @@ void gameClass::updateShopWorldMat()
 		}
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 0)
 		{
-			upgradeOverlay->getObj()->setMaterialName("ConfirmSelected.png");
+			upgradeOverlay->getObj()->setMaterialName("CancelSelectedWeapons.png");
 		}
 		if (upgradeOvlerlayCounterWeapons == 4 && getShopOverlayCounterRow() == 1)
 		{
-			upgradeOverlay->getObj()->setMaterialName("CancelSelected.png");
+			upgradeOverlay->getObj()->setMaterialName("CancelSelectedWeapons.png");
 		}
 	}
 
@@ -5067,11 +5119,6 @@ void gameClass::updateCollision(double dt)
 				gameStateLimbo = false;
 				gameStateWin = true;
 				gameStateMeny = false;
-				/*if (tempXP == 4)
-				{
-
-				}*/
-				//pickupHolder[i].setIsDestroy(true);
 			}
 		}
 	}
@@ -5730,6 +5777,58 @@ void gameClass::updateBossTimerForRainingFire(float dt)
 	}
 }
 
+void gameClass::updateColdownDisplay(float dt)
+{
+	/*coldownDisplay->getObj()->setMaterialName("Transparent.png");
+	coldownDisplay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	if (player->getCanCast())
+	{
+		OutputDebugString(L"\nCD < 0.0f!\n");
+		coldownDisplay->setIsDestroy(false);
+	}
+	if (!player->getCanCast())
+	{
+		coldownDisplay->setIsDestroy(true);
+	}
+	if (player->getRingType() == 0 && player->getPlayAnimation())
+	{
+		coldownDisplay->getObj()->setMaterialName("Transparent.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixIdentity());
+	}
+	else if (player->getRingType() == 1 && !coldownDisplay->getIsDestry())
+	{
+		OutputDebugString(L"\nFADE!\n");
+		coldownDisplay->getObj()->setMaterialName("MagicFireFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}
+	else if (player->getRingType() == 2 && !coldownDisplay->getIsDestry())
+	{
+		OutputDebugString(L"\nFADE!\n");
+		coldownDisplay->getObj()->setMaterialName("MagicBlueFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}
+	else if (player->getRingType() == 3 && !coldownDisplay->getIsDestry())
+	{
+		coldownDisplay->getObj()->setMaterialName("ShieldFadeSpriteSheet.png");
+		coldownDisplay->getObj()->setWorldMatrix(XMMatrixScaling(0.4, 0.6, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
+		coldownDisplay->updateAnimation(dt);
+		if (coldownDisplay->getCurrentFrame() == 5)
+		{
+			coldownDisplay->setIsDestroy(true);
+		}
+	}*/
+}
+
 bool gameClass::checkCollisionPlatformTop(platformClass* platform, objectClass *obj, XMMATRIX objWorld)
 {
 
@@ -5811,10 +5910,3 @@ void gameClass::setGameStateLimbo(bool other)
 {
 	this->gameStateLimbo = other;
 }
-
-
-
-
-
-
-
