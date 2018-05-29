@@ -914,6 +914,11 @@ void playerClass::setIfInObjHolder(bool other)
 }
 
 
+void playerClass::setInvulnurable(bool check)
+{
+	this->invulnurable = check;
+}
+
 bool playerClass::getInvulnurable()
 {
 	return this->invulnurable;

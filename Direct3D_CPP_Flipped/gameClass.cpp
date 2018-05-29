@@ -1618,6 +1618,30 @@ void gameClass::shutdown()
 		delete background;
 		background = 0;
 	}
+	if (floor)
+	{
+		floor->shutdown();
+		delete floor;
+		floor = 0;
+	}
+	if (walls)
+	{
+		walls->shutdown();
+		delete walls;
+		walls = 0;
+	}
+	if (pillars)
+	{
+		pillars->shutdown();
+		delete pillars;
+		pillars = 0;
+	}
+	if (foregroundWalls)
+	{
+		foregroundWalls->shutdown();
+		delete foregroundWalls;
+		foregroundWalls = 0;
+	}
 	if (ringDisplay)
 	{
 		ringDisplay->shutdown();
@@ -2595,6 +2619,9 @@ bool gameClass::frameGame(double dt)
 		return false;
 	}
 
+	removeObjFromObjHolder(foregroundWalls->getObj());
+	addObjectToObjHolder(foregroundWalls->getObj());
+
 	return true;
 }
 
@@ -3087,7 +3114,7 @@ void gameClass::initializeRings()
 		ringTemp.clone(*ring);
 		nrOfVisiblePickups++;
 		addPickupToPickupHolder(ringTemp, nrOfVisiblePickups);
-		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(index)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(index)) - 20, 0.1f));
+		pickupHolder[nrOfVisiblePickups - 1].setTranslationMatStart(XMMatrixScaling(0.3f, 0.5f, 0.0f) * XMMatrixTranslation(XMVectorGetX(pickupSpawn->getObj()->getPositionWithIndex(index)), XMVectorGetY(pickupSpawn->getObj()->getPositionWithIndex(index)), 0.1f));
 		pickupHolder[nrOfVisiblePickups - 1].setPickupType(3);
 		pickupHolder[nrOfVisiblePickups - 1].setRingType(rand() % 4);
 
@@ -3371,6 +3398,7 @@ void gameClass::updateShield(double dt)
 		}
 		shieldBubble->updateAnimation(dt);
 		shieldBubble->getObj()->setWorldMatrix(playerMove);
+		player->setInvulnurable(true);
 	}
 	else
 	{
