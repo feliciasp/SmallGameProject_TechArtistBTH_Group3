@@ -21,6 +21,7 @@ SoundClass::SoundClass()
 	m_PickupRingSoundBuffer = 0;
 	m_PickupXpSoundBuffer = 0;
 	m_ShieldBubbleSoundBuffer = 0;
+	m_BossLaughSoundBuffer = 0;
 
 	m_MenuButtonSoundBuffer = 0;
 
@@ -165,6 +166,13 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("bossLaugh.wav", &m_BossLaughSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading BossLaugh",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 		result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
 		if (!result)
 		{
@@ -230,6 +238,7 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_PickupRingSoundBuffer);
 	shutdownWaveFile(&m_PickupXpSoundBuffer);
 	shutdownWaveFile(&m_ShieldBubbleSoundBuffer);
+	shutdownWaveFile(&m_BossLaughSoundBuffer);
 
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 
@@ -344,6 +353,10 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 9)
 		{
 			playSoundEffect(m_ShieldBubbleSoundBuffer);
+		}
+		if (soundToPlay == 10)
+		{
+			playSoundEffect(m_BossLaughSoundBuffer);
 		}
 	}
 

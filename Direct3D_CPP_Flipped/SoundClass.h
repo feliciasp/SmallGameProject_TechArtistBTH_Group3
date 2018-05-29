@@ -84,6 +84,7 @@ private:
 	IDirectSoundBuffer8* m_PickupRingSoundBuffer;
 	IDirectSoundBuffer8* m_PickupXpSoundBuffer;
 	IDirectSoundBuffer8* m_ShieldBubbleSoundBuffer;
+	IDirectSoundBuffer8* m_BossLaughSoundBuffer;
 
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;
 
