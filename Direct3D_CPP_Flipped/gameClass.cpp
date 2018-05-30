@@ -1653,7 +1653,7 @@ bool gameClass::initialize(int ShowWnd)
 	portalPlane->setFrameCount(24);
 	portalPlane->setAnimationCount(1);
 	portalPlane->setPickupType(7);
-	portalPlane->setIsDestroy(false);
+	portalPlane->setIsDestroy(true);
 	portalPlane->setTranslationMatStart(XMMatrixTranslation(XMVectorGetX(spawnBoss->getObj()->getPosition()) + 2.0f, XMVectorGetY(spawnBoss->getObj()->getPosition()) - 8.0f, 0.0f));
 	portalPlane->getObj()->setNormalMapName("normal_3.jpg");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), portalPlane->getObj()->getNormalMapName());
@@ -2955,7 +2955,10 @@ bool gameClass::frameMeny(double dt)
 
 		player->setWeaponType(0);
 
-		player->setNrPixelFragments(0);
+		player->setNrPixelFragments(99);
+		player->setNrPolysgons(99);
+
+		portalPlane->setIsDestroy(true);
 
 		for (int i = 0; i < 4; i++) {
 			player->setNrWeaponBought(i, false);

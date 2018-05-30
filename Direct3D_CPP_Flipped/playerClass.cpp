@@ -75,7 +75,7 @@ playerClass::playerClass()
 	weaponCost[0] = 3;
 	weaponCost[1] = 10;
 	weaponCost[2] = 30;
-	weaponCost[3] = 100;
+	weaponCost[3] = 99;
 
 	dodge = false;
 	isDodging = false;
