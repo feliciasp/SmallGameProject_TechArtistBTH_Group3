@@ -90,6 +90,9 @@ private:
 	IDirectSoundBuffer8* m_PlayerClimbSoundBuffer;
 	IDirectSoundBuffer8* m_PlayerDodgeSoundBuffer;
 	IDirectSoundBuffer8* m_CooldownOverSoundBuffer;
+	IDirectSoundBuffer8* m_BossDeathSoundBuffer;
+	IDirectSoundBuffer8* m_BossHurtSoundBuffer;
+	IDirectSoundBuffer8* m_MonsterAttackSoundBuffer;
 
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;
 	IDirectSoundBuffer8* m_MenuSelectSoundBuffer;

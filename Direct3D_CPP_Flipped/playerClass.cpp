@@ -42,6 +42,8 @@ playerClass::playerClass()
 	fakeTimer = 0;
 
 	firstFrame = true;
+	firstClimbFrame1 = true;
+	firstClimbFrame2 = true;
 
 	gravityTimer = 0;
 
@@ -423,6 +425,17 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 		idle = false;
 		running = false;
 		timeBetweenFrames = 0.05f;
+
+		if (soundAvailable && currentFrame == 1 && firstClimbFrame1)
+		{
+			sound->playSFX(1, 12);
+			firstClimbFrame1 = false;
+		}
+		if (soundAvailable && currentFrame != 1 && !firstClimbFrame1)
+		{
+
+			firstClimbFrame1 = true;
+		}
 	}
 	else
 	{
@@ -454,6 +467,8 @@ void playerClass::handleMovement(double dt, bool checkClimb)
 	{
 		dodge = true;
 		dodgeReleased = false;
+		if (soundAvailable)
+			sound->playSFX(1, 13);
 	}
 
 	
