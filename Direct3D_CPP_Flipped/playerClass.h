@@ -124,7 +124,10 @@ private:
 	int fakeTimer;
 
 	bool canCast;
+
 	bool firstFrame;
+	bool firstClimbFrame1;
+	bool firstClimbFrame2;
 
 	objectClass* obj;
 	directInput* input;

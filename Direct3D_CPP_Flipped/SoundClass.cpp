@@ -27,6 +27,9 @@ SoundClass::SoundClass()
 	m_PlayerClimbSoundBuffer = 0;
 	m_PlayerDodgeSoundBuffer = 0;
 	m_CooldownOverSoundBuffer = 0;
+	m_BossDeathSoundBuffer = 0;
+	m_BossHurtSoundBuffer = 0;
+	m_MonsterAttackSoundBuffer = 0;
 
 	m_MenuButtonSoundBuffer = 0;
 	m_MenuSelectSoundBuffer = 0;
@@ -217,6 +220,27 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("bossDeath.wav", &m_BossDeathSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading CD Over",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("bossHurt.wav", &m_BossHurtSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading CD Over",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("monsterAttack.wav", &m_MonsterAttackSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading monster attack",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
 
 		//*******LOAD MENU********//
 		result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
@@ -299,6 +323,9 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_PlayerClimbSoundBuffer);
 	shutdownWaveFile(&m_PlayerDodgeSoundBuffer);
 	shutdownWaveFile(&m_CooldownOverSoundBuffer);
+	shutdownWaveFile(&m_BossDeathSoundBuffer);
+	shutdownWaveFile(&m_BossHurtSoundBuffer);
+	shutdownWaveFile(&m_MonsterAttackSoundBuffer);
 
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
 	shutdownWaveFile(&m_MenuSelectSoundBuffer);
@@ -443,6 +470,18 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 14) //Cooldown over (powers back)
 		{
 			playSoundEffect(m_CooldownOverSoundBuffer);
+		}
+		if (soundToPlay == 15) //Boss death
+		{
+			playSoundEffect(m_BossDeathSoundBuffer);
+		}
+		if (soundToPlay == 16) //Boss hurt
+		{
+			playSoundEffect(m_BossHurtSoundBuffer);
+		}
+		if (soundToPlay == 17) //Skeleton attacking
+		{
+			playSoundEffect(m_MonsterAttackSoundBuffer);
 		}
 	}
 

@@ -3866,6 +3866,10 @@ void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
 		std::string tempString = std::to_string(temp);
 		slot2->getObj()->setMaterialName(tempString + ".png");
 	}
+	if (player->getNrPolygons() <= 9)
+	{
+		slot2->getObj()->setMaterialName("0.png");
+	}
 	slot1->getObj()->setWorldMatrix(mat1);
 	slot2->getObj()->setWorldMatrix(mat2);
 	polygonDisp->getObj()->setWorldMatrix(polygonDispMat);
@@ -5280,12 +5284,14 @@ void gameClass::updateCollision(double dt)
 							enemyHolder[i].setAttackAnimation(true);
 							enemyHolder[i].getObj()->setStartFrame(34);
 							enemyHolder[i].getObj()->setEndFrame(60);
-							//OutputDebugString(L"Attacking");
 							if (soundAvailable)
-								sound->playSFX(1, 5);		
+								sound->playSFX(1, 17);
+							//OutputDebugString(L"Attacking");		
 						}
 						if (enemyHolder[i].getAttackAnimation() && enemyHolder[i].getObj()->getFrameCount() >= 46 && enemyHolder[i].getObj()->getFrameCount() < 51)
 						{
+							if (soundAvailable)
+								sound->playSFX(1, 5);
 							player->setPlayerHP(player->getPlayerHP() - 1);
 
 							player->setPlayerHurt(true);
@@ -5363,13 +5369,15 @@ void gameClass::updateCollision(double dt)
 							enemyHolder[i].setAttackAnimation(true);
 							enemyHolder[i].getObj()->setStartFrame(34);
 							enemyHolder[i].getObj()->setEndFrame(60);
-							//OutputDebugString(L"Attacking");
 							if (soundAvailable)
-								sound->playSFX(1, 5);							
+								sound->playSFX(1, 17);
+							//OutputDebugString(L"Attacking");				
 						}
 
 						if (enemyHolder[i].getAttackAnimation() && enemyHolder[i].getObj()->getFrameCount() >= 46 && enemyHolder[i].getObj()->getFrameCount() < 51)
 						{
+							if (soundAvailable)
+								sound->playSFX(1, 5);
 							player->setPlayerHP(player->getPlayerHP() - 1);
 							player->setPlayerHurt(true);
 							player->setPlayerHurtFromLeft(true);
@@ -5765,10 +5773,14 @@ void gameClass::updateCollision(double dt)
 		if (player->getObj()->getCollisionClass()->checkCollision(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove), XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove), XMVector3Transform(portalPlane->getObj()->getBoundingBoxMin(), yOffset), XMVector3Transform(portalPlane->getObj()->getBoundingBoxMax(), yOffset)))
 		{
 			//OutputDebugString(L"\nPORTAL!!!\n");
+			if (soundAvailable)
+				sound->playSFX(1, 11);
 			gameStateLevel = false;
 			gameStateLimbo = false;
 			gameStateWin = true;
 			gameStateMeny = false;
+			if (soundAvailable)
+				sound->playAmbient(3);
 		}
 	}
 }
@@ -5929,11 +5941,15 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				boss->setEnemyHP(boss->getEnemyHP() - player->getWeapon()->getDamage());
 				//OutputDebugString(L"\nenemy lost hP!\n");
 			}
 			if (boss->getEnemyHP() <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 15);
 				removeObjFromObjHolder(boss->getObj());
 				boss->setIsActive(false);
 				player->setIfInObjHolder(false);
@@ -5949,11 +5965,15 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				boss->setEnemyHP(boss->getEnemyHP() - player->getWeapon()->getDamage());
 				//OutputDebugString(L"\nenemy lost hP!\n");
 			}
 			if (boss->getEnemyHP() <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 15);
 				removeObjFromObjHolder(boss->getObj());
 				boss->setIsActive(false);
 				player->setIfInObjHolder(false);
@@ -5975,11 +5995,15 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				boss->setEnemyHP(boss->getEnemyHP() - 1);
 				//OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 			}
 			if (boss->getEnemyHP() <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 15);
 				removeObjFromObjHolder(boss->getObj());
 				boss->setIsActive(false);
 				bossIsInCombat = false;
@@ -5998,11 +6022,15 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				boss->setEnemyHP(boss->getEnemyHP() - 1);
 				//OutputDebugString(L"\nenemy lost hP by Fireball!\n");
 			}
 			if (boss->getEnemyHP() <= 0)
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 15);
 				removeObjFromObjHolder(boss->getObj());
 				boss->setIsActive(false);
 				player->setIfInObjHolder(false);
@@ -6027,6 +6055,8 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				//OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
 				boss->setIsFrozen(true);
 			}
@@ -6039,6 +6069,8 @@ void gameClass::updateBoss(double dt)
 		{
 			if (boss->hurtState())
 			{
+				if (soundAvailable)
+					sound->playSFX(1, 16);
 				//OutputDebugString(L"\nenemy frozen by Frostbolt!\n");
 				boss->setIsFrozen(true);
 			}
