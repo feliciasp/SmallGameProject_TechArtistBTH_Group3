@@ -50,6 +50,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		float4 lightDir = lightSource - input.pointOnSurface;
 		float lightDistance = length(lightDir);
 		lightDir = normalize(lightDir);
+		input.Normal = normalize(input.Normal);
 		float diffConstant = dot(lightDir.xyz, input.Normal.xyz);
 		color = texture1.Sample(textureSample, input.TexCoord);
 
