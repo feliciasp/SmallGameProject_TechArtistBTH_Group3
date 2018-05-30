@@ -278,7 +278,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane.bin", hInstance, hwnd, width, height);
+	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane2.bin", hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init player obj",
@@ -6049,14 +6049,9 @@ void gameClass::updateBoss(double dt)
 			bossFire->setDestinationStart(useThis2);
 			bossFire->setDestinationPoint(useThis);
 			bossFire->setTranslationMatStart(tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame * tempBossStartingPositionMatrix);
-			if (lengthBetween2 <= XMVectorGetX(boss->getTriggerCheck()) && lengthBetween1 <= 1.5f)
-			{
-				enemyFire->setGoesRight(true);
-			}
-			if (lengthBetween1 <= XMVectorGetX(boss->getTriggerCheck()) && lengthBetween1 >= 1.5f)
-			{
-				enemyFire->setGoesRight(false);
-			}
+			
+			enemyFire->setGoesRight(false);
+			
 		}
 		if (!bossFire->getIsDestroyed() && bossFire->getCheckIfObjHolder())
 		{
