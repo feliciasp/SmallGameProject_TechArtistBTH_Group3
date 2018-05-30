@@ -264,6 +264,12 @@ double projectileClass::getLifeTime()
 
 void projectileClass::updateAnimation(double dt)
 {
+
+	if (projectileType == 1)
+	{
+		animationSpeed = 0.2f;
+	}
+
 	if (currentTime > animationSpeed)
 	{
 		currentTime = 0.0f;

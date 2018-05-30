@@ -382,7 +382,7 @@ bool gameClass::initialize(int ShowWnd)
 	//COPY A MATRIX IN ENEMY THAT HOLD THE SPAWN POINT
 	enemy2->getTranslationMatStart(tempEnemyStartingPositionMatrix);
 	enemy2->setTranslation(0.0f);
-	enemy2->getObj()->setMaterialName("skeletonTexture.png");
+	enemy2->getObj()->setMaterialName("RangedTest2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy2->getObj()->getMaterialName());
 
 	enemy2->getObj()->setNormalMapName("normal_3.jpg");
@@ -602,7 +602,7 @@ bool gameClass::initialize(int ShowWnd)
 	pillars->getObj()->setMaterialName("Pillar_Moss_BaseColor.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pillars->getObj()->getMaterialName());
 
-	pillars->getObj()->setNormalMapName("normal_3.jpg");
+	pillars->getObj()->setNormalMapName("Pillar_Normal.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), pillars->getObj()->getNormalMapName());
 
 	foregroundWalls = new backgroundClass;
@@ -832,12 +832,13 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	enemyFire->getObj()->setMaterialName("Fireball_real_spritesheet_smaller.png");
+	enemyFire->getObj()->setMaterialName("FIREBALL.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemyFire->getObj()->getMaterialName());
 	enemyFire->setIsDestroyed(false);
 	enemyFire->setCheckIfObjHolder(false);
 	enemyFire->getTranslationMatStart(tempEnemyTranslationMatrix);
-	enemyFire->setFrameCount(20);
+	enemyFire->setFrameCount(2);
+	enemyFire->setProjectileType(1);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(player->getObj()->getBoundingBoxMax()) };
 	enemyFire->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
@@ -4960,7 +4961,7 @@ void gameClass::updateProjectile(double dt, projectileClass* projectile, int typ
 	{
 		projectile->moveRrojToCertainDestination(dt);
 		projectile->getTransX(enemyFireMat);
-		projectile->getObj()->setWorldMatrix(XMMatrixScaling(0.6f, 0.5f, 0.0f) * enemyFireMat);
+		projectile->getObj()->setWorldMatrix(XMMatrixScaling(0.6f, 1.0f, 0.0f) * enemyFireMat);
 		projectile->updateAnimation(dt);
 		projectile->setLifeTime(dt);
 		if (projectile->getLifeTime() > 1.5f)
@@ -6108,15 +6109,7 @@ void gameClass::updateBoss(double dt)
 
 			bossFire->setDestinationStart(useThis2);
 			bossFire->setDestinationPoint(useThis);
-			bossFire->setTranslationMatStart(tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame * tempBossStartingPositionMatrix);
-			if (lengthBetween2 <= XMVectorGetX(boss->getTriggerCheck()) && lengthBetween1 <= 1.5f)
-			{
-				enemyFire->setGoesRight(true);
-			}
-			if (lengthBetween1 <= XMVectorGetX(boss->getTriggerCheck()) && lengthBetween1 >= 1.5f)
-			{
-				enemyFire->setGoesRight(false);
-			}
+			bossFire->setTranslationMatStart(XMMatrixRotationZ(3.14159265) * tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame * tempBossStartingPositionMatrix);
 		}
 		if (!bossFire->getIsDestroyed() && bossFire->getCheckIfObjHolder())
 		{
