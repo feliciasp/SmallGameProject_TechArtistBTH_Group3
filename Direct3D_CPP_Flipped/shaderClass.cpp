@@ -12,8 +12,8 @@ shaderClass::shaderClass()
 	vertexShaderNoTransformation = 0;
 	pixelShaderNoShading = 0;
 
-	normalTexture = 0;
-	textureViewNorm = 0;
+	//normalTexture = 0;
+	//textureViewNorm = 0;
 }
 
 shaderClass::shaderClass(const shaderClass & other)
@@ -24,7 +24,7 @@ shaderClass::~shaderClass()
 {
 }
 
-bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, XMMATRIX joints[30], int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
+bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX proj, int type, std::string name, std::string name2, XMVECTOR camPos, ID3D11RenderTargetView* renderTargetBackBuffer, ID3D11DepthStencilView* depthStencilView, XMMATRIX joints[30], int weaponType, int hurt, int frameCount, int currentFrame, int currentAnimation, bool flipped)
 {
 	bool result;
 
@@ -82,7 +82,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 
 	else
 	{
-		renderShader(devCon, indexCount, name);
+		renderShader(devCon, indexCount, name, name2);
 	}
 	
 
@@ -131,8 +131,15 @@ bool shaderClass::createShaderClass(ID3D11Device * device)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	createNormalMapInfo(device);
-	/*result = createTextureReasourceAndTextureView(device, "texture1.jpg");
+	/*result = createNormalMapInfo(device, "WallTexture_NORMAL.png");
+	if (FAILED(result))
+	{
+		MessageBox(NULL, L"Error creating normal",
+			L"Error", MB_OK | MB_ICONERROR);
+		return false;
+	}
+	
+	result = createNormalMapInfo(device, "normal_3.jpg");
 	if (FAILED(result))
 	{
 		MessageBox(NULL, L"Error creating resource and texture view2",
@@ -684,7 +691,7 @@ bool shaderClass::setEnemyShaderParameters(ID3D11DeviceContext * devCon, XMMATRI
 }
 
 //secound func called in rander func. setShaderParam is before to ensure everything is setup correctly
-void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std::string name, std::string name2)
 {
 	//Set vertex Layout
 	devCon->IASetInputLayout(vertexLayout);
@@ -697,7 +704,13 @@ void shaderClass::renderShader(ID3D11DeviceContext * devCon, int indexCount, std
 		if (matNameHolder[i].nameMat == name)
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
-			devCon->PSSetShaderResources(1, 1, &textureViewNorm);
+		}
+	}
+	for (int i = 0; i < matNameHolderNormal.size(); i++)
+	{
+		if (matNameHolderNormal[i].nameMat == name2)
+		{
+			devCon->PSSetShaderResources(1, 1, &textureViewNorm[i]);
 		}
 	}
 	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
@@ -791,7 +804,13 @@ void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std:
 		if (matNameHolder[i].nameMat == name)
 		{
 			devCon->PSSetShaderResources(0, 1, &textureRescourceView[i]);
-			devCon->PSSetShaderResources(1, 1, &textureViewNorm);
+		}
+	}
+	for (int i = 0; i < matNameHolderNormal.size(); i++)
+	{
+		if (matNameHolderNormal[i].nameMat == name)
+		{
+			devCon->PSSetShaderResources(1, 1, &textureViewNorm[i]);
 		}
 	}
 	devCon->PSSetSamplers(0, 1, &textureSampleSmoothed);
@@ -860,7 +879,7 @@ void shaderClass::shutdown()
 		pixelShaderNoShading->Release();
 		pixelShaderNoShading = 0;
 	}
-	if (normalTexture)
+	/*if (normalTexture)
 	{
 		normalTexture->Release();
 		normalTexture = 0;
@@ -869,21 +888,49 @@ void shaderClass::shutdown()
 	{
 		textureViewNorm->Release();
 		textureViewNorm = 0;
-	}
+	}*/
 }
 
-void shaderClass::createNormalMapInfo(ID3D11Device * device)
+bool shaderClass::createNormalMapInfo(ID3D11Device * device, std::string name)
 {
+
+	for (int j = 0; j < matNameHolderNormal.size(); j++)
+	{
+		if (matNameHolderNormal[j].nameMat == name)
+		{
+			OutputDebugString(L"\nNormal map was already been created\n");
+			return false;
+		}
+	}
 	HRESULT result;
+
 	normalMap.texHeight = 256;
 	normalMap.texWidth = 256;
-	normalMap.texPixels = stbi_load("WallTexture_NORMAL.png", &normalMap.texHeight, &normalMap.texWidth, &normalMap.texBBP, 4);
+	normalMap.texPixels = stbi_load(name.c_str(), &normalMap.texWidth, &normalMap.texHeight, &normalMap.texBBP, 4);
+	if (!normalMap.texPixels)
+	{
+		std::wstring test = L"ERROR";
+		MessageBox(0, test.c_str(), L"TEST", MB_OK);
+		return false;
+	}
+	normalMap.nameMat = name;
+
+	matNameHolderNormal.push_back(normalMap);
+
+	ID3D11Texture2D* tempTextureNoral = nullptr;
+	normalTexture.push_back(tempTextureNoral);
+	ID3D11ShaderResourceView* tempShaderResourceNorm = nullptr;
+	textureViewNorm.push_back(tempShaderResourceNorm);
+
+	//normalMap.texHeight = 256;
+	//normalMap.texWidth = 256;
+	//normalMap.texPixels = stbi_load(name.c_str(), &normalMap.texHeight, &normalMap.texWidth, &normalMap.texBBP, 4);
 
 	// -------------DESCRIBE TEXTURE--------------
 	D3D11_TEXTURE2D_DESC normalMapInfo;
 	ZeroMemory(&normalMapInfo, sizeof(normalMapInfo));
-	normalMapInfo.Width = normalMap.texWidth;
-	normalMapInfo.Height = normalMap.texHeight;
+	normalMapInfo.Width = matNameHolderNormal[textureViewNorm.size() - 1].texWidth;
+	normalMapInfo.Height = matNameHolderNormal[textureViewNorm.size() - 1].texHeight;
 	normalMapInfo.MipLevels = normalMapInfo.ArraySize = 1;
 	normalMapInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	normalMapInfo.SampleDesc.Count = 1;
@@ -895,10 +942,10 @@ void shaderClass::createNormalMapInfo(ID3D11Device * device)
 
 	D3D11_SUBRESOURCE_DATA normalMapData;
 	ZeroMemory(&normalMapData, sizeof(normalMapData));
-	normalMapData.pSysMem = (void*)normalMap.texPixels;
-	normalMapData.SysMemPitch = normalMap.texWidth * 4 * sizeof(char);
+	normalMapData.pSysMem = (void*)matNameHolderNormal[textureViewNorm.size() - 1].texPixels;
+	normalMapData.SysMemPitch = matNameHolderNormal[textureViewNorm.size() - 1].texWidth * 4 * sizeof(char);
 
-	result = device->CreateTexture2D(&normalMapInfo, &normalMapData, &normalTexture);
+	result = device->CreateTexture2D(&normalMapInfo, &normalMapData, &normalTexture[textureViewNorm.size() - 1]);
 	if (FAILED(result))
 	{
 		MessageBox(NULL, L"Error creatibg normal map",
@@ -912,13 +959,14 @@ void shaderClass::createNormalMapInfo(ID3D11Device * device)
 	viewDescNorm.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	viewDescNorm.Texture2D.MipLevels = normalMapInfo.MipLevels;
 	viewDescNorm.Texture2D.MostDetailedMip = 0;
-	result = device->CreateShaderResourceView(normalTexture, &viewDescNorm, &textureViewNorm);
+	result = device->CreateShaderResourceView(normalTexture[textureViewNorm.size() - 1], &viewDescNorm, &textureViewNorm[textureViewNorm.size() - 1]);
 	if (FAILED(result))
 	{
 		MessageBox(NULL, L"Error creatibg normal map2",
 			L"Error", MB_OK | MB_ICONERROR);
 	}
 
-	stbi_image_free(normalMap.texPixels);
-
+	stbi_image_free(matNameHolderNormal[textureViewNorm.size() - 1].texPixels);
+	OutputDebugString(L"normalMap created.\n");
+	return true;
 }

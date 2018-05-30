@@ -105,6 +105,18 @@ private:
 	backgroundClass* pickupSpawn;
 	backgroundClass* spawnBoss;
 	backgroundClass* ladders;
+
+	backgroundClass* spiderweeb;
+	backgroundClass* barrel;
+	backgroundClass* candle;
+	backgroundClass* plank;
+	backgroundClass* painting1;
+	backgroundClass* painting2;
+	backgroundClass* ironmaiden;
+	backgroundClass* sewer;
+	backgroundClass* bannerCarpet;
+	backgroundClass* crate;
+
 	pickupClass* expFragment;
 	pickupClass* ring;
 	pickupClass* shieldBubble;

@@ -14,6 +14,7 @@ objectClass::objectClass()
 	startFrame = 1;
 	endFrame = 1;
 	skeletalAnimTimer = 0.0f;
+	matNameNormal = "normal_3.jpg";
 }
 
 objectClass::objectClass(const objectClass & other)
@@ -324,9 +325,19 @@ void objectClass::setMaterialName(std::string name)
 	this->matName = name;
 }
 
- std::string objectClass::getMaterialName()
+std::string objectClass::getMaterialName()
 {
 	return this->matName;
+}
+
+void objectClass::setNormalMapName(std::string name)
+{
+	this->matNameNormal = name;
+}
+
+std::string objectClass::getNormalMapName()
+{
+	return this->matNameNormal;
 }
 
  int objectClass::getFrameCount()

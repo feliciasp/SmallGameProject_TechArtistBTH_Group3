@@ -62,6 +62,9 @@ class objectClass
 		void setMaterialName(std::string name);
 		std::string getMaterialName();
 
+		void setNormalMapName(std::string name);
+		std::string getNormalMapName();
+
 		int getFrameCount();
 		void setFrameCount(int frameCount);
 
@@ -90,6 +93,7 @@ class objectClass
 
 		XMMATRIX objWorld;
 		std::string matName;
+		std::string matNameNormal;
 
 		int frameCount;
 		int currentFrame;
