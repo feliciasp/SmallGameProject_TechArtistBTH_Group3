@@ -65,6 +65,10 @@ bool objectClass::initlialize(ID3D11Device * device, const char* filename)
 	if (mesh.getJointCount() > 0)
 	{
 		transforms = new XMMATRIX[mesh.getJointCount()];
+		for (int i = 0; i < mesh.getJointCount(); i++)
+		{
+			transforms[i] = XMMatrixIdentity();
+		}
 	}
 
 	return true;

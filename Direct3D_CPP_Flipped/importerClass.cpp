@@ -90,7 +90,6 @@ void Importer::clone(const Importer & other)
 
 			if (loadedMeshes[i].mHeader.jointCount > 0)
 			{
-				OutputDebugString(L"\nCOPIES ANIMATION VALUES!\n");
 				loadedMeshes[i].skeleton = new Joint[other.loadedMeshes[i].mHeader.jointCount];
 				memcpy(loadedMeshes[i].skeleton, other.loadedMeshes[i].skeleton, sizeof(other.loadedMeshes[i].skeleton));
 			}

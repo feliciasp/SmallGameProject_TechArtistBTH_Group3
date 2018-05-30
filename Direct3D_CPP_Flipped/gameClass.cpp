@@ -278,7 +278,7 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane.bin", hInstance, hwnd, width, height);
+	result = player->initialize(graphics->getD3D()->GetDevice(), "playerPlane2.bin", hInstance, hwnd, width, height);
 	if (!result)
 	{
 		MessageBox(NULL, L"Error init player obj",
@@ -426,15 +426,15 @@ bool gameClass::initialize(int ShowWnd)
 	boss->setStartMat(XMVectorGetX(spawnBoss->getObj()->getPosition()), XMVectorGetY(spawnBoss->getObj()->getPosition()));
 	boss->setStartPos(XMVectorGetX(spawnBoss->getObj()->getPosition()), XMVectorGetY(spawnBoss->getObj()->getPosition()), XMVectorGetZ(spawnBoss->getObj()->getPosition()));
 
-	boss->getObj()->setMaterialName("skeletonTexture.png");
+	boss->getObj()->setMaterialName("BossTest1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), boss->getObj()->getMaterialName());
 
 	tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame = XMMatrixIdentity();
 	tempMasterMovementBossMat = XMMatrixIdentity();
 	boss->getObj()->setType(3);
 
-	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
-	tempBboxMin = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()), XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
+	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax())};
+	tempBboxMin = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()), XMVectorGetY(boss->getObj()->getBoundingBoxMin())};
 	boss->setBboxMaxWeaponRight(tempBboxMax);
 	boss->setBboxMinWeaponRight(tempBboxMin);
 
@@ -750,6 +750,7 @@ bool gameClass::initialize(int ShowWnd)
 	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMin()) - 3, XMVectorGetY(boss->getObj()->getBoundingBoxMin()) };
 	bossFire->setBoundingBoxMaxLeft(boss->getObj()->getBoundingBoxMin() * 0.3f);
 	bossFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
+	bossFire->setFrameCount(4);
 
 	///////////////////////////////////////////
 	//projectile test
@@ -771,6 +772,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire2->getObj()->getMaterialName());
 	bossFire2->setProjectileType(2);
 	bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
+	bossFire2->setFrameCount(4);
 
 	bossFire3 = new projectileClass;
 	if (!bossFire3)
@@ -790,6 +792,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire3->getObj()->getMaterialName());
 	bossFire3->setProjectileType(2);
 	bossFire3->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-40.0f, 102.0f, 0.0f));
+	bossFire3->setFrameCount(4);
 
 	bossFire4 = new projectileClass;
 	if (!bossFire4)
@@ -809,6 +812,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire4->getObj()->getMaterialName());
 	bossFire4->setProjectileType(2);
 	bossFire4->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-30.0f, 102.0f, 0.0f));
+	bossFire4->setFrameCount(4);
 
 
 	bossFire5= new projectileClass;
@@ -829,6 +833,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire5->getObj()->getMaterialName());
 	bossFire5->setProjectileType(2);
 	bossFire5->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-20.0f, 102.0f, 0.0f));
+	bossFire5->setFrameCount(4);
 
 
 	bossFire6 = new projectileClass;
@@ -849,6 +854,7 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossFire6->getObj()->getMaterialName());
 	bossFire6->setProjectileType(2);
 	bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
+	bossFire6->setFrameCount(4);
 
 
 	/////////////////////////////////////////////
@@ -5512,6 +5518,20 @@ void gameClass::updateBoss(double dt)
 		if (!boss->getIsFrozen())
 		{
 			boss->updateFalling(dt);
+
+			if (!boss->getAttackAnimation())
+			{
+				boss->getObj()->setStartFrame(1);
+				boss->getObj()->setEndFrame(39);
+			}
+			if (boss->getAttackAnimation());
+			{
+				if (boss->getObj()->getFrameCount() >= boss->getObj()->getEndFrame() - 1)
+				{
+					boss->setAttackAnimation(false);
+				}
+				
+			}
 			/*enemyHolder[i].getObj()->setWorldMatrix(tempEnemyStartingPositionMatrix);*/
 			//jag vet att detta är förvirrande men denna tranlationmat func hämtar ut ett värde i x som gör att vår sak rör på oss
 			boss->getTranslationMat(tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame);
@@ -5775,6 +5795,9 @@ void gameClass::updateBoss(double dt)
 				OutputDebugString(L"\nrand > 4\n");
 				bossTimerForRainingFire = 10;
 				bossFire->setIsDestroyed(true);
+				boss->getObj()->setStartFrame(41);
+				boss->getObj()->setEndFrame(62);
+				boss->setAttackAnimation(true);
 
 				bossFire2->setIsDestroyed(false);
 				bossFire3->setIsDestroyed(false);
@@ -6077,6 +6100,8 @@ void gameClass::updateBoss(double dt)
 			{
 				nrOfEnemysBossHasSpawned++;
 				bossTimer = 300 * dt;
+				boss->getObj()->setStartFrame(64);
+				boss->getObj()->setEndFrame(93);
 				//boss->setEnemyTranslationMatrix(tempBossTranslationMatrix * XMMatrixTranslation(0.0, 10.0f, 0.0));
 				int randValue = rand() % 2;
 				if (randValue == 0)
@@ -6118,6 +6143,10 @@ void gameClass::updateBoss(double dt)
 		}
 	}
 
+	if (!boss->getIsFrozen())
+	{
+		boss->getObj()->playAnimation(dt, false);
+	}
 
 	boss->updateAttackCooldownTimer(dt);
 
