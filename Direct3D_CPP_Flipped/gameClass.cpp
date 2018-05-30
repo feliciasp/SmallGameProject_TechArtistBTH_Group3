@@ -489,73 +489,73 @@ bool gameClass::initialize(int ShowWnd)
 
 	//background test
 	spiderweeb = new backgroundClass;
-	result = spiderweeb->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	spiderweeb->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = spiderweeb->initlialize(graphics->getD3D()->GetDevice(), "SPIDERWEBS.bin");
+	spiderweeb->getObj()->setMaterialName("spiderwebTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spiderweeb->getObj()->getMaterialName());
 	spiderweeb->getObj()->setNormalMapName("normal_3.jpg");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), spiderweeb->getObj()->getNormalMapName());
 
 	barrel = new backgroundClass;
-	result = barrel->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	barrel->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = barrel->initlialize(graphics->getD3D()->GetDevice(), "BARRELS.bin");
+	barrel->getObj()->setMaterialName("Barrel1_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), barrel->getObj()->getMaterialName());
-	barrel->getObj()->setNormalMapName("normal_3.jpg");
+	barrel->getObj()->setNormalMapName("Barrel1_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), barrel->getObj()->getNormalMapName());
 
 	candle = new backgroundClass;
-	result = candle->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	candle->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = candle->initlialize(graphics->getD3D()->GetDevice(), "CANDLES.bin");
+	candle->getObj()->setMaterialName("candle1_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), candle->getObj()->getMaterialName());
-	candle->getObj()->setNormalMapName("normal_3.jpg");
+	candle->getObj()->setNormalMapName("candle1_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), candle->getObj()->getNormalMapName());
 
 	plank = new backgroundClass;
-	result = plank->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	plank->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = plank->initlialize(graphics->getD3D()->GetDevice(), "PLANKS.bin");
+	plank->getObj()->setMaterialName("Planks_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), plank->getObj()->getMaterialName());
-	plank->getObj()->setNormalMapName("normal_3.jpg");
+	plank->getObj()->setNormalMapName("Planks_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), plank->getObj()->getNormalMapName());
 
 	painting1 = new backgroundClass;
-	result = painting1->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	painting1->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = painting1->initlialize(graphics->getD3D()->GetDevice(), "PORTRAITS.bin");
+	painting1->getObj()->setMaterialName("PortraitFrame_proper.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), painting1->getObj()->getMaterialName());
-	painting1->getObj()->setNormalMapName("normal_3.jpg");
+	painting1->getObj()->setNormalMapName("PortraitFrame_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), painting1->getObj()->getNormalMapName());
 
 	painting2 = new backgroundClass;
-	result = painting2->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	painting2->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = painting2->initlialize(graphics->getD3D()->GetDevice(), "TABLES.bin");
+	painting2->getObj()->setMaterialName("Table_Round_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), painting2->getObj()->getMaterialName());
-	painting2->getObj()->setNormalMapName("normal_3.jpg");
+	painting2->getObj()->setNormalMapName("Table_Round_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), painting2->getObj()->getNormalMapName());
 
 	ironmaiden = new backgroundClass;
-	result = ironmaiden->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	ironmaiden->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = ironmaiden->initlialize(graphics->getD3D()->GetDevice(), "IRONMAIDENS.bin");
+	ironmaiden->getObj()->setMaterialName("ironMaiden_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ironmaiden->getObj()->getMaterialName());
-	ironmaiden->getObj()->setNormalMapName("normal_3.jpg");
+	ironmaiden->getObj()->setNormalMapName("ironMaiden_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), ironmaiden->getObj()->getNormalMapName());
 
 	sewer = new backgroundClass;
-	result = sewer->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	sewer->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = sewer->initlialize(graphics->getD3D()->GetDevice(), "SEWERS.bin");
+	sewer->getObj()->setMaterialName("sewer_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), sewer->getObj()->getMaterialName());
-	sewer->getObj()->setNormalMapName("normal_3.jpg");
+	sewer->getObj()->setNormalMapName("sewer_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), sewer->getObj()->getNormalMapName());
 
 	bannerCarpet = new backgroundClass;
-	result = bannerCarpet->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	bannerCarpet->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = bannerCarpet->initlialize(graphics->getD3D()->GetDevice(), "BANNERS_AND_CARPETS.bin");
+	bannerCarpet->getObj()->setMaterialName("banner_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bannerCarpet->getObj()->getMaterialName());
-	bannerCarpet->getObj()->setNormalMapName("normal_3.jpg");
+	bannerCarpet->getObj()->setNormalMapName("banner_NORMAL.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bannerCarpet->getObj()->getNormalMapName());
 
 	crate = new backgroundClass;
-	result = crate->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
-	crate->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	result = crate->initlialize(graphics->getD3D()->GetDevice(), "CHESTS.bin");
+	crate->getObj()->setMaterialName("Chest_Closed_BaseColor.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), crate->getObj()->getMaterialName());
-	crate->getObj()->setNormalMapName("normal_3.jpg");
+	crate->getObj()->setNormalMapName("Chest_Closed_Normal.png");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), crate->getObj()->getNormalMapName());
 
 
@@ -1109,11 +1109,21 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), platform->getObj()->getMaterialName());
 	platform->getObj()->setNormalMapName("normal_3.jpg");
 	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), platform->getObj()->getNormalMapName());
-	addObjectToObjHolder(background->getObj());
+	/*addObjectToObjHolder(background->getObj());*/
 	addObjectToObjHolder(platform->getObj());
 	addObjectToObjHolder(floor->getObj());
 	addObjectToObjHolder(walls->getObj());
-	addObjectToObjHolder(pillars->getObj());
+	//addObjectToObjHolder(pillars->getObj());
+	//addObjectToObjHolder(candle->getObj());
+	addObjectToObjHolder(crate->getObj());
+	addObjectToObjHolder(plank->getObj());
+	addObjectToObjHolder(ironmaiden->getObj());
+	addObjectToObjHolder(painting1->getObj());
+	//addObjectToObjHolder(painting2->getObj());
+	//addObjectToObjHolder(barrel->getObj());
+	addObjectToObjHolder(bannerCarpet->getObj());
+	addObjectToObjHolder(sewer->getObj());
+	addObjectToObjHolder(spiderweeb->getObj());
 	addObjectToObjHolder(foregroundWalls->getObj());
 	addObjectToObjHolder(ladders->getObj());
 
@@ -2955,8 +2965,8 @@ bool gameClass::frameMeny(double dt)
 
 		player->setWeaponType(0);
 
-		player->setNrPixelFragments(99);
-		player->setNrPolysgons(99);
+		player->setNrPixelFragments(0);
+		player->setNrPolysgons(0);
 
 		portalPlane->setIsDestroy(true);
 
@@ -3745,16 +3755,16 @@ void gameClass::staticBackground()
 	foregroundWalls->getObj()->setWorldMatrix(backgroundMat);
 
 
-	//spiderweeb->getObj()->setWorldMatrix(backgroundMat);
-	//barrel->getObj()->setWorldMatrix(backgroundMat);
-	//candle->getObj()->setWorldMatrix(backgroundMat);
-	//plank->getObj()->setWorldMatrix(backgroundMat);
-	//painting1->getObj()->setWorldMatrix(backgroundMat);
-	//painting2->getObj()->setWorldMatrix(backgroundMat);
-	//ironmaiden->getObj()->setWorldMatrix(backgroundMat);
-	//sewer->getObj()->setWorldMatrix(backgroundMat);
-	//bannerCarpet->getObj()->setWorldMatrix(backgroundMat);
-	//crate->getObj()->setWorldMatrix(backgroundMat);
+	spiderweeb->getObj()->setWorldMatrix(backgroundMat);
+	barrel->getObj()->setWorldMatrix(backgroundMat);
+	candle->getObj()->setWorldMatrix(backgroundMat);
+	plank->getObj()->setWorldMatrix(backgroundMat);
+	painting1->getObj()->setWorldMatrix(backgroundMat);
+	painting2->getObj()->setWorldMatrix(backgroundMat);
+	ironmaiden->getObj()->setWorldMatrix(backgroundMat);
+	sewer->getObj()->setWorldMatrix(backgroundMat);
+	bannerCarpet->getObj()->setWorldMatrix(backgroundMat);
+	crate->getObj()->setWorldMatrix(backgroundMat);
 }
 
 void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)

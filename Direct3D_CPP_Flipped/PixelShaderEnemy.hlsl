@@ -57,7 +57,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 		colorShaded = color * lightColor * diffConstant * 2;
 		colorShaded += ambient;
-		colorShaded *= 1.3;
+
 		if (input.hurtColor == 1)
 		{
 			colorShaded = colorShaded * float4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -67,8 +67,8 @@ float4 main(VS_OUT input) : SV_TARGET
 			colorShaded = colorShaded * float4(0.0f, 0.8f, 1.0f, 1.0f);
 		}
 
-		//color += colorShaded;
-		//float3 colorShaded = input.Color * diffConstant;
+		color += colorShaded;
+		float3 colorShaded = input.Color * diffConstant;
 
 	}
 	if (input.hurtColor == 2)
