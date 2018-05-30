@@ -763,22 +763,22 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 				}
 			break;
 			case 1:
-				if (matNameHolder[i].nameMat == "GoldShovelSpriteSheet.png") {
-					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
-				}
-				break;
-			case 2:
 				if (matNameHolder[i].nameMat == "SwordSpriteSheet.png") {
 					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
 				}
 				break;
+			case 2:
+				if (matNameHolder[i].nameMat == "SwordFancySpriteSheet.png") {
+					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
+				}
+				break;
 			case 3:
-				if (matNameHolder[i].nameMat == "BloodShovelSpriteSheet.png") {
+				if (matNameHolder[i].nameMat == "SwordBigSpriteSheet.png") {
 					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
 				}
 				break;
 			case 4:
-				if (matNameHolder[i].nameMat == "DarkShovelSpriteSheet.png") {
+				if (matNameHolder[i].nameMat == "GoldShovelSpriteSheet.png") {
 					devCon->PSSetShaderResources(1, 1, &textureRescourceView[i]);
 				}
 				break;
