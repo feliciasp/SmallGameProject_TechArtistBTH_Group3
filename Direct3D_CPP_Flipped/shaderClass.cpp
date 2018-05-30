@@ -65,7 +65,7 @@ bool shaderClass::render(ID3D11DeviceContext * devCon, int indexCount, XMMATRIX 
 	else if (type == 3)
 	{
 		result = setEnemyShaderParameters(devCon, world, view, proj, camPos, joints, weaponType, hurt);
-		renderEnemy(devCon, indexCount, name);
+		renderEnemy(devCon, indexCount, name, name2);
 	}
 
 	else if (type == 4)
@@ -791,7 +791,7 @@ void shaderClass::renderShaderSprite(ID3D11DeviceContext * devCon, int indexCoun
 	devCon->Draw(indexCount, 0);
 }
 
-void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std::string name)
+void shaderClass::renderEnemy(ID3D11DeviceContext * devCon, int indexCount, std::string name, std::string name2)
 {
 	//Set vertex Layout
 	devCon->IASetInputLayout(vertexLayout);

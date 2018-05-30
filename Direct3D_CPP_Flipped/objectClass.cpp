@@ -15,6 +15,8 @@ objectClass::objectClass()
 	endFrame = 1;
 	skeletalAnimTimer = 0.0f;
 	matNameNormal = "normal_3.jpg";
+
+	hurt = 0;
 }
 
 objectClass::objectClass(const objectClass & other)
@@ -387,4 +389,14 @@ std::string objectClass::getNormalMapName()
  void objectClass::getTransformMatrix(XMMATRIX & other, int jointIndex)
  {
 	 other = this->transforms[jointIndex];
+ }
+
+ void objectClass::setHurt(int hurt)
+ {
+	 this->hurt = hurt;
+ }
+
+ int objectClass::getHurt()
+ {
+	 return this->hurt;
  }

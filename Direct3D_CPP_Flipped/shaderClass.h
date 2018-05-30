@@ -114,7 +114,7 @@ class shaderClass
 		void renderShader(ID3D11DeviceContext* devCon, int indexCount, std::string name, std::string name2);
 		void renderShaderScreenSpace(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 		void renderShaderSprite(ID3D11DeviceContext* devCon, int indexCount, std::string name, int weaponType);
-		void renderEnemy(ID3D11DeviceContext* devCon, int indexCount, std::string name);
+		void renderEnemy(ID3D11DeviceContext* devCon, int indexCount, std::string name, std::string name2);
 		void renderPickup(ID3D11DeviceContext* devCon, int indexCount, std::string name);
 
 		std::vector<texImage> matNameHolder;

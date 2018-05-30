@@ -126,6 +126,7 @@ void enemyClass::resetEnemy()
 	useRotation = false;
 
 	hurt = 0;
+	this->obj->setHurt(0);
 
 }
 
@@ -192,10 +193,12 @@ void enemyClass::timeCountdown(float dt)
 		if (this->isFrozen)
 		{
 			this->hurt = 3;
+			this->obj->setHurt(3);
 		}
 		else
 		{
 			this->hurt = 0;
+			this->obj->setHurt(0);
 		}	
 	}
 }
@@ -239,6 +242,7 @@ void enemyClass::setIsFrozen(bool check)
 	if (check == true)
 	{
 		this->hurt = 3;
+		this->obj->setHurt(3);
 	}
 }
 
@@ -257,10 +261,12 @@ void enemyClass::updateFrozenTimer(float dt)
 		if (this->isAttack)
 		{
 			this->hurt = 1;
+			this->obj->setHurt(1);
 		}
 		else
 		{
 			this->hurt = 0;
+			this->obj->setHurt(0);
 		}
 		
 	}

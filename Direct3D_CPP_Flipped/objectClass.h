@@ -79,6 +79,9 @@ class objectClass
 
 		void getTransformMatrix(XMMATRIX& other, int jointIndex);
 
+		void setHurt(int hurt);
+		int getHurt();
+
 	private:
 
 		Importer mesh;
@@ -104,6 +107,8 @@ class objectClass
 		int endFrame;
 		XMMATRIX* transforms;
 		float skeletalAnimTimer;
+
+		int hurt;
 };
 
 #endif

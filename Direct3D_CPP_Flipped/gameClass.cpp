@@ -2763,7 +2763,7 @@ bool gameClass::frameGame(double dt)
 			{
 				objHolder[i]->getTransformMatrix(tJoints[j], j);
 			}
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, objHolder[i]->getJointCount(), enemyHolder[enemyTypeChecker - 1].getHurt());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, objHolder[i]->getJointCount(), objHolder[i]->getHurt());
 			if (!result)
 			{
 				return false;
