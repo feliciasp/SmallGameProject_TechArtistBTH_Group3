@@ -66,6 +66,7 @@ public:
 	bool getIfInObjHolder();
 	void setIfInObjHolder(bool other);
 
+	void setInvulnurable(bool check);
 	bool getInvulnurable();
 
 	void setHasRing(bool check);

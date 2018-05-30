@@ -72,14 +72,17 @@ VS_OUT VS_main(VS_IN input)
 	if (input.Joints.x != -1 || input.Joints.y != -1 || input.Joints.z != -1 || input.Joints.w != -1)
 	{
 		output.Pos.xyz = newPos.xyz;
+		input.Pos = newPos.xyz;
 		input.Normal = newNormal.xyz;
 	}
 
+
+	float4 normal = mul(float4(input.Normal, 0.0f), world);
 	output.Pos = mul(output.Pos, transform);
-	output.Normal = mul(input.Normal, world);
+	output.Normal = normal.xyz;
 	output.TexCoord = input.TexCoord;
 	output.Color = input.Color;
-	output.pointOnSurface = mul(input.Pos, world);
+	output.pointOnSurface = mul(float4(input.Pos, 1.0f), world);
 	output.cameraPos = cameraPos;
 	output.hurtColor = hurtColor;
 	output.Tangent = input.Tangent;
