@@ -17,7 +17,7 @@ gameClass::gameClass(HINSTANCE hInstance)
 	menyMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	winMat = XMMatrixScaling(0.7f, 0.7f, 0.0f);
 	limboMat = XMMatrixIdentity();
-	menyHighlightMat = XMMatrixScaling(0.38f, 0.07f, 0.0f) * XMMatrixTranslation(-0.027f, 0.16f, 0.0f);
+	menyHighlightMat = XMMatrixScaling(0.01f, 0.02f, 0.0f) * XMMatrixTranslation(-0.147f, 0.045f, 0.0f);
 	counterOverlay = 0;
 	menyCheck = true;
 	shopOverlayCount = -1;
@@ -288,6 +288,8 @@ bool gameClass::initialize(int ShowWnd)
 
 	player->getObj()->setMaterialName("playerSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), player->getObj()->getMaterialName());
+	player->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), player->getObj()->getNormalMapName());
 
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "ShovelSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "GoldShovelSpriteSheet.png");
@@ -324,6 +326,8 @@ bool gameClass::initialize(int ShowWnd)
 	playerShadowPlane->getObj()->setMaterialName("Shadow.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), playerShadowPlane->getObj()->getMaterialName());
 
+	playerShadowPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), playerShadowPlane->getObj()->getNormalMapName());
 	//addObjectToObjHolder(playerShadowPlane->getObj());
 
 	//enemy
@@ -346,6 +350,9 @@ bool gameClass::initialize(int ShowWnd)
 	enemy->setTranslation(0.0f);
 	enemy->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy->getObj()->getMaterialName());
+
+	enemy->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), enemy->getObj()->getNormalMapName());
 
 	tempBboxMax = { XMVectorGetX(enemy->getObj()->getBoundingBoxMax()) + 1, XMVectorGetY(enemy->getObj()->getBoundingBoxMax()) };
 	tempBboxMin = { XMVectorGetX(enemy->getObj()->getBoundingBoxMax()), XMVectorGetY(enemy->getObj()->getBoundingBoxMin()) };
@@ -378,6 +385,9 @@ bool gameClass::initialize(int ShowWnd)
 	enemy2->getObj()->setMaterialName("skeletonTexture.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), enemy2->getObj()->getMaterialName());
 
+	enemy2->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), enemy2->getObj()->getNormalMapName());
+
 	tempBboxMax = { XMVectorGetX(enemy2->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(enemy2->getObj()->getBoundingBoxMax()) };
 	tempBboxMin = { XMVectorGetX(enemy2->getObj()->getBoundingBoxMax()), XMVectorGetY(enemy2->getObj()->getBoundingBoxMin()) };
 	enemy2->setBboxMaxWeaponRight(tempBboxMax);
@@ -406,6 +416,9 @@ bool gameClass::initialize(int ShowWnd)
 	spawnBoss->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spawnBoss->getObj()->getMaterialName());
 
+	spawnBoss->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), spawnBoss->getObj()->getNormalMapName());
+
 	//enemy range
 	boss = new enemyClass;
 	if (!boss)
@@ -428,6 +441,8 @@ bool gameClass::initialize(int ShowWnd)
 
 	boss->getObj()->setMaterialName("BossTest1.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), boss->getObj()->getMaterialName());
+	boss->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), boss->getObj()->getNormalMapName());
 
 	tempMatrixThatMakesOurBossMove_HoldsOurXValueFrame = XMMatrixIdentity();
 	tempMasterMovementBossMat = XMMatrixIdentity();
@@ -466,6 +481,89 @@ bool gameClass::initialize(int ShowWnd)
 	background->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), background->getObj()->getMaterialName());
 
+	background->getObj()->setNormalMapName("WallTexture_NORMAL.png");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), background->getObj()->getNormalMapName());
+
+	//////////////////BACKGROUND
+	////////////////////////////
+
+	//background test
+	spiderweeb = new backgroundClass;
+	result = spiderweeb->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	spiderweeb->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spiderweeb->getObj()->getMaterialName());
+	spiderweeb->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), spiderweeb->getObj()->getNormalMapName());
+
+	barrel = new backgroundClass;
+	result = barrel->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	barrel->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), barrel->getObj()->getMaterialName());
+	barrel->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), barrel->getObj()->getNormalMapName());
+
+	candle = new backgroundClass;
+	result = candle->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	candle->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), candle->getObj()->getMaterialName());
+	candle->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), candle->getObj()->getNormalMapName());
+
+	plank = new backgroundClass;
+	result = plank->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	plank->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), plank->getObj()->getMaterialName());
+	plank->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), plank->getObj()->getNormalMapName());
+
+	painting1 = new backgroundClass;
+	result = painting1->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	painting1->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), painting1->getObj()->getMaterialName());
+	painting1->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), painting1->getObj()->getNormalMapName());
+
+	painting2 = new backgroundClass;
+	result = painting2->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	painting2->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), painting2->getObj()->getMaterialName());
+	painting2->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), painting2->getObj()->getNormalMapName());
+
+	ironmaiden = new backgroundClass;
+	result = ironmaiden->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	ironmaiden->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ironmaiden->getObj()->getMaterialName());
+	ironmaiden->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), ironmaiden->getObj()->getNormalMapName());
+
+	sewer = new backgroundClass;
+	result = sewer->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	sewer->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), sewer->getObj()->getMaterialName());
+	sewer->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), sewer->getObj()->getNormalMapName());
+
+	bannerCarpet = new backgroundClass;
+	result = bannerCarpet->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	bannerCarpet->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bannerCarpet->getObj()->getMaterialName());
+	bannerCarpet->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bannerCarpet->getObj()->getNormalMapName());
+
+	crate = new backgroundClass;
+	result = crate->initlialize(graphics->getD3D()->GetDevice(), "2dummyBackground.bin");
+	crate->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), crate->getObj()->getMaterialName());
+	crate->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), crate->getObj()->getNormalMapName());
+
+
+
+	////////////////////////////
+	////////////////////////////
+
+
 	floor = new backgroundClass;
 	result = floor->initlialize(graphics->getD3D()->GetDevice(), "BackgroundFloors.bin");
 	if (!result)
@@ -477,6 +575,9 @@ bool gameClass::initialize(int ShowWnd)
 	floor->getObj()->setMaterialName("Floor_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), floor->getObj()->getMaterialName());
 
+	floor->getObj()->setNormalMapName("Floor_NORMAL.png");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), floor->getObj()->getNormalMapName());
+
 	walls = new backgroundClass;
 	result = walls->initlialize(graphics->getD3D()->GetDevice(), "BackgroundWalls.bin");
 	if (!result)
@@ -487,6 +588,9 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	walls->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 
+	walls->getObj()->setNormalMapName("WallTexture_NORMAL.png");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), walls->getObj()->getNormalMapName());
+
 	pillars = new backgroundClass;
 	result = pillars->initlialize(graphics->getD3D()->GetDevice(), "DungeonPillars.bin");
 	if (!result)
@@ -495,7 +599,11 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	pillars->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	pillars->getObj()->setMaterialName("Pillar_Moss_BaseColor.png");
+	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pillars->getObj()->getMaterialName());
+
+	pillars->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), pillars->getObj()->getNormalMapName());
 
 	foregroundWalls = new backgroundClass;
 	result = foregroundWalls->initlialize(graphics->getD3D()->GetDevice(), "ForegroundWalls.bin");
@@ -505,9 +613,10 @@ bool gameClass::initialize(int ShowWnd)
 			L"Error", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	foregroundWalls->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
+	foregroundWalls->getObj()->setMaterialName("Floor_DIFFUSE.png");
 
-
+	foregroundWalls->getObj()->setNormalMapName("Floor_NORMAL.png");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), foregroundWalls->getObj()->getNormalMapName());
 	//spawnEnemys
 
 	//background test
@@ -528,6 +637,8 @@ bool gameClass::initialize(int ShowWnd)
 	ladders->getObj()->setMaterialName("ladder_PNG14808.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ladders->getObj()->getMaterialName());
 
+	ladders->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), ladders->getObj()->getNormalMapName());
 
 	//spawnEnemys test
 	spawnEnemys = new backgroundClass;
@@ -547,7 +658,8 @@ bool gameClass::initialize(int ShowWnd)
 	spawnEnemys->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), spawnEnemys->getObj()->getMaterialName());
 
-
+	spawnEnemys->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), spawnEnemys->getObj()->getNormalMapName());
 
 
 	//pickupSpawn test
@@ -568,6 +680,9 @@ bool gameClass::initialize(int ShowWnd)
 	pickupSpawn->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), pickupSpawn->getObj()->getMaterialName());
 
+	pickupSpawn->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), pickupSpawn->getObj()->getNormalMapName());
+
 	//pickup test
 	expFragment = new pickupClass;
 	if (!expFragment)
@@ -586,6 +701,9 @@ bool gameClass::initialize(int ShowWnd)
 	expFragment->getObj()->setMaterialName("pixelFragmentSprite.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), expFragment->getObj()->getMaterialName());
 	expFragment->getTranslationMatStart(pickupStartPosMoveMat);
+
+	expFragment->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), expFragment->getObj()->getNormalMapName());
 
 	expFragment->setPickupType(3);
 	expFragment->setRingType(1);
@@ -607,7 +725,8 @@ bool gameClass::initialize(int ShowWnd)
 	ring->getObj()->setMaterialName("RingsSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), ring->getObj()->getMaterialName());
 	ring->getTranslationMatStart(pickupStartPosMoveMat);
-
+	ring->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), ring->getObj()->getNormalMapName());
 
 	//shieldBubble
 	shieldBubble = new pickupClass;
@@ -631,6 +750,9 @@ bool gameClass::initialize(int ShowWnd)
 	shieldBubble->setAnimationCount(1);
 	shieldBubble->getObj()->setAnimationCount(1);
 	shieldBubble->setPickupType(6);
+
+	shieldBubble->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), shieldBubble->getObj()->getNormalMapName());
 
 	///////////////////////////
 	coldownDisplay = new pickupClass;
@@ -658,6 +780,8 @@ bool gameClass::initialize(int ShowWnd)
 	coldownDisplay->getObj()->setFrameCount(5);
 	coldownDisplay->setTranslationMatStart(XMMatrixScaling(0.4, 0.9, 0.0) * XMMatrixTranslation(XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + ((XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetX(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) / 2), XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove)) + (XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMax(), playerMove)) - XMVectorGetY(XMVector3Transform(player->getObj()->getBoundingBoxMin(), playerMove))) + 1.0f, 0.0f));
 
+	coldownDisplay->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), coldownDisplay->getObj()->getNormalMapName());
 
 	//projectile test
 	projectile = new projectileClass;
@@ -690,6 +814,8 @@ bool gameClass::initialize(int ShowWnd)
 	projectile->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	projectile->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 	projectile->setFrameCount(4);
+	projectile->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), projectile->getObj()->getNormalMapName());
 
 	//projectile test
 	enemyFire = new projectileClass;
@@ -721,6 +847,9 @@ bool gameClass::initialize(int ShowWnd)
 	enemyFire->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
 	enemyFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
+	enemyFire->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), enemyFire->getObj()->getNormalMapName());
+
 	//projectile test
 	bossFire = new projectileClass;
 	if (!bossFire)
@@ -742,6 +871,7 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire->setIsDestroyed(false);
 	bossFire->setCheckIfObjHolder(false);
 	bossFire->getTranslationMatStart(tempBossTranslationMatrix);
+	bossFire->setFrameCount(4);
 
 	tempBboxMax = { XMVectorGetX(boss->getObj()->getBoundingBoxMax()) + 3, XMVectorGetY(boss->getObj()->getBoundingBoxMax()) };
 	bossFire->setBoundingBoxMaxRight(tempBboxMax * 0.3f);
@@ -752,6 +882,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 	bossFire->setFrameCount(4);
 
+	bossFire->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire->getObj()->getNormalMapName());
 	///////////////////////////////////////////
 	//projectile test
 	bossFire2 = new projectileClass;
@@ -774,6 +906,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire2->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-50.0f, 102.0f, 0.0f));
 	bossFire2->setFrameCount(4);
 
+	bossFire2->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire2->getObj()->getNormalMapName());
 	bossFire3 = new projectileClass;
 	if (!bossFire3)
 	{
@@ -793,6 +927,9 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire3->setProjectileType(2);
 	bossFire3->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-40.0f, 102.0f, 0.0f));
 	bossFire3->setFrameCount(4);
+
+	bossFire3->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire3->getObj()->getNormalMapName());
 
 	bossFire4 = new projectileClass;
 	if (!bossFire4)
@@ -814,6 +951,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire4->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-30.0f, 102.0f, 0.0f));
 	bossFire4->setFrameCount(4);
 
+	bossFire4->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire4->getObj()->getNormalMapName());
 
 	bossFire5= new projectileClass;
 	if (!bossFire5)
@@ -835,6 +974,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire5->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-20.0f, 102.0f, 0.0f));
 	bossFire5->setFrameCount(4);
 
+	bossFire5->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire5->getObj()->getNormalMapName());
 
 	bossFire6 = new projectileClass;
 	if (!bossFire6)
@@ -856,6 +997,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossFire6->setTranslationMatStart(XMMatrixRotationZ(-1.57079633) * XMMatrixTranslation(-10.0f, 102.0f, 0.0f));
 	bossFire6->setFrameCount(4);
 
+	bossFire6->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossFire6->getObj()->getNormalMapName());
 
 	/////////////////////////////////////////////
 
@@ -887,10 +1030,11 @@ bool gameClass::initialize(int ShowWnd)
 	bossIce->setBoundingBoxMinRight(player->getObj()->getBoundingBoxMax() * 0.3f);
 
 	tempBboxMax = { XMVectorGetX(player->getObj()->getBoundingBoxMin()) - 6, XMVectorGetY(player->getObj()->getBoundingBoxMin()) };
-	bossFire->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
-	bossFire->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
+	bossIce->setBoundingBoxMaxLeft(player->getObj()->getBoundingBoxMin() * 0.3f);
+	bossIce->setBoundingBoxMinLeft(tempBboxMax * 0.3f);
 
-
+	bossIce->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossIce->getObj()->getNormalMapName());
 	//GUI
 	GUIheart1 = new GUItestClass;
 	if (!GUIheart1)
@@ -910,6 +1054,8 @@ bool gameClass::initialize(int ShowWnd)
 	GUIheart1->getObj()->setMaterialName("HP2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), GUIheart1->getObj()->getMaterialName());
 
+	GUIheart1->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), GUIheart1->getObj()->getNormalMapName());
 	addHearthToHeartHolder(*GUIheart1, 1);
 	addHearthToHeartHolder(*GUIheart1, 2);
 	addHearthToHeartHolder(*GUIheart1, 3);
@@ -941,7 +1087,8 @@ bool gameClass::initialize(int ShowWnd)
 	bossdoor->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), bossdoor->getObj()->getMaterialName());
 	bossdoor->getObj()->setWorldMatrix(XMMatrixIdentity());
-
+	bossdoor->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), bossdoor->getObj()->getNormalMapName());
 	//platform 
 	platform = new platformClass;
 	if (!platform)
@@ -959,7 +1106,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	platform->getObj()->setMaterialName("WallTexture_DIFFUSE.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), platform->getObj()->getMaterialName());
-
+	platform->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), platform->getObj()->getNormalMapName());
 	addObjectToObjHolder(background->getObj());
 	addObjectToObjHolder(platform->getObj());
 	addObjectToObjHolder(floor->getObj());
@@ -1000,7 +1148,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingWhiteSpriteSheet.png");
 	slot1->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot1->getObj());
-
+	slot1->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), slot1->getObj()->getNormalMapName());
 	//GUI POLYGON COUNT
 	slot2 = new GUItestClass;
 	if (!slot2)
@@ -1019,7 +1168,8 @@ bool gameClass::initialize(int ShowWnd)
 	slot2->getObj()->setWorldMatrix(slot2Mat);
 	slot2->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot2->getObj());
-
+	slot2->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), slot2->getObj()->getNormalMapName());
 	//GUI POLYGON COUNT
 	polygonDisp = new GUItestClass;
 	if (!polygonDisp)
@@ -1039,7 +1189,8 @@ bool gameClass::initialize(int ShowWnd)
 	polygonDisp->getObj()->setMaterialName("Polygon.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "Polygon.png");
 	addObjectToObjHolder(polygonDisp->getObj());
-
+	polygonDisp->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), polygonDisp->getObj()->getNormalMapName());
 	//GUI RING HOLDER
 	ringDisplay = new GUItestClass;
 	if (!ringDisplay)
@@ -1063,7 +1214,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "RingWhite3.png");
 	ringDisplay->setIsDestroy(true);
 	ringDisplay->setCheckIfObjHolder(false);
-
+	ringDisplay->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), ringDisplay->getObj()->getNormalMapName());
 	//addObjectToObjHolder(ringDisplay->getObj());
 
 	//GUI RING HOLDER
@@ -1088,7 +1240,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP2.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP3.png");
 	//graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), "EXP4.png");
-
+	xpDisplay->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), xpDisplay->getObj()->getNormalMapName());
 
 	//GUI RING HOLDER
 	slot1xp = new GUItestClass;
@@ -1108,7 +1261,8 @@ bool gameClass::initialize(int ShowWnd)
 	slot1xp->getObj()->setWorldMatrix(slot1xpMat);
 	slot1xp->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot1xp->getObj());
-
+	slot1xp->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), slot1xp->getObj()->getNormalMapName());
 	//GUI RING HOLDER
 	slot2xp = new GUItestClass;
 	if (!slot2xp)
@@ -1127,7 +1281,8 @@ bool gameClass::initialize(int ShowWnd)
 	slot2xp->getObj()->setWorldMatrix(slot2xpMat);
 	slot2xp->getObj()->setMaterialName("0.png");
 	addObjectToObjHolder(slot2xp->getObj());
-
+	slot2xp->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), slot2xp->getObj()->getNormalMapName());
 	addObjectToObjHolder(xpDisplay->getObj());
 	//////////////////////////
 	//		MENY			//
@@ -1148,9 +1303,10 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	meny->getObj()->setWorldMatrix(menyMat);
-	meny->getObj()->setMaterialName("textureMeny.png");
+	meny->getObj()->setMaterialName("MenuBackground.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), meny->getObj()->getMaterialName());
-
+	meny->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), meny->getObj()->getNormalMapName());
 	menyHighlight = new GUItestClass;
 	if (!menyHighlight)
 	{
@@ -1166,11 +1322,12 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	menyHighlight->getObj()->setWorldMatrix(menyHighlightMat);
-	menyHighlight->getObj()->setMaterialName("textureMenyOverlay.png");
+	menyHighlight->getObj()->setMaterialName("MenuSelected.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), menyHighlight->getObj()->getMaterialName());
 	addObjectToObjHolderMeny(menyHighlight->getObj());
 	addObjectToObjHolderMeny(meny->getObj());
-
+	menyHighlight->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), menyHighlight->getObj()->getNormalMapName());
 
 	//////////////////////////
 	//////	 LIMBO		//////
@@ -1196,7 +1353,8 @@ bool gameClass::initialize(int ShowWnd)
 	limboBackPlane->getObj()->setMaterialName("LimboBack.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getMaterialName());
 
-
+	limboBackPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboBackPlane->getObj()->getNormalMapName());
 	addObjectToObjHolderLimbo(limboBackPlane->getObj());
 
 	//LIMBO Smith PLANE
@@ -1216,7 +1374,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboSmithPlane->getObj()->setMaterialName("SmithSpriteSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getMaterialName());
-
+	limboSmithPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboSmithPlane->getObj()->getNormalMapName());
 	limboPickupHolder[0].clone(*limboSmithPlane);
 	limboPickupHolder[0].setFrameCount(2);
 	limboPickupHolder[0].setAnimationCount(1);
@@ -1241,7 +1400,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboWalkingPlane->getObj()->setMaterialName("Shadow.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getMaterialName());
-
+	limboWalkingPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboWalkingPlane->getObj()->getNormalMapName());
 	addObjectToObjHolderLimbo(limboWalkingPlane->getObj());
 	addObjectToObjHolderLimbo(player->getObj());
 
@@ -1262,7 +1422,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboFrontPlane->getObj()->setMaterialName("LimboFront.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getMaterialName());
-
+	limboFrontPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboFrontPlane->getObj()->getNormalMapName());
 	addObjectToObjHolderLimbo(limboFrontPlane->getObj());
 
 	//LIMBO Text PLANE
@@ -1282,7 +1443,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboTextPlane->getObj()->setMaterialName("SmithTextSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getMaterialName());
-
+	limboTextPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboTextPlane->getObj()->getNormalMapName());
 	limboPickupHolder[1].clone(*limboTextPlane);
 	limboPickupHolder[1].setFrameCount(4);
 	limboPickupHolder[1].setAnimationCount(1);
@@ -1307,7 +1469,8 @@ bool gameClass::initialize(int ShowWnd)
 	}
 	limboTextPlanePressE->getObj()->setMaterialName("SmithTextEnterSheet.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), limboTextPlanePressE->getObj()->getMaterialName());
-
+	limboTextPlanePressE->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), limboTextPlanePressE->getObj()->getNormalMapName());
 	limboPickupHolder[2].clone(*limboTextPlanePressE);
 	limboPickupHolder[2].setFrameCount(4);
 	limboPickupHolder[2].setAnimationCount(1);
@@ -1336,7 +1499,8 @@ bool gameClass::initialize(int ShowWnd)
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getMaterialName());
 	upgradeGUI->setIsDestroy(true);
 	upgradeGUI->getObj()->setType(3);
-
+	upgradeGUI->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), upgradeGUI->getObj()->getNormalMapName());
 
 	//addObjectToObjHolderLimbo(upgradeGUI->getObj());
 
@@ -1384,7 +1548,8 @@ bool gameClass::initialize(int ShowWnd)
 	upgradeOverlay->setIsDestroy(true);
 	upgradeOverlay->getObj()->setType(3);
 	//addObjectToObjHolderLimbo(upgradeOverlay->getObj());
-
+	upgradeOverlay->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), upgradeOverlay->getObj()->getNormalMapName());
 	//
 	//HEalth count
 	healthUpgradeCount = new GUItestClass;
@@ -1404,7 +1569,8 @@ bool gameClass::initialize(int ShowWnd)
 	healthUpgradeCount->getObj()->setWorldMatrix(healthUpgradeCountMat);
 	healthUpgradeCount->getObj()->setMaterialName("0.png");
 	healthUpgradeCount->setIsDestroy(true);
-
+	healthUpgradeCount->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), healthUpgradeCount->getObj()->getNormalMapName());
 	//speed count
 	speedUpgradeCount = new GUItestClass;
 	if (!speedUpgradeCount)
@@ -1423,7 +1589,8 @@ bool gameClass::initialize(int ShowWnd)
 	speedUpgradeCount->getObj()->setWorldMatrix(speedUpgradeCountMat);
 	speedUpgradeCount->getObj()->setMaterialName("0.png");
 	speedUpgradeCount->setIsDestroy(true);
-
+	speedUpgradeCount->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), speedUpgradeCount->getObj()->getNormalMapName());
 
 	//TOTAL COST PENDING
 	totalCostPendingSlot1 = new GUItestClass;
@@ -1443,7 +1610,8 @@ bool gameClass::initialize(int ShowWnd)
 	totalCostPendingSlot1->getObj()->setWorldMatrix(totalCostPendingSlot1Mat);
 	totalCostPendingSlot1->getObj()->setMaterialName("0.png");
 	totalCostPendingSlot1->setIsDestroy(true);
-
+	totalCostPendingSlot1->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), totalCostPendingSlot1->getObj()->getNormalMapName());
 	//speed count
 	totalCostPendingSlot2 = new GUItestClass;
 	if (!totalCostPendingSlot2)
@@ -1462,7 +1630,8 @@ bool gameClass::initialize(int ShowWnd)
 	totalCostPendingSlot2->getObj()->setWorldMatrix(totalCostPendingSlot2Mat);
 	totalCostPendingSlot2->getObj()->setMaterialName("0.png");
 	totalCostPendingSlot2->setIsDestroy(true);
-
+	totalCostPendingSlot2->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), totalCostPendingSlot2->getObj()->getNormalMapName());
 	//PORTAL
 	portalPlane = new pickupClass;
 	if (!portalPlane)
@@ -1485,7 +1654,8 @@ bool gameClass::initialize(int ShowWnd)
 	portalPlane->setPickupType(7);
 	portalPlane->setIsDestroy(false);
 	portalPlane->setTranslationMatStart(XMMatrixTranslation(XMVectorGetX(spawnBoss->getObj()->getPosition()) + 2.0f, XMVectorGetY(spawnBoss->getObj()->getPosition()) - 8.0f, 0.0f));
-
+	portalPlane->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), portalPlane->getObj()->getNormalMapName());
 	//nrOfVisiblePickups++;
 	//addPickupToPickupHolder(*portalPlane, nrOfVisiblePickups);
 
@@ -1515,9 +1685,10 @@ bool gameClass::initialize(int ShowWnd)
 		return false;
 	}
 	win->getObj()->setWorldMatrix(winMat);
-	win->getObj()->setMaterialName("winTexture.png");
+	win->getObj()->setMaterialName("Win.png");
 	graphics->getShaders()->createTextureReasourceAndTextureView(graphics->getD3D()->GetDevice(), win->getObj()->getMaterialName());
-
+	win->getObj()->setNormalMapName("normal_3.jpg");
+	graphics->getShaders()->createNormalMapInfo(graphics->getD3D()->GetDevice(), win->getObj()->getNormalMapName());
 	addObjectToObjHolderWin(win->getObj());
 	initializeRings();
 	initializeEnemies();
@@ -1916,6 +2087,92 @@ void gameClass::shutdown()
 		delete bossFire;
 		bossFire = 0;
 	}
+	if (floor)
+	{
+		floor->shutdown();
+		delete floor;
+		floor = 0;
+	}
+	if (walls)
+	{
+		walls->shutdown();
+		delete walls;
+		walls = 0;
+	}
+	if (pillars)
+	{
+		pillars->shutdown();
+		delete pillars;
+		pillars = 0;
+	}
+	if (foregroundWalls)
+	{
+		foregroundWalls->shutdown();
+		delete foregroundWalls;
+		foregroundWalls = 0;
+	}
+	//////////////////////////
+	if (spiderweeb)
+	{
+		spiderweeb->shutdown();
+		delete spiderweeb;
+		spiderweeb = 0;
+	}
+	if (barrel)
+	{
+		barrel->shutdown();
+		delete barrel;
+		barrel = 0;
+	}
+	if (candle)
+	{
+		candle->shutdown();
+		delete candle;
+		candle = 0;
+	}
+	if (plank)
+	{
+		plank->shutdown();
+		delete plank;
+		plank = 0;
+	}
+	if (painting1)
+	{
+		painting1->shutdown();
+		delete painting1;
+		painting1 = 0;
+	}
+	if (painting2)
+	{
+		painting2->shutdown();
+		delete painting2;
+		painting2 = 0;
+	}
+	if (ironmaiden)
+	{
+		ironmaiden->shutdown();
+		delete ironmaiden;
+		ironmaiden = 0;
+	}
+	if (sewer)
+	{
+		sewer->shutdown();
+		delete sewer;
+		sewer = 0;
+	}
+	if (bannerCarpet)
+	{
+		bannerCarpet->shutdown();
+		delete bannerCarpet;
+		bannerCarpet = 0;
+	}
+	if (crate)
+	{
+		crate->shutdown();
+		delete crate;
+		crate = 0;
+	}
+	/////////////////////////
 	if (playerShadowPlane)
 	{
 		playerShadowPlane->shutdown();
@@ -2049,7 +2306,7 @@ bool gameClass::frameWin(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderWin.size(); i++)
 	{
-		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
+		result = graphics->frame(objHolderWin[i], view, proj, objHolderWin[i]->getType(), objHolderWin[i]->getMaterialName(), objHolderWin[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 		if (!result)
 		{
 			return false;
@@ -2061,6 +2318,8 @@ bool gameClass::frameWin(double dt)
 	if (inputDirectOther->isEscapePressed() == true)
 	{
 		player->resetPlayer();
+		player->setMaxHP(1);
+		player->setPlayerHP(1);
 		if (pickupHolder)
 		{
 			for (int i = 0; i < nrOfVisiblePickups; i++)
@@ -2072,9 +2331,7 @@ bool gameClass::frameWin(double dt)
 		initializeRings();
 		for (int i = 0; i < nrOfVisibleEnemies; i++)
 		{
-			removeObjFromObjHolder(enemyHolder[i].getObj());
-			nrOfVisibleEnemies--;
-			removeEnemyFromEnemyHolder(enemyHolder[i], nrOfVisibleEnemies);
+			enemyHolder[i].resetEnemy();
 		}
 		initializeEnemies();
 		slot1->setIsDestroy(true);
@@ -2084,8 +2341,9 @@ bool gameClass::frameWin(double dt)
 		projectile->resetProjectile();
 		projectile->setIsDestroyed(false);
 		enemyFire->resetFireEnemy();
-		bossFire->resetFireEnemy();
 		bossIce->resetFireEnemy();
+		bossFire->resetFireEnemy();
+		bossBattleEntered = false;
 
 		camera->reset();
 
@@ -2156,7 +2414,7 @@ bool gameClass::frameLimbo(double dt)
 	{
 		if (objHolderLimbo[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), objHolderLimbo[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -2166,7 +2424,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else if (objHolderLimbo[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), objHolderLimbo[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, limboPickupHolder[pickupCheck].getFrameCount(), limboPickupHolder[pickupCheck].getCurrentFrame());
 			pickupCheck++;
 			if (!result)
 			{
@@ -2175,7 +2433,7 @@ bool gameClass::frameLimbo(double dt)
 		}
 
 		else if (objHolderLimbo[i]->getType() == 3) {
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 2);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), objHolderLimbo[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 2);
 			if (!result)
 			{
 				return false;
@@ -2185,7 +2443,7 @@ bool gameClass::frameLimbo(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
+			result = graphics->frame(objHolderLimbo[i], view, ortoProj, objHolderLimbo[i]->getType(), objHolderLimbo[i]->getMaterialName(), objHolderLimbo[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -2471,7 +2729,7 @@ bool gameClass::frameGame(double dt)
 	{
 		if (objHolder[i]->getType() == 2)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, player->getFrameCount(), player->getCurrentFrame(), player->getCurrentAnimation(), player->getFlipped());
 			if (!result)
 
 			{
@@ -2481,7 +2739,7 @@ bool gameClass::frameGame(double dt)
 
 		else if (objHolder[i]->getType() == 4)
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame());
 			if (!result)
 			{
 				return false;
@@ -2494,7 +2752,7 @@ bool gameClass::frameGame(double dt)
 			{
 				objHolder[i]->getTransformMatrix(tJoints[j], j);
 			}
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, objHolder[i]->getJointCount(), enemyHolder[enemyTypeChecker - 1].getHurt());
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, objHolder[i]->getJointCount(), enemyHolder[enemyTypeChecker - 1].getHurt());
 			if (!result)
 			{
 				return false;
@@ -2506,13 +2764,13 @@ bool gameClass::frameGame(double dt)
 		else if (objHolder[i]->getType() == 5)
 		{
 			if (!projectile->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), projectile->getCurrentAnimation(), projectile->getGoesRight());
 			if (!enemyFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), enemyFire->getCurrentAnimation(), enemyFire->getGoesRight());
 			if (!bossFire->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossFire->getCurrentAnimation(), bossFire->getGoesRight());
 			if (!bossIce->getIsDestroyed())
-				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
+				result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0, objHolder[i]->getFrameCount(), objHolder[i]->getCurrentFrame(), bossIce->getCurrentAnimation(), bossIce->getGoesRight());
 			
 			if (!result)
 			{
@@ -2522,7 +2780,7 @@ bool gameClass::frameGame(double dt)
 
 		else
 		{
-			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
+			result = graphics->frame(objHolder[i], view, proj, objHolder[i]->getType(), objHolder[i]->getMaterialName(), objHolder[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 			if (!result)
 
 			{
@@ -2555,6 +2813,7 @@ bool gameClass::frameGame(double dt)
 		enemyFire->resetFireEnemy();
 		bossIce->resetFireEnemy();
 		bossFire->resetFireEnemy();
+		boss->setEnemyHP(100);
 		bossBattleEntered = false;
 
 		for (int i = 0; i < 5; i++)
@@ -2658,7 +2917,7 @@ bool gameClass::frameMeny(double dt)
 	graphics->beginScene();
 	for (int i = 0; i < objHolderMeny.size(); i++)
 	{
-		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
+		result = graphics->frame(objHolderMeny[i], view, proj, objHolderMeny[i]->getType(), objHolderMeny[i]->getMaterialName(), objHolderMeny[i]->getNormalMapName(), camera->getPosition(), tJoints, player->getWeaponType(), 0);
 		if (!result)
 
 		{
@@ -2743,7 +3002,7 @@ bool gameClass::frameMeny(double dt)
 		
 	}
 
-	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 3)
+	if (inputDirectOther->isEnterPressed() == true && counterOverlay == 2)
 	{
 		return false;
 	}
@@ -3470,6 +3729,18 @@ void gameClass::staticBackground()
 	walls->getObj()->setWorldMatrix(backgroundMat);
 	pillars->getObj()->setWorldMatrix(backgroundMat);
 	foregroundWalls->getObj()->setWorldMatrix(backgroundMat);
+
+
+	//spiderweeb->getObj()->setWorldMatrix(backgroundMat);
+	//barrel->getObj()->setWorldMatrix(backgroundMat);
+	//candle->getObj()->setWorldMatrix(backgroundMat);
+	//plank->getObj()->setWorldMatrix(backgroundMat);
+	//painting1->getObj()->setWorldMatrix(backgroundMat);
+	//painting2->getObj()->setWorldMatrix(backgroundMat);
+	//ironmaiden->getObj()->setWorldMatrix(backgroundMat);
+	//sewer->getObj()->setWorldMatrix(backgroundMat);
+	//bannerCarpet->getObj()->setWorldMatrix(backgroundMat);
+	//crate->getObj()->setWorldMatrix(backgroundMat);
 }
 
 void gameClass::updateGUIPolygon(XMMATRIX mat1, XMMATRIX mat2)
@@ -3766,9 +4037,9 @@ int gameClass::getCounterOverlay()
 void gameClass::updateOverlay()
 {
 	//MENY
-	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getCounterOverlay() < 3)
+	if (inputDirectOther->isArrowDownPressed() && arrowDownReleased && getCounterOverlay() < 2)
 	{
-		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.21f, 0.0f);
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, -0.24f, 0.0f);
 		setCounterOverlay(getCounterOverlay() + 1);
 		arrowDownReleased = false;
 		if (soundAvailable)
@@ -3776,7 +4047,7 @@ void gameClass::updateOverlay()
 	}
 	if (inputDirectOther->isArrowUpPressed() && arrowUpReleased && getCounterOverlay() > 0)
 	{
-		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.21f, 0.0f);
+		menyHighlightMat = menyHighlightMat * XMMatrixTranslation(0.0f, 0.24f, 0.0f);
 		setCounterOverlay(getCounterOverlay() - 1);
 		arrowUpReleased = false;
 		if (soundAvailable)
