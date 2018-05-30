@@ -44,7 +44,7 @@ float4 main(VS_OUT input) : SV_TARGET
 		//input.Normal = normalize(float4(mul(normalMap, texSpaceMat),1.0f));
 
 
-		float4 ambient = float4(0.2f, 0.2f, 0.2f, 1.0f);
+		float4 ambient = float4(0.0f, 0.0f, 0.1f, 1.0f);
 		float4 lightColor = float4(1.0f, 0.7f, 0.4f, 1.0f);
 		float4 lightSource = input.cameraPos; //same as our camera since that is where we want our light to come from
 		float4 lightDir = lightSource - input.pointOnSurface;
@@ -55,11 +55,9 @@ float4 main(VS_OUT input) : SV_TARGET
 		color = texture1.Sample(textureSample, input.TexCoord);
 
 
-
-
-		colorShaded = color * lightColor * diffConstant * 3;
+		colorShaded = color * lightColor * diffConstant * 2;
 		colorShaded += ambient;
-
+		colorShaded *= 1.3;
 		if (input.hurtColor == 1)
 		{
 			colorShaded = colorShaded * float4(1.0f, 0.0f, 0.0f, 1.0f);
