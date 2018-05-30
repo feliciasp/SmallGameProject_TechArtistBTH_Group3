@@ -68,10 +68,10 @@ playerClass::playerClass()
 		weaponBought[i] = false;
 	}
 
-	weaponCost[0] = 3;
-	weaponCost[1] = 10;
-	weaponCost[2] = 30;
-	weaponCost[3] = 100;
+	weaponCost[0] = 1;
+	weaponCost[1] = 1;
+	weaponCost[2] = 1;
+	weaponCost[3] = 1;
 
 	dodge = false;
 	isDodging = false;
