@@ -2960,6 +2960,11 @@ bool gameClass::frameMeny(double dt)
 
 		portalPlane->setIsDestroy(true);
 
+		addObjectToObjHolder(boss->getObj());
+		boss->setCheckIfObjHolder(true);
+		boss->setIsActive(true);
+		boss->setEnemyHP(100);
+
 		for (int i = 0; i < 4; i++) {
 			player->setNrWeaponBought(i, false);
 		}
