@@ -71,6 +71,7 @@ private:
 	IDirectSoundBuffer8* m_MenuAmbientSoundBuffer;
 	IDirectSoundBuffer8* m_LimboAmbientSoundBuffer;
 	IDirectSoundBuffer8* m_BossBattleSoundBuffer;
+	IDirectSoundBuffer8* m_WinSoundBuffer;
 
 	//SFX buffers
 	IDirectSoundBuffer8* m_PlayerAttackSoundBuffer1;
@@ -85,8 +86,13 @@ private:
 	IDirectSoundBuffer8* m_PickupXpSoundBuffer;
 	IDirectSoundBuffer8* m_ShieldBubbleSoundBuffer;
 	IDirectSoundBuffer8* m_BossLaughSoundBuffer;
+	IDirectSoundBuffer8* m_PortalEntrySoundBuffer;
+	IDirectSoundBuffer8* m_PlayerClimbSoundBuffer;
+	IDirectSoundBuffer8* m_PlayerDodgeSoundBuffer;
+	IDirectSoundBuffer8* m_CooldownOverSoundBuffer;
 
 	IDirectSoundBuffer8* m_MenuButtonSoundBuffer;
+	IDirectSoundBuffer8* m_MenuSelectSoundBuffer;
 
 	IDirectSoundBuffer8* m_LimboWeaponBuySoundBuffer;
 	IDirectSoundBuffer8* m_LimboUpSoundBuffer;

@@ -9,6 +9,7 @@ SoundClass::SoundClass()
 	m_MenuAmbientSoundBuffer = 0;
 	m_LimboAmbientSoundBuffer = 0;
 	m_BossBattleSoundBuffer = 0;
+	m_WinSoundBuffer = 0;
 
 	m_PlayerAttackSoundBuffer1 = 0;
 	m_PlayerAttackSoundBuffer2 = 0;
@@ -22,8 +23,13 @@ SoundClass::SoundClass()
 	m_PickupXpSoundBuffer = 0;
 	m_ShieldBubbleSoundBuffer = 0;
 	m_BossLaughSoundBuffer = 0;
+	m_PortalEntrySoundBuffer = 0;
+	m_PlayerClimbSoundBuffer = 0;
+	m_PlayerDodgeSoundBuffer = 0;
+	m_CooldownOverSoundBuffer = 0;
 
 	m_MenuButtonSoundBuffer = 0;
+	m_MenuSelectSoundBuffer = 0;
 
 	m_LimboWeaponBuySoundBuffer = 0;
 	m_LimboUpSoundBuffer = 0;
@@ -61,6 +67,7 @@ bool SoundClass::initialize(HWND hwnd)
 	if (soundAvailable)
 	{
 		//Initialize .wav files in secondary sound buffers
+		//*******LOAD AMBIENT********//
 		result = loadWaveFile("game_ambiance_loop.wav", &m_GameAmbientSoundBuffer);
 		if (!result)
 		{
@@ -89,6 +96,15 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("win_loop.wav", &m_WinSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading win",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		
+		//*******LOAD GAME********//
 		result = loadWaveFile("miss1.wav", &m_PlayerAttackSoundBuffer1);
 		if (!result)
 		{
@@ -117,10 +133,10 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		result = loadWaveFile("step1.wav", &m_PlayerStepSoundBuffer);
+		result = loadWaveFile("step2.wav", &m_PlayerStepSoundBuffer);
 		if (!result)
 		{
-			MessageBox(NULL, L"Error loading audio",
+			MessageBox(NULL, L"Error loading step",
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
@@ -173,6 +189,36 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("portalEntry.wav", &m_PortalEntrySoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading portalEntry",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("climb1.wav", &m_PlayerClimbSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading climb1",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("dodgePlayer.wav", &m_PlayerDodgeSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading doge",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		result = loadWaveFile("cooldownOver.wav", &m_CooldownOverSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading CD Over",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+
+		//*******LOAD MENU********//
 		result = loadWaveFile("meny_button.wav", &m_MenuButtonSoundBuffer);
 		if (!result)
 		{
@@ -180,6 +226,15 @@ bool SoundClass::initialize(HWND hwnd)
 				L"Error", MB_OK | MB_ICONERROR);
 			return false;
 		}
+		result = loadWaveFile("menySelect.wav", &m_MenuSelectSoundBuffer);
+		if (!result)
+		{
+			MessageBox(NULL, L"Error loading menySelect",
+				L"Error", MB_OK | MB_ICONERROR);
+			return false;
+		}
+
+		//*******LOAD LIMBO********//
 		result = loadWaveFile("weaponBought.wav", &m_LimboWeaponBuySoundBuffer);
 		if (!result)
 		{
@@ -226,6 +281,7 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_MenuAmbientSoundBuffer);
 	shutdownWaveFile(&m_LimboAmbientSoundBuffer);
 	shutdownWaveFile(&m_BossBattleSoundBuffer);
+	shutdownWaveFile(&m_WinSoundBuffer);
 
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer1);
 	shutdownWaveFile(&m_PlayerAttackSoundBuffer2);
@@ -239,8 +295,13 @@ void SoundClass::shutdown()
 	shutdownWaveFile(&m_PickupXpSoundBuffer);
 	shutdownWaveFile(&m_ShieldBubbleSoundBuffer);
 	shutdownWaveFile(&m_BossLaughSoundBuffer);
+	shutdownWaveFile(&m_PortalEntrySoundBuffer);
+	shutdownWaveFile(&m_PlayerClimbSoundBuffer);
+	shutdownWaveFile(&m_PlayerDodgeSoundBuffer);
+	shutdownWaveFile(&m_CooldownOverSoundBuffer);
 
 	shutdownWaveFile(&m_MenuButtonSoundBuffer);
+	shutdownWaveFile(&m_MenuSelectSoundBuffer);
 
 	shutdownWaveFile(&m_LimboWeaponBuySoundBuffer);
 	shutdownWaveFile(&m_LimboUpSoundBuffer);
@@ -254,39 +315,44 @@ void SoundClass::shutdown()
 bool SoundClass::playAmbient(int gameState)
 {
 	bool result;
-	if (gameState == 0)
+	if (gameState == 0) //MENU
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
 		m_BossBattleSoundBuffer->Stop();
+		m_WinSoundBuffer->Stop();
 		playBackgroundSounds(m_MenuAmbientSoundBuffer);
 	}
-	else if (gameState == 1)
+	else if (gameState == 1) //GAME
 	{
 		m_MenuAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
 		m_BossBattleSoundBuffer->Stop();
+		m_WinSoundBuffer->Stop();
 		playBackgroundSounds(m_GameAmbientSoundBuffer);
 	}
-	else if (gameState == 2)
+	else if (gameState == 2) //LIMBO
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_MenuAmbientSoundBuffer->Stop();
 		m_BossBattleSoundBuffer->Stop();
+		m_WinSoundBuffer->Stop();
 		playBackgroundSounds(m_LimboAmbientSoundBuffer);
 	}
-	else if (gameState == 3)
+	else if (gameState == 3) //WIN
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_MenuAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
 		m_BossBattleSoundBuffer->Stop();
+		playBackgroundSounds(m_WinSoundBuffer);
 	}
-	else if (gameState == 4)
+	else if (gameState == 4) //BOSS BATTLE
 	{
 		m_GameAmbientSoundBuffer->Stop();
 		m_MenuAmbientSoundBuffer->Stop();
 		m_LimboAmbientSoundBuffer->Stop();
+		m_WinSoundBuffer->Stop();
 		playBackgroundSounds(m_BossBattleSoundBuffer);
 	}
 
@@ -300,6 +366,10 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		if (soundToPlay == 0) //Menu scroll
 		{
 			playSoundEffect(m_MenuButtonSoundBuffer);
+		}
+		if (soundToPlay == 1) //Start game (new and loaded)
+		{
+			playSoundEffect(m_MenuSelectSoundBuffer);
 		}
 	}
 	if (gameState == 1) //Game SFX
@@ -350,13 +420,29 @@ bool SoundClass::playSFX(int gameState, int soundToPlay)
 		{
 			playSoundEffect(m_PickupXpSoundBuffer);
 		}
-		if (soundToPlay == 9)
+		if (soundToPlay == 9) //Shield bubble activated
 		{
 			playSoundEffect(m_ShieldBubbleSoundBuffer);
 		}
-		if (soundToPlay == 10)
+		if (soundToPlay == 10) //Boss rains FIREY DEATH AND DESTRUCTION upon the tiny player
 		{
 			playSoundEffect(m_BossLaughSoundBuffer);
+		}
+		if (soundToPlay == 11) //Player enters portal
+		{
+			playSoundEffect(m_PortalEntrySoundBuffer);
+		}
+		if (soundToPlay == 12) //Player climbs ladder
+		{
+			playSoundEffect(m_PlayerClimbSoundBuffer);
+		}
+		if (soundToPlay == 13) //Player dodges
+		{
+			playSoundEffect(m_PlayerDodgeSoundBuffer);
+		}
+		if (soundToPlay == 14) //Cooldown over (powers back)
+		{
+			playSoundEffect(m_CooldownOverSoundBuffer);
 		}
 	}
 
